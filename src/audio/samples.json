@@ -1,0 +1,1174 @@
+{
+ "ac": {
+  "files": [
+   "ac.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "aquarium": {
+  "files": [
+   "aquarium.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "bark": {
+  "files": [
+   "bark-1.m4a",
+   "bark-2.m4a",
+   "bark-3.m4a",
+   "bark-4.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.711,
+   0.379,
+   0.413,
+   0.374
+  ]
+ },
+ "bark-far": {
+  "files": [
+   "bark-far-1.m4a",
+   "bark-far-2.m4a",
+   "bark-far-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.425,
+   0.674,
+   0.634
+  ]
+ },
+ "bark-sleepy": {
+  "files": [
+   "bark-sleepy-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   1.2
+  ]
+ },
+ "bark-small": {
+  "files": [
+   "bark-small-1.m4a",
+   "bark-small-2.m4a",
+   "bark-small-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.308,
+   0.773,
+   0.429
+  ]
+ },
+ "birds": {
+  "files": [
+   "birds.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   22.55
+  ]
+ },
+ "birds-near": {
+  "files": [
+   "birds-near.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "boiler": {
+  "files": [
+   "boiler.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "brush": {
+  "files": [
+   "brush.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   6.55
+  ]
+ },
+ "button": {
+  "files": [
+   "button-1.m4a",
+   "button-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.39,
+   0.363
+  ]
+ },
+ "cabinet-close": {
+  "files": [
+   "cabinet-close-1.m4a",
+   "cabinet-close-2.m4a",
+   "cabinet-close-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.817,
+   0.891,
+   0.587
+  ]
+ },
+ "cabinet-open": {
+  "files": [
+   "cabinet-open-1.m4a",
+   "cabinet-open-2.m4a",
+   "cabinet-open-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.601,
+   0.729,
+   0.62
+  ]
+ },
+ "car-drive": {
+  "files": [
+   "car-drive.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "car-pass": {
+  "files": [
+   "car-pass-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   6.799
+  ]
+ },
+ "ceiling-fan": {
+  "files": [
+   "ceiling-fan.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   10.55
+  ]
+ },
+ "chop": {
+  "files": [
+   "chop.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "city": {
+  "files": [
+   "city.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   22.55
+  ]
+ },
+ "click": {
+  "files": [
+   "click-1.m4a",
+   "click-2.m4a",
+   "click-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.137,
+   0.139,
+   0.189
+  ]
+ },
+ "coffee": {
+  "files": [
+   "coffee.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   9.55
+  ]
+ },
+ "compressor": {
+  "files": [
+   "compressor.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.3
+  ]
+ },
+ "crickets": {
+  "files": [
+   "crickets.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   18.55
+  ]
+ },
+ "crunch": {
+  "files": [
+   "crunch.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   6.55
+  ]
+ },
+ "cutlery": {
+  "files": [
+   "cutlery.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   14.55
+  ]
+ },
+ "diffuser": {
+  "files": [
+   "diffuser.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   8.55
+  ]
+ },
+ "dingdong": {
+  "files": [
+   "dingdong-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   3.168
+  ]
+ },
+ "dishes": {
+  "files": [
+   "dishes.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   15.3
+  ]
+ },
+ "dishwasher": {
+  "files": [
+   "dishwasher.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   17.05
+  ]
+ },
+ "door-close": {
+  "files": [
+   "door-close-1.m4a",
+   "door-close-2.m4a",
+   "door-close-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.791,
+   0.706,
+   0.826
+  ]
+ },
+ "door-open": {
+  "files": [
+   "door-open-1.m4a",
+   "door-open-2.m4a",
+   "door-open-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.991,
+   1.117,
+   1.879
+  ]
+ },
+ "drawer-close": {
+  "files": [
+   "drawer-close-1.m4a",
+   "drawer-close-2.m4a",
+   "drawer-close-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.982,
+   0.92,
+   1.016
+  ]
+ },
+ "drawer-open": {
+  "files": [
+   "drawer-open-1.m4a",
+   "drawer-open-2.m4a",
+   "drawer-open-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.991,
+   0.977,
+   1.245
+  ]
+ },
+ "dryer": {
+  "files": [
+   "dryer.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   18.3
+  ]
+ },
+ "fan": {
+  "files": [
+   "fan.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   9.3
+  ]
+ },
+ "fire": {
+  "files": [
+   "fire.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   18.55
+  ]
+ },
+ "flush": {
+  "files": [
+   "flush-1.m4a",
+   "flush-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   6.171,
+   5.65
+  ]
+ },
+ "fountain": {
+  "files": [
+   "fountain.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   14.55
+  ]
+ },
+ "fridge": {
+  "files": [
+   "fridge.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   18.55
+  ]
+ },
+ "fridge-open": {
+  "files": [
+   "fridge-open.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   10.55
+  ]
+ },
+ "frogs": {
+  "files": [
+   "frogs.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   18.55
+  ]
+ },
+ "grind": {
+  "files": [
+   "grind-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   3.663
+  ]
+ },
+ "hiss": {
+  "files": [
+   "hiss-1.m4a",
+   "hiss-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   1.032,
+   1.241
+  ]
+ },
+ "hottub": {
+  "files": [
+   "hottub.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "kettle": {
+  "files": [
+   "kettle.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   14.05
+  ]
+ },
+ "kettle-click": {
+  "files": [
+   "kettle-click-1.m4a",
+   "kettle-click-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.217,
+   0.215
+  ]
+ },
+ "kibble": {
+  "files": [
+   "kibble-1.m4a",
+   "kibble-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   1.453,
+   1.455
+  ]
+ },
+ "kids-play": {
+  "files": [
+   "kids-play.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   20.55
+  ]
+ },
+ "land": {
+  "files": [
+   "land-1.m4a",
+   "land-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.286,
+   0.378
+  ]
+ },
+ "lap": {
+  "files": [
+   "lap.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   6.55
+  ]
+ },
+ "lick": {
+  "files": [
+   "lick.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   6.55
+  ]
+ },
+ "lock": {
+  "files": [
+   "lock-1.m4a",
+   "lock-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   3.443,
+   3.518
+  ]
+ },
+ "meow": {
+  "files": [
+   "meow-1.m4a",
+   "meow-2.m4a",
+   "meow-3.m4a",
+   "meow-4.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   1.071,
+   1.134,
+   1.157,
+   1.133
+  ]
+ },
+ "meow-yawn": {
+  "files": [
+   "meow-yawn-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   1.962
+  ]
+ },
+ "microwave": {
+  "files": [
+   "microwave.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "motor-blinds": {
+  "files": [
+   "motor-blinds.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   2.7
+  ]
+ },
+ "motor-garage": {
+  "files": [
+   "motor-garage.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   6.55
+  ]
+ },
+ "mower": {
+  "files": [
+   "mower.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "music-1": {
+  "files": [
+   "music-1.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   59.25
+  ]
+ },
+ "music-2": {
+  "files": [
+   "music-2.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   56.75
+  ]
+ },
+ "music-3": {
+  "files": [
+   "music-3.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   56.25
+  ]
+ },
+ "music-4": {
+  "files": [
+   "music-4.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   59.25
+  ]
+ },
+ "nas": {
+  "files": [
+   "nas.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   10.55
+  ]
+ },
+ "night": {
+  "files": [
+   "night.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   22.55
+  ]
+ },
+ "oven-fan": {
+  "files": [
+   "oven-fan.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "owl": {
+  "files": [
+   "owl-1.m4a",
+   "owl-2.m4a",
+   "owl-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   4.59,
+   4.257,
+   4.548
+  ]
+ },
+ "page": {
+  "files": [
+   "page-1.m4a",
+   "page-2.m4a",
+   "page-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   2.5,
+   2.572,
+   2.511
+  ]
+ },
+ "patter-dog": {
+  "files": [
+   "patter-dog.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   5.8
+  ]
+ },
+ "pc-fan": {
+  "files": [
+   "pc-fan.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   8.55
+  ]
+ },
+ "place": {
+  "files": [
+   "place-1.m4a",
+   "place-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.257,
+   0.31
+  ]
+ },
+ "place-room": {
+  "files": [
+   "place-room-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.196
+  ]
+ },
+ "pool-pump": {
+  "files": [
+   "pool-pump.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   10.55
+  ]
+ },
+ "purifier": {
+  "files": [
+   "purifier.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   10.55
+  ]
+ },
+ "purr": {
+  "files": [
+   "purr.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   8.55
+  ]
+ },
+ "purr-short": {
+  "files": [
+   "purr-short-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   2.628
+  ]
+ },
+ "radiator": {
+  "files": [
+   "radiator.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   10.55
+  ]
+ },
+ "rain": {
+  "files": [
+   "rain.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   22.55
+  ]
+ },
+ "rain-heavy": {
+  "files": [
+   "rain-heavy.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   18.55
+  ]
+ },
+ "relay": {
+  "files": [
+   "relay-1.m4a",
+   "relay-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.156,
+   0.152
+  ]
+ },
+ "remove": {
+  "files": [
+   "remove-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.258
+  ]
+ },
+ "rustle": {
+  "files": [
+   "rustle-1.m4a",
+   "rustle-2.m4a",
+   "rustle-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.144,
+   1.52,
+   1.492
+  ]
+ },
+ "scratch": {
+  "files": [
+   "scratch.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   6.05
+  ]
+ },
+ "shower": {
+  "files": [
+   "shower.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   14.55
+  ]
+ },
+ "siren": {
+  "files": [
+   "siren.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   6.55
+  ]
+ },
+ "sizzle": {
+  "files": [
+   "sizzle.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   14.55
+  ]
+ },
+ "snore": {
+  "files": [
+   "snore.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   16.55
+  ]
+ },
+ "sprinkler": {
+  "files": [
+   "sprinkler.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "squeak": {
+  "files": [
+   "squeak-1.m4a",
+   "squeak-2.m4a",
+   "squeak-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.519,
+   0.47,
+   1.134
+  ]
+ },
+ "squirrel": {
+  "files": [
+   "squirrel-1.m4a",
+   "squirrel-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   2.02,
+   2.242
+  ]
+ },
+ "step-grass": {
+  "files": [
+   "step-grass-1.m4a",
+   "step-grass-2.m4a",
+   "step-grass-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.397,
+   0.41,
+   0.41
+  ]
+ },
+ "step-gravel": {
+  "files": [
+   "step-gravel-1.m4a",
+   "step-gravel-2.m4a",
+   "step-gravel-3.m4a",
+   "step-gravel-4.m4a",
+   "step-gravel-5.m4a",
+   "step-gravel-6.m4a",
+   "step-gravel-7.m4a",
+   "step-gravel-8.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41
+  ]
+ },
+ "step-hard": {
+  "files": [
+   "step-hard-1.m4a",
+   "step-hard-2.m4a",
+   "step-hard-3.m4a",
+   "step-hard-4.m4a",
+   "step-hard-5.m4a",
+   "step-hard-6.m4a",
+   "step-hard-7.m4a",
+   "step-hard-8.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41
+  ]
+ },
+ "step-soft": {
+  "files": [
+   "step-soft-1.m4a",
+   "step-soft-2.m4a",
+   "step-soft-3.m4a",
+   "step-soft-4.m4a",
+   "step-soft-5.m4a",
+   "step-soft-6.m4a",
+   "step-soft-7.m4a",
+   "step-soft-8.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41
+  ]
+ },
+ "step-stairs": {
+  "files": [
+   "step-stairs-1.m4a",
+   "step-stairs-2.m4a",
+   "step-stairs-3.m4a",
+   "step-stairs-4.m4a",
+   "step-stairs-5.m4a",
+   "step-stairs-6.m4a",
+   "step-stairs-7.m4a",
+   "step-stairs-8.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41
+  ]
+ },
+ "step-water": {
+  "files": [
+   "step-water-1.m4a",
+   "step-water-2.m4a",
+   "step-water-3.m4a",
+   "step-water-4.m4a",
+   "step-water-5.m4a",
+   "step-water-6.m4a",
+   "step-water-7.m4a",
+   "step-water-8.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41
+  ]
+ },
+ "step-wood": {
+  "files": [
+   "step-wood-1.m4a",
+   "step-wood-2.m4a",
+   "step-wood-3.m4a",
+   "step-wood-4.m4a",
+   "step-wood-5.m4a",
+   "step-wood-6.m4a",
+   "step-wood-7.m4a",
+   "step-wood-8.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41,
+   0.41
+  ]
+ },
+ "tap": {
+  "files": [
+   "tap.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "thunder": {
+  "files": [
+   "thunder-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   4.223
+  ]
+ },
+ "trampoline": {
+  "files": [
+   "trampoline-1.m4a",
+   "trampoline-2.m4a",
+   "trampoline-3.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.391,
+   0.764,
+   0.391
+  ]
+ },
+ "tv-menu": {
+  "files": [
+   "tv-menu.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   15.5
+  ]
+ },
+ "tv-show": {
+  "files": [
+   "tv-show.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   26.55
+  ]
+ },
+ "typing": {
+  "files": [
+   "typing.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   12.55
+  ]
+ },
+ "unlock": {
+  "files": [
+   "unlock-1.m4a",
+   "unlock-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   3.347,
+   3.335
+  ]
+ },
+ "vacuum": {
+  "files": [
+   "vacuum.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   3.8
+  ]
+ },
+ "vacuum-bot": {
+  "files": [
+   "vacuum-bot.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   10.55
+  ]
+ },
+ "valve": {
+  "files": [
+   "valve-1.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   2.171
+  ]
+ },
+ "washer": {
+  "files": [
+   "washer.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   20.55
+  ]
+ },
+ "wind": {
+  "files": [
+   "wind.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   22.55
+  ]
+ },
+ "wind-strong": {
+  "files": [
+   "wind-strong.m4a"
+  ],
+  "loop": true,
+  "dur": [
+   14.8
+  ]
+ },
+ "window-close": {
+  "files": [
+   "window-close-1.m4a",
+   "window-close-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   0.42,
+   0.595
+  ]
+ },
+ "window-open": {
+  "files": [
+   "window-open-1.m4a",
+   "window-open-2.m4a"
+  ],
+  "loop": false,
+  "dur": [
+   1.033,
+   1.31
+  ]
+ }
+}

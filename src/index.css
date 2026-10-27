@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+/*
+ * Homescape UI tokens. The single source of truth is DESIGN.md.
+ * Day: pastel isometric. Night: the dark counterpart of the same language (main[data-night]).
+ */
+:root {
+  /* Right panel (written by ui/panelState.ts > applyPanelVars): space it takes on the right, its width, height of the bottom card on narrow screens */
+  --panel: 408px;
+  --panel-w: 380px;
+  --sheet: 50%;
+  --ground: #e9ebf8;
+  --surface: rgb(255 255 255 / 0.9);
+  --surface-solid: #ffffff;
+  --surface-2: #f5f6fd;
+  --ink: #1b2042;
+  --ink-2: #555c7e;
+  --ink-3: #8d93ae;
+  --line: #e3e6f3;
+  --brand: #3f56e0;
+  --brand-600: #3346c4;
+  --brand-50: #eef0ff;
+  --brand-100: #dfe3ff;
+  --sun: #f5c04a;
+  --sun-50: #fff6df;
+  --ok: #1f9d63;
+  --ok-50: #e3f6ec;
+  --warn: #c77700;
+  --warn-50: #fdf0dc;
+  --miss: #e2564b;
+  --miss-50: #fde9e7;
+  --glass-border: rgb(255 255 255 / 0.95);
+  --shadow: 0 1px 2px rgb(27 32 66 / 0.06), 0 12px 32px rgb(27 32 66 / 0.08);
+}
+
+[data-night="true"] {
+  --ground: #10142b;
+  --surface: rgb(27 33 66 / 0.86);
+  --surface-solid: #1b2142;
+  --surface-2: #232a52;
+  --ink: #eef0ff;
+  --ink-2: #b4bae0;
+  --ink-3: #8088b4;
+  --line: #2e3663;
+  --brand: #8a97ff;
+  --brand-600: #a4aeff;
+  --brand-50: #262e60;
+  --brand-100: #313a78;
+  --sun: #ffc94d;
+  --sun-50: #3a3016;
+  --ok: #4fd08a;
+  --ok-50: #143524;
+  --warn: #ffb648;
+  --warn-50: #3a2a10;
+  --miss: #ff7d72;
+  --miss-50: #3d1c1c;
+  --glass-border: rgb(255 255 255 / 0.08);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-surface: var(--surface-solid);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-600: var(--brand-600);
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-sun: var(--sun);
+  --color-sun-50: var(--sun-50);
+  --color-ok: var(--ok);
+  --color-ok-50: var(--ok-50);
+  --color-warn: var(--warn);
+  --color-warn-50: var(--warn-50);
+  --color-miss: var(--miss);
+  --color-miss-50: var(--miss-50);
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  /*
+   * Touch screens (iPad): double tap does not zoom the page, no gray tap highlight or rubber-band overscroll, and a long
+   * press shows no text selection or "copy" bubble (selection stays on in text fields).
+   */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+/*
+ * App opened from the home screen (iPad): the status bar is transparent (index.html > black-translucent, white text) and
+ * the page starts under it. The body color fills the gap of the bar's height (safe-area-inset-top): at night the same dark
+ * navy as the top bar, by day the dark blue of the logo (the white clock stays readable). The app has full height below.
+ */
+body[data-standalone='1'] {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top);
+  background: #3346c4;
+}
+body[data-standalone='1'][data-night='1'] {
+  background: #151b38;
+}
+body[data-standalone='1'] main.h-dvh {
+  height: 100%;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+canvas {
+  touch-action: none;
+}
+
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+}
+
+/* Lite mode: the frosted glass blur is recomputed on every 3D frame; use a flat surface instead. */
+body[data-lite='1'] .glass,
+body[data-lite='1'] .backdrop-blur {
+  backdrop-filter: none;
+  background: var(--surface-solid);
+}
+
+.icon-tile {
+  background: linear-gradient(160deg, var(--brand-50), var(--brand-100));
+  color: var(--brand);
+}
+
+/* ⌥ / ⇧ held: rotate cursor */
+body[data-rotate='1'] canvas {
+  cursor: move !important;
+}
+
+/* Space held: pan cursor */
+body[data-pan='1'] canvas {
+  cursor: grab !important;
+}
+body[data-pan='1'][data-grabbing='1'] canvas {
+  cursor: grabbing !important;
+}
+
+input[type='range'] {
+  accent-color: var(--brand);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Text fields: a soft ring on the field itself instead of an offset outline (an offset outline is clipped by the glass cards) */
+input:not([type='checkbox'], [type='radio'], [type='range']):focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+/* A field that is the whole bar (search palette): the caret is the focus, no ring */
+.field-bare:focus-visible {
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/*
+ * Transition to the dashboard: the backdrop and blur fade in softly, the cards appear one by one rising slightly (--i
+ * order, 32 ms apart); leaving, it fades out quickly. With "reduce motion" on, the rule above turns all of it off.
+ */
+@keyframes dash-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes dash-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes dash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+}
+.dash-in {
+  animation: dash-fade-in 260ms ease-out both;
+}
+.dash-out {
+  animation: dash-fade-out 200ms ease-in both;
+  pointer-events: none !important;
+}
+.dash-rise {
+  animation: dash-rise 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(min(var(--i, 0), 14) * 32ms);
+}
+
+/* The quick on/off pill (ui/QuickPill.tsx) appears above the item growing slightly; from below when it sits under the item */
+@keyframes quick-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.94);
+  }
+}
+.quick-in {
+  animation: quick-in 140ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+[data-side='below'] > .quick-in {
+  animation-name: quick-in-below;
+}
+@keyframes quick-in-below {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.94);
+  }
+}
+
+/* Red pulse along the screen edges while the alarm is triggered (ui/AlarmBanner) */
+@keyframes alarm-pulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 0 rgba(255, 42, 42, 0);
+  }
+  50% {
+    box-shadow: inset 0 0 180px 50px rgba(255, 42, 42, 0.55);
+  }
+}
+.alarm-vignette {
+  animation: alarm-pulse 1.1s ease-in-out infinite;
+}
+
+/*
+ * Card body (Inspector): the grid column does not grow with its content, so the card never scrolls sideways. Inner grids
+ * are single column too; :where has zero specificity and the layer is components, so inner grids with grid-cols-* keep
+ * their own columns.
+ */
+@layer components {
+  .panel-body {
+    overflow-x: hidden;
+  }
+  .panel-body,
+  .panel-body :where(.grid) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

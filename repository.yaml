@@ -1,0 +1,4 @@
+# Home Assistant add-on repository: add this repository's URL in Settings > Add-ons > Add-on store > Repositories
+name: Homescape
+url: https://github.com/muratozturk5/homescape
+maintainer: Homescape contributors

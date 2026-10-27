@@ -1,0 +1,48 @@
+{
+  "capturedAt": "2026-10-08T12:00:00+03:00",
+  "areas": [
+    { "area_id": "living_room", "name": "Living Room", "icon": "mdi:sofa" },
+    { "area_id": "kitchen", "name": "Kitchen", "icon": "mdi:stove" },
+    { "area_id": "bedroom", "name": "Bedroom", "icon": "mdi:bed" },
+    { "area_id": "bathroom", "name": "Bathroom", "icon": "mdi:bathtub" },
+    { "area_id": "entrance", "name": "Entrance", "icon": "mdi:door" },
+    { "area_id": "office", "name": "Office", "icon": "mdi:laptop" }
+  ],
+  "entities": [
+    { "entity_id": "light.living_room_chandelier", "area_id": "living_room", "state": "on", "attributes": { "friendly_name": "Living Room Chandelier", "brightness": 210, "color_mode": "color_temp", "color_temp_kelvin": 3000, "supported_color_modes": ["color_temp"] } },
+    { "entity_id": "light.living_room_floor_lamp", "area_id": "living_room", "state": "off", "attributes": { "friendly_name": "Floor Lamp", "supported_color_modes": ["brightness"] } },
+    { "entity_id": "light.living_room_tv_led", "area_id": "living_room", "state": "on", "attributes": { "friendly_name": "TV Backlight LED", "brightness": 180, "color_mode": "rgb", "rgb_color": [92, 112, 255], "supported_color_modes": ["rgb"] } },
+    { "entity_id": "media_player.living_room_tv", "area_id": "living_room", "state": "playing", "attributes": { "friendly_name": "Living Room TV", "volume_level": 0.3, "media_title": "Documentary" } },
+    { "entity_id": "climate.living_room_ac", "area_id": "living_room", "state": "cool", "attributes": { "friendly_name": "Living Room AC", "hvac_modes": ["off", "cool", "heat", "auto"], "hvac_action": "cooling", "current_temperature": 24.5, "temperature": 22, "min_temp": 16, "max_temp": 30, "target_temp_step": 0.5 } },
+    { "entity_id": "humidifier.living_room_diffuser", "area_id": "living_room", "state": "on", "attributes": { "friendly_name": "Diffuser", "humidity": 55, "mode": "normal", "available_modes": ["normal", "auto"] } },
+    { "entity_id": "sensor.living_room_temperature", "area_id": "living_room", "state": "24.5", "attributes": { "friendly_name": "Living Room Temperature", "device_class": "temperature", "unit_of_measurement": "°C" } },
+    { "entity_id": "sensor.living_room_humidity", "area_id": "living_room", "state": "48", "attributes": { "friendly_name": "Living Room Humidity", "device_class": "humidity", "unit_of_measurement": "%" } },
+    { "entity_id": "binary_sensor.living_room_occupancy", "area_id": "living_room", "state": "on", "attributes": { "friendly_name": "Living Room Occupancy", "device_class": "occupancy" } },
+    { "entity_id": "vacuum.robot_vacuum", "area_id": "living_room", "state": "docked", "attributes": { "friendly_name": "Robot Vacuum", "battery_level": 92 } },
+
+    { "entity_id": "light.kitchen_ceiling", "area_id": "kitchen", "state": "off", "attributes": { "friendly_name": "Kitchen Ceiling Lamp", "supported_color_modes": ["brightness"] } },
+    { "entity_id": "switch.kitchen_counter_led", "area_id": "kitchen", "state": "on", "attributes": { "friendly_name": "Counter LED" } },
+    { "entity_id": "binary_sensor.kitchen_window", "area_id": "kitchen", "state": "off", "attributes": { "friendly_name": "Kitchen Window", "device_class": "window" } },
+    { "entity_id": "sensor.kitchen_temperature", "area_id": "kitchen", "state": "23.1", "attributes": { "friendly_name": "Kitchen Temperature", "device_class": "temperature", "unit_of_measurement": "°C" } },
+
+    { "entity_id": "light.bedroom_chandelier", "area_id": "bedroom", "state": "off", "attributes": { "friendly_name": "Bedroom Chandelier", "supported_color_modes": ["color_temp"] } },
+    { "entity_id": "switch.bedroom_headboard", "area_id": "bedroom", "state": "on", "attributes": { "friendly_name": "Headboard Light" } },
+    { "entity_id": "switch.bedroom_outlet", "area_id": "bedroom", "state": "off", "attributes": { "friendly_name": "Bedroom Outlet", "device_class": "outlet" } },
+    { "entity_id": "cover.bedroom_curtain", "area_id": "bedroom", "state": "open", "attributes": { "friendly_name": "Curtain", "device_class": "curtain", "current_position": 60 } },
+
+    { "entity_id": "switch.bathroom_mirror", "area_id": "bathroom", "state": "off", "attributes": { "friendly_name": "Mirror Light" } },
+    { "entity_id": "binary_sensor.bathroom_motion", "area_id": "bathroom", "state": "off", "attributes": { "friendly_name": "Bathroom Motion", "device_class": "motion" } },
+    { "entity_id": "sensor.bathroom_humidity", "area_id": "bathroom", "state": "71", "attributes": { "friendly_name": "Bathroom Humidity", "device_class": "humidity", "unit_of_measurement": "%" } },
+
+    { "entity_id": "light.entrance_wall_light", "area_id": "entrance", "state": "on", "attributes": { "friendly_name": "Entrance Wall Light", "brightness": 140, "color_mode": "color_temp", "color_temp_kelvin": 2700, "supported_color_modes": ["color_temp"] } },
+    { "entity_id": "binary_sensor.entrance_door", "area_id": "entrance", "state": "off", "attributes": { "friendly_name": "Front Door", "device_class": "door" } },
+    { "entity_id": "alarm_control_panel.house_alarm", "area_id": "entrance", "state": "disarmed", "attributes": { "friendly_name": "Home Alarm", "code_arm_required": false } },
+
+    { "entity_id": "switch.office_desk_lamp", "area_id": "office", "state": "on", "attributes": { "friendly_name": "Desk Lamp" } },
+    { "entity_id": "switch.office_monitors", "area_id": "office", "state": "on", "attributes": { "friendly_name": "Monitors" } },
+    { "entity_id": "fan.office_fan", "area_id": "office", "state": "on", "attributes": { "friendly_name": "Fan", "percentage": 50 } },
+    { "entity_id": "switch.office_camera", "area_id": "office", "state": "off", "attributes": { "friendly_name": "Office Camera" } },
+
+    { "entity_id": "sun.sun", "area_id": null, "state": "above_horizon", "attributes": { "friendly_name": "Sun", "elevation": 38 } }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "name": "homescape",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Your Home Assistant home as a live, interactive 3D dollhouse in the browser",
+  "keywords": [
+    "home-assistant",
+    "smart-home",
+    "3d",
+    "three.js",
+    "react-three-fiber",
+    "dollhouse",
+    "floor-plan",
+    "dashboard"
+  ],
+  "homepage": "https://github.com/muratozturk5/homescape#readme",
+  "bugs": {
+    "url": "https://github.com/muratozturk5/homescape/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muratozturk5/homescape.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:addon": "npm run build && node scripts/copy-addon.mjs",
+    "lint": "oxlint",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "i18n:check": "node scripts/i18n-check.mjs",
+    "preview": "vite preview",
+    "shot": "node tools/shot.mjs",
+    "check:controls": "node tools/controls-check.mjs",
+    "check:home": "node tools/home-check.mjs",
+    "perf": "node tools/perf-check.mjs",
+    "check": "node tools/controls-check.mjs && node tools/home-check.mjs && node tools/world-check.mjs && node tools/interior-check.mjs && node tools/outdoor-check.mjs && node tools/pets-check.mjs && node tools/sound-check.mjs && node tools/demo-check.mjs && node tools/street-check.mjs && node tools/building-check.mjs && node tools/sync-check.mjs && node tools/weather-check.mjs",
+    "check:world": "node tools/world-check.mjs",
+    "check:interior": "node tools/interior-check.mjs",
+    "check:outdoor": "node tools/outdoor-check.mjs",
+    "check:pets": "node tools/pets-check.mjs",
+    "check:sound": "node tools/sound-check.mjs",
+    "check:demo": "node tools/demo-check.mjs",
+    "check:street": "node tools/street-check.mjs",
+    "check:building": "node tools/building-check.mjs",
+    "check:sync": "node tools/sync-check.mjs",
+    "check:weather": "node tools/weather-check.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
+    "home-assistant-js-websocket": "^9.7.1",
+    "lucide-react": "^1.53.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.186.1",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.81.0",
+    "playwright": "^1.64.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0"
+  }
+}
