@@ -185,7 +185,8 @@ select:focus-visible {
 }
 
 /* A field that is the whole bar (search palette): the caret is the focus, no ring */
-.field-bare:focus-visible {
+input.field-bare:focus-visible,
+textarea.field-bare:focus-visible {
   box-shadow: none;
 }
 
