@@ -40,6 +40,10 @@ interface Window {
     sync: () => Promise<{ status: string; at: string | null; conflict: unknown; meta: { device: string; base: string | null; sig: string | null; editedAt: string | null }; remote: { updatedAt: string; device: string; homes: number } | null }>
     /** The plan in the fake live source's Home Assistant storage (a given value is stored as if another device wrote it) */
     fakeRemote: (value?: unknown) => Promise<unknown>
+    /** Settings of the fake live source: failing (reads and writes fail), user (Home Assistant user) */
+    fakeUser: (patch: { failing?: boolean; user?: string }) => Promise<void>
+    /** Plan backups in the fake live source */
+    fakeBackups: () => Promise<unknown>
     fakeLiveCalls: () => Promise<{ domain: string; service: string; data: Record<string, unknown> }[]>
     demo: () => Promise<void>
     /** Ray in the scene: height, distance and item of the first visible hit (dev/sceneProbe.ts) */

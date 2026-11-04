@@ -4,6 +4,8 @@
 // Run with the dev server open: `npm run check:sync`
 import { chromium } from 'playwright'
 
+const BASE = process.env.HOMESCAPE_URL ?? 'http://localhost:5190/'
+
 let failures = 0
 const ok = (c, m) => {
   if (!c) failures += 1
@@ -16,7 +18,7 @@ const device = async () => {
   const ctx = await b.newContext({ viewport: { width: 1280, height: 820 }, locale: 'en-US' })
   const p = await ctx.newPage()
   p.on('pageerror', (e) => errors.push(e.message))
-  await p.goto('http://localhost:5190/')
+  await p.goto(BASE)
   await p.waitForSelector('body[data-ready="1"]')
   await p.waitForTimeout(800)
   return p
@@ -106,7 +108,7 @@ const asked = await C.isVisible('#sync-prompt')
 ok(asked && (await remote(C)).updatedAt === r.updatedAt, 'If the edited plan on this device differs from the one in HA, it asks; nothing is written to HA')
 if (asked) await C.click('#sync-use-remote')
 await C.waitForTimeout(400)
-const backup = await C.evaluate(() => JSON.parse(localStorage.getItem('homescape-sync-backup') ?? 'null'))
+const backup = await C.evaluate(() => JSON.parse(localStorage.getItem('homescape-sync-backup') ?? '[]')[0])
 ok(!(await C.isVisible('#sync-prompt')) && !(await rooms(C)).includes('C Room') && backup?.homes?.[0]?.layout?.levels?.[0]?.rooms?.some((x) => x.name === 'C Room'), '"Use the one in Home Assistant": the HA plan arrives, the plan on this device is backed up')
 
 // --- D: same question, saves the one on this device ---

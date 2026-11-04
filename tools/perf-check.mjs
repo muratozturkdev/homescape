@@ -3,11 +3,13 @@
 // Note: headless Chrome uses software WebGL (SwiftShader); the absolute values mean little, the before/after comparison matters.
 import { chromium } from 'playwright'
 
+const BASE = process.env.HOMESCAPE_URL ?? 'http://localhost:5190/'
+
 const DSF = Number(process.env.PERF_DPR ?? 2) // Imitate a Retina display
 const b = await chromium.launch({ channel: 'chrome', args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] })
 const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: DSF, locale: 'en-US' })
 const p = await ctx.newPage()
-await p.goto('http://localhost:5190/')
+await p.goto(BASE)
 await p.waitForSelector('body[data-ready="1"]')
 await p.waitForTimeout(2500)
 const cdp = await ctx.newCDPSession(p)

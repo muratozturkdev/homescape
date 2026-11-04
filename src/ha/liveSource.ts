@@ -97,7 +97,7 @@ const hostLabel = (hassUrl: string) => {
 }
 
 /**
- * Inside the Home Assistant frontend (add-on panel or Webpage dashboard, ha/embed.ts): uses the frontend's own connection,
+ * Inside the Home Assistant frontend (app panel or Webpage dashboard, ha/embed.ts): uses the frontend's own connection,
  * so there is no sign-in. Returns null when Homescape is not shown inside Home Assistant.
  */
 export async function connectEmbedded(): Promise<HaSource | null> {
@@ -140,6 +140,14 @@ function sourceFromConnection(conn: Connection, label: string, owned: boolean): 
       },
       async set(key, value) {
         await conn.sendMessagePromise({ type: 'frontend/set_user_data', key, value })
+      },
+      async owner() {
+        try {
+          const user = await conn.sendMessagePromise<{ id?: string } | null>({ type: 'auth/current_user' })
+          return user?.id ?? null
+        } catch {
+          return null
+        }
       },
       async subscribe(key, cb) {
         try {

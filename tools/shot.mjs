@@ -13,8 +13,10 @@
 import { chromium } from 'playwright'
 import { mkdirSync } from 'node:fs'
 
+const BASE = process.env.HOMESCAPE_URL ?? 'http://localhost:5190/'
+
 const env = process.env
-const URL = env.SHOT_URL ?? 'http://localhost:5190/'
+const URL = env.SHOT_URL ?? BASE
 const NAME = env.SHOT_NAME ?? 'scene'
 const W = Number(env.SHOT_W ?? 1600)
 const H = Number(env.SHOT_H ?? 900)

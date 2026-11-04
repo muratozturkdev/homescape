@@ -30,7 +30,7 @@ export interface HaSnapshot {
   entities: (HassEntity & { area_id: string | null; device_model?: string })[]
 }
 
-/** Connection layer. Demo, live (WebSocket) and, later, the add-on (ingress) implement the same interface. */
+/** Connection layer. Demo, live (WebSocket) implement the same interface. */
 export interface HaSource {
   kind: 'demo' | 'live'
   /** Name shown in the UI, e.g. "Demo" or "homeassistant.local" */
@@ -50,5 +50,7 @@ export interface HaSource {
     get(key: string): Promise<unknown>
     set(key: string, value: unknown): Promise<void>
     subscribe(key: string, cb: (value: unknown) => void): Promise<(() => void) | null>
+    /** Id of the Home Assistant user of this connection: a plan belongs to one account */
+    owner?(): Promise<string | null>
   }
 }

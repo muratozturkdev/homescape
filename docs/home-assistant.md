@@ -3,30 +3,32 @@
 Homescape can open from Home Assistant's sidebar. Inside Home Assistant it reuses the frontend's own login: there is no
 second sign-in and Homescape never stores a token. Pick one of the two ways below.
 
-| | Add-on (ingress) | Files in `/config/www` + Webpage dashboard |
+| | App (ingress) | Files in `/config/www` + Webpage dashboard |
 | --- | --- | --- |
 | Works on | Home Assistant OS, Supervised | Every installation (also Container and Core) |
-| Updates | From the add-on store | Copy the new build over the old one |
-| Sidebar entry | Automatic ("Homescape") | You add a Webpage dashboard |
+| Updates | From the Apps page | Copy the new build over the old one |
+| Sidebar entry | Automatic ("Homescape"), for every user | You add a Webpage dashboard |
 
-## Option 1: add-on
+Apps were called add-ons before Home Assistant 2026.2.
 
-1. In Home Assistant open **Settings > Add-ons > Add-on store**, then the menu (three dots) **> Repositories**.
-2. Add `https://github.com/muratozturk5/homescape` and close the dialog.
-3. Find **Homescape** in the store, install it and start it. Turn on **Show in sidebar**.
+## Option 1: app
+
+1. In Home Assistant go to **Settings > Apps** and select **Install app**.
+2. In the top-right menu select **Repositories**, add `https://github.com/muratozturk5/homescape` and close the dialog.
+3. Find **Homescape**, install it and start it. Turn on **Show in sidebar**.
 4. Open **Homescape** from the sidebar.
 
-The add-on builds the web app from the repository on first install (this takes a few minutes on a Raspberry Pi). To
+The app builds the web page from the repository on first install (this takes a few minutes on a Raspberry Pi). To
 install a local build instead (for example while developing):
 
 ```bash
 npm install
-npm run build:addon   # builds and copies dist/ to addon/www/
+npm run build:app   # builds and copies dist/ to homescape/www/
 ```
 
-Copy the `addon/` folder to `/addons/homescape/` on the Home Assistant machine (Samba or SSH add-on), then in the add-on
-store use the menu **> Check for updates**; the add-on appears under **Local add-ons**. With `addon/www/` present the
-add-on uses those files and does not build anything.
+Copy the `homescape/` folder to `/addons/homescape/` on the Home Assistant machine (Samba or SSH app), then check for updates
+on the Install app page; the app appears under **Local apps**. With `homescape/www/` present the app uses those files and
+does not build anything.
 
 ## Option 2: files in /config/www and a Webpage dashboard
 
@@ -42,9 +44,9 @@ app's code, but not your data. Your entities, areas and plan are only loaded ove
 
 ## How the connection works
 
-- **Inside the Home Assistant frontend** (add-on panel or Webpage dashboard), Homescape runs in a same-origin iframe and
-  uses the frontend's connection (`window.parent.hassConnection`). The language follows your Home Assistant profile
-  unless you pick another one in Homescape's language menu.
+- **Inside the Home Assistant frontend** (app panel or Webpage dashboard), Homescape runs in a same-origin iframe and uses
+  the frontend's connection (`window.parent.hassConnection`). The language follows your Home Assistant profile unless you
+  pick another one in Homescape's language menu.
 - **Opened directly from Home Assistant's address** (for example `http://homeassistant.local:8123/local/homescape/index.html`
   in a new tab), Homescape signs in through Home Assistant's own login page at that address.
 - **Anywhere else** (the development server, your own web server), use the connect dialog in the top right: sign in with
@@ -60,8 +62,39 @@ app's code, but not your data. Your entities, areas and plan are only loaded ove
   The development server (`npm run dev` with `HA_URL` in `.env.local`) proxies Home Assistant, so no CORS setting is
   needed there.
 
-## Where the plan is stored
+## Where your data lives
 
-Your house plan is kept in the browser (localStorage) and, when connected to Home Assistant, synced to your Home Assistant
-user's frontend storage (key `homescape-plan`), so every device you sign in with shows the same plan. Homescape only reads
-your Home Assistant state and calls the services you trigger from its controls; it does not change your configuration.
+Homescape has no server and no account, and nothing leaves your network.
+
+| What | Where | Who can see it |
+| --- | --- | --- |
+| Your homes and plans | Home Assistant, in your user's frontend storage (`/config/.storage/frontend.user_data_<user id>`, key `homescape-plan`) | Your Home Assistant user |
+| Previous versions of the plan | The same place, key `homescape-plan-backups` (up to 3) | Your Home Assistant user |
+| A working copy and up to 5 replaced versions | This browser's local storage | This browser |
+| Settings of this device (sound, panel, language, connection) | This browser's local storage | This browser |
+
+- **The app stores nothing.** Updating, stopping or uninstalling the Homescape app, or deleting the files in `/config/www`,
+  does not touch your plan.
+- **Backups:** Home Assistant backups include your plan, because they include `/config/.storage`.
+- **Each Home Assistant user has their own plan.** Someone signing in with another user starts with their own. To share a
+  home, sign in with the same user on those devices, or use **Plan history > Download all homes** and open the file in
+  **Edit**.
+- **The demo connection and the sample home are not saved to Home Assistant.** Edits made there stay in that browser.
+- **Removing a Home Assistant user** removes that user's frontend storage, and with it their plan.
+
+### What Homescape does to Home Assistant
+
+It reads states, areas, devices and entities, reads and writes the two storage keys above (plus
+`homescape-plan-unreadable` if you choose to replace a plan it cannot read), and calls a service only when you press a
+control. It does not change your configuration, entities, dashboards or automations.
+
+### How your plan is protected
+
+- Nothing is written unless the plan in Home Assistant was read first; a failed read changes nothing.
+- A plan Homescape cannot read, or one saved by a newer version, is never overwritten. Sync stops and your edits stay on
+  that device until you update.
+- Only your edits are written. A plan generated automatically never replaces the one in Home Assistant, so a device that
+  lost its browser data gets your plan back.
+- Before a plan is replaced, a copy is kept. Open the home menu and choose **Plan history** to see the copies, restore one
+  or download all homes as a file.
+- Plans saved by older versions are upgraded when they load, both from the browser and from Home Assistant.

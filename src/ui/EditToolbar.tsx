@@ -2,7 +2,8 @@ import { DoorOpen, Download, Eraser, MousePointer2, Redo2, SquareDashed, SquareD
 import { useEffect, useRef, useState } from 'react'
 import { useHa } from '@/ha/store'
 import { connectRooms } from '@/model/doors'
-import { activeLevel, exportLayout, importLayout, useLayout } from '@/model/layoutStore'
+import { importPlanFile } from '@/ha/planSync'
+import { activeLevel, exportLayout, useLayout } from '@/model/layoutStore'
 import { useView } from '@/scene/camera'
 import { t, tn } from '@/i18n'
 import { regenerateFromHa } from './regenerate'
@@ -97,7 +98,7 @@ export default function EditToolbar() {
             e.target.value = ''
             if (!f) return
             try {
-              await importLayout(f)
+              await importPlanFile(f)
               useView.getState().request({ kind: 'house' })
               notice(t('Plan imported.'))
             } catch (err) {

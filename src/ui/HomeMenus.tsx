@@ -1,9 +1,10 @@
-import { Check, ChevronDown, House, Layers, Pencil, Plus, RotateCcw, Sparkles, Trash2, X } from 'lucide-react'
+import { Check, ChevronDown, History, House, Layers, Pencil, Plus, RotateCcw, Sparkles, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { AMERICAN_NAME, americanLayout } from '@/demo/american'
 import { findAmericanHome, openAmericanHome } from '@/demo/demoHomes'
 import { homeDir, homeLayout, switchHomeAnimated } from './homeSwitch'
-import { useSync } from '@/ha/planSync'
+import { blockText, useSync } from '@/ha/planSync'
+import { usePlanHistory } from './planHistoryState'
 import { useHa } from '@/ha/store'
 import { activeHomeId, activeLevel, homesOf, levelName, useLayout } from '@/model/layoutStore'
 import { type RoofMode, type RoofStyle, useView } from '@/scene/camera'
@@ -90,6 +91,7 @@ export function HomeSwitcher() {
   const L = () => useLayout.getState()
   // Homes synced through Home Assistant (ha/planSync.ts)
   const sync = useSync((s) => s.status)
+  const blocked = useSync((s) => s.blocked)
 
   return (
     <div ref={ref} className="relative">
@@ -181,7 +183,20 @@ export function HomeSwitcher() {
             {t('Each home has its own plan and floors; all of them use the same Home Assistant connection.')}
             {sync === 'synced' && ` ${t('Homes are stored in Home Assistant: every device signed in with the same user (iPad, phone) sees these homes.')}`}
             {sync === 'waiting' && ` ${t('No home plan is stored in Home Assistant yet: it is saved there when you make a change on this device.')}`}
+            {blocked && ` ${blockText(blocked)}`}
           </p>
+          <button
+            type="button"
+            id="plan-history-open"
+            onClick={() => {
+              setOpen(false)
+              usePlanHistory.setState({ open: true })
+            }}
+            className="mx-1 mt-1 flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[12px] font-semibold text-brand hover:bg-surface-2"
+          >
+            <History size={14} />
+            {t('Plan history')}
+          </button>
         </div>
       )}
     </div>

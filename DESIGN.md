@@ -42,7 +42,7 @@ Day palette (`palette.ts`): wall `#f7f7fd`, wood `#ecdcc4`, tile `#f4f5fb`, carp
 | Interface | Plus Jakarta Sans (variable) | The whole UI |
 | Numbers and code | JetBrains Mono 400/500 | KPI values, temperatures, dimensions, entity_id, eyebrow labels |
 
-Fonts come from `@fontsource` packages (no internet needed; they work in the add-on too). Scale: 11 · 12-13 · 14-15 · 16-17 · 19-22.
+Fonts come from `@fontsource` packages (no internet needed; they work in the Home Assistant app too). Scale: 11 · 12-13 · 14-15 · 16-17 · 19-22.
 
 Scripts outside the bundled subsets (for example Cyrillic in the UI font, Devanagari, Chinese, Japanese, Korean) fall back to the system font through the font stacks in `index.css`. Uppercase eyebrow labels use CSS `uppercase`, which follows the `<html lang>` rules.
 
@@ -86,6 +86,7 @@ Scripts outside the bundled subsets (for example Cyrillic in the UI font, Devana
 - **Fullscreen guide (iPad):** a centered glass card (at most 440 px): a tablet icon tile, a mono "FULLSCREEN" eyebrow, a semibold heading, a short explanation, three numbered steps (rows on a light background, brand blue number circles, the Share and Add to Home Screen icons inline), and at the bottom a filled "Got it" and an outlined "Fullscreen anyway".
 - **Status bar in the home screen app:** transparent with white text; beneath it, at night the top bar's dark navy (seamless), by day a strip in the logo's dark blue (`#3346c4`).
 - **Plan sync prompt:** only when two devices have different hand-edited plans: a glass card centered at the top (at most 448 px) with a brand blue sync icon tile on the left, a mono uppercase "HOME ASSISTANT" eyebrow, a semibold heading saying the plan on this device is different, and a short explanation (save date; the plan not chosen is backed up). Two equal buttons: filled brand blue "use the one in Home Assistant" (cloud download) and outlined "keep this device's" (cloud upload); 40 px tall on touch. The sync status sits in a small note under the home menu.
+- **Plan history:** opens from the home menu ("Plan history" text button with a history icon). Centered glass card (max 460 px): history icon tile, title, one line of explanation; rows on a soft surface with the date, then homes, rooms, items and where the copy is kept; a text "Restore" button that asks for a second click (filled brand blue). At the bottom "Download all homes", and only when the plan in Home Assistant is unreadable a red "Replace it with the plan on this device".
 
 ### View mode
 

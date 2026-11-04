@@ -5,10 +5,11 @@ import sample from './sample-snapshot.json'
 /*
  * Data of the demo source: a local snapshot (not in git) when there is one, else the bundled sample home (always the
  * sample in automated browsers).
- * local-snapshot.json is a read-only copy of the developer's own HA and is real data: never translated. The sample is
+ * local-snapshot.json is a read-only copy of the developer's own HA and is real data: never translated, and only read on
+ * the development server, so a production build can never contain it. The sample is
  * English source text; its area names, entity names and media titles are shown in the user's language.
  */
-const local = import.meta.glob<{ default: HaSnapshot }>('./local-snapshot.json', { eager: true })
+const local = import.meta.env.DEV ? import.meta.glob<{ default: HaSnapshot }>('./local-snapshot.json', { eager: true }) : {}
 
 /** Texts of sample-snapshot.json (registered here for the key extractor; keep in sync with the JSON) */
 const SAMPLE_TEXTS = new Set([

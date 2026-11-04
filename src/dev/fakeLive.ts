@@ -17,6 +17,10 @@ const userStore = new Map<string, unknown>()
 const userSubs = new Map<string, Set<(v: unknown) => void>>()
 const copy = (v: unknown) => (v == null ? null : (JSON.parse(JSON.stringify(v)) as unknown))
 export const fakeUserData = {
+  /** While true every read and write fails, like a dropped connection */
+  failing: false,
+  /** Home Assistant user of the connection (plan sync tells accounts apart) */
+  user: 'user-a',
   get: (key: string) => copy(userStore.get(key)),
   put(key: string, value: unknown) {
     if (value == null) userStore.delete(key)
@@ -43,10 +47,15 @@ export async function fakeLive() {
     },
     userData: {
       async get(key) {
+        if (fakeUserData.failing) throw new Error('connection lost')
         return fakeUserData.get(key)
       },
       async set(key, value) {
+        if (fakeUserData.failing) throw new Error('connection lost')
         fakeUserData.put(key, value)
+      },
+      async owner() {
+        return fakeUserData.user
       },
       async subscribe(key, cb) {
         const set = userSubs.get(key) ?? new Set()

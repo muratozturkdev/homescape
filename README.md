@@ -34,18 +34,21 @@ Home Assistant areas and entities; you shape it further directly in 3D.
 - **14 languages**: English, Deutsch, Español, Français, Italiano, Nederlands, Polski, Português, Русский, Türkçe,
   हिन्दी, 日本語, 한국어, 中文. The device (or Home Assistant) language is used automatically.
 - **Private by design**: runs entirely in your browser, talks only to your Home Assistant, never sees your password.
+- **Your plan is safe**: it is stored in Home Assistant under your user and included in your backups. Homescape never
+  overwrites data it cannot read, keeps a copy before replacing a plan, and can restore any of them from **Plan history**.
+  See [where your data lives](docs/home-assistant.md#where-your-data-lives).
 
 ## Getting started
 
 ### In Home Assistant (recommended)
 
-Add this repository to the add-on store (**Settings > Add-ons > Add-on store > Repositories**):
+In Home Assistant go to **Settings > Apps > Install app**, open the top-right menu, choose **Repositories** and add:
 
 ```
 https://github.com/muratozturk5/homescape
 ```
 
-Install **Homescape**, start it and open it from the sidebar. On installations without add-ons (Container, Core), copy
+Install **Homescape**, start it and open it from the sidebar. On installations without apps (Container, Core), copy
 the built files to `/config/www/homescape` and add a Webpage dashboard. Both ways are described in
 [docs/home-assistant.md](docs/home-assistant.md).
 

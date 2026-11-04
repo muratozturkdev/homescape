@@ -7,13 +7,15 @@
 import { chromium } from 'playwright'
 import { mkdirSync } from 'node:fs'
 
+const BASE = process.env.HOMESCAPE_URL ?? 'http://localhost:5190/'
+
 mkdirSync('shots', { recursive: true })
 let failures = 0
 const b = await chromium.launch({ channel: 'chrome', args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] })
 const p = await b.newPage({ viewport: { width: 1600, height: 900 }, locale: 'en-US' })
 const errors = []
 p.on('pageerror', (e) => errors.push(e.message))
-await p.goto('http://localhost:5190/')
+await p.goto(BASE)
 await p.waitForSelector('body[data-ready="1"]')
 await p.waitForTimeout(1200)
 

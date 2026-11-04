@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
     : undefined
 
   return {
-    // Relative paths: so it also works under the sub path of a future Home Assistant add-on (ingress).
+    // Relative paths: so it also works under the sub path of the Home Assistant app (ingress).
     base: './',
     plugins: [react(), tailwindcss(), planDump()],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },

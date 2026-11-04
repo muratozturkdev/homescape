@@ -5,6 +5,8 @@
 import { chromium } from 'playwright'
 import { mkdirSync } from 'node:fs'
 
+const BASE = process.env.HOMESCAPE_URL ?? 'http://localhost:5190/'
+
 mkdirSync('shots', { recursive: true })
 let failures = 0
 const b = await chromium.launch({ channel: 'chrome', args: ['--autoplay-policy=no-user-gesture-required', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] })
@@ -13,7 +15,7 @@ const errors = []
 p.on('pageerror', (e) => errors.push(e.message))
 // Daytime (at night the people and the sky differ)
 await p.clock.setFixedTime(new Date('2026-10-27T13:00:00'))
-await p.goto('http://localhost:5190/')
+await p.goto(BASE)
 await p.waitForSelector('body[data-ready="1"]')
 await p.waitForTimeout(1500)
 

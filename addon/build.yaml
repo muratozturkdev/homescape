@@ -1,8 +1,0 @@
-# Base images per architecture, and the source the add-on builds when no prebuilt files are in ./www
-build_from:
-  aarch64: ghcr.io/home-assistant/aarch64-base:3.21
-  amd64: ghcr.io/home-assistant/amd64-base:3.21
-  armv7: ghcr.io/home-assistant/armv7-base:3.21
-args:
-  HOMESCAPE_REPO: https://github.com/muratozturk5/homescape
-  HOMESCAPE_REF: main

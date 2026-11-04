@@ -1,7 +1,7 @@
 import { ArrowDown, Group, Trash2 } from 'lucide-react'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { openDemoHome } from '@/demo/demoHomes'
-import { startPlanSync } from '@/ha/planSync'
+import { startPlanSync, withoutEdit } from '@/ha/planSync'
 import { useHa } from '@/ha/store'
 import { t, tn } from '@/i18n'
 import { groupFamily, HEATING, heatingSummary } from '@/model/groups'
@@ -23,6 +23,7 @@ import { applyPanelVars, usePanel } from '@/ui/panelState'
 import HomeScreenGuide from '@/ui/HomeScreenGuide'
 import { isStandalone } from '@/ui/fullscreen'
 import QuickPill from '@/ui/QuickPill'
+import PlanHistory from '@/ui/PlanHistory'
 import SyncPrompt from '@/ui/SyncPrompt'
 import SearchPalette from '@/ui/SearchPalette'
 import EditToolbar from '@/ui/EditToolbar'
@@ -60,8 +61,11 @@ function useAutoLayout() {
   useEffect(() => {
     if (hasLayout || !registry || !ready) return
     const { layout, unplaced } = generateLayout(registry, entities)
-    useLayout.getState().setLayout(layout, unplaced)
-    useLayout.setState({ past: [] })
+    // Not a hand edit: a generated plan is never written over the plan in Home Assistant
+    withoutEdit(() => {
+      useLayout.getState().setLayout(layout, unplaced)
+      useLayout.setState({ past: [] })
+    })
   }, [hasLayout, registry, ready, entities])
 }
 
@@ -441,6 +445,18 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // The browser could not save the plan (localStorage.setItem failed): tell the user once a minute at most
+    let told = 0
+    const onFail = () => {
+      if (Date.now() - told < 60_000) return
+      told = Date.now()
+      useHa.setState({ notice: t('This browser could not save the plan: its storage is full or unavailable. Changes may be lost when the page closes.') })
+    }
+    window.addEventListener('homescape:storage-failed', onFail)
+    return () => window.removeEventListener('homescape:storage-failed', onFail)
+  }, [])
+
+  useEffect(() => {
     void useHa.getState().boot()
     window.__homescape = {
       select: (sel) => useLayout.getState().select(sel),
@@ -469,6 +485,8 @@ export default function App() {
       doorTraffic: () => import('@/scene/doorTraffic').then((m) => Object.keys(m.useDoorTraffic.getState().open)),
       fakeLiveCalls: () => import('@/dev/fakeLive').then((m) => [...m.fakeCalls]),
       sync: () => import('@/ha/planSync').then((m) => JSON.parse(JSON.stringify(m.syncDebug()))),
+      fakeUser: (patch) => import('@/dev/fakeLive').then((m) => void Object.assign(m.fakeUserData, patch)),
+      fakeBackups: () => import('@/dev/fakeLive').then((m) => m.fakeUserData.get('homescape-plan-backups')),
       fakeRemote: (value) => import('@/dev/fakeLive').then((m) => (value === undefined ? m.fakeUserData.get('homescape-plan') : (m.fakeUserData.put('homescape-plan', value), m.fakeUserData.get('homescape-plan')))),
       demo: () => useHa.getState().connectDemo(),
       pick: (x, y, z, dx, dy, dz) => import('@/dev/sceneProbe').then((m) => m.pick(x, y, z, dx, dy, dz)),
@@ -549,6 +567,7 @@ export default function App() {
       <AlarmBanner />
       <SearchPalette />
       <SyncPrompt />
+      <PlanHistory />
       <HomeScreenGuide />
       <Toast />
       {connectOpen && (

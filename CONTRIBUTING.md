@@ -19,6 +19,7 @@ npm run typecheck
 npm run lint
 npm run i18n:check   # every t() text has a translation entry
 npm run check        # browser regression tests (needs the dev server running and Chrome installed)
+npm run check:data   # data safety only; required for any change to src/ha/planSync.ts or to saved plans
 ```
 
 `npm run check` runs every suite; the single suites are listed in `package.json` (`check:world`, `check:home` ...).
@@ -31,6 +32,13 @@ npm run check        # browser regression tests (needs the dev server running an
   do not reformat files you did not change.
 - Comments explain why, briefly. Everything in the repository is in English.
 - No em dash or en dash characters in code, text or docs.
+
+## Saved data
+
+People's home plans are the one thing this project must never lose. If you change the plan format, raise `STORE_VERSION` and
+add a step to `migrateLayout` in `src/model/layoutStore.ts`: plans from the browser, from Home Assistant and from backups all
+go through it. Steps must never throw. Keep the rules at the top of `src/ha/planSync.ts`: never write without reading first,
+never overwrite data this version cannot read, and only write hand edits.
 
 ## Translations
 

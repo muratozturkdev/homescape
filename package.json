@@ -28,7 +28,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:addon": "npm run build && node scripts/copy-addon.mjs",
+    "build:app": "npm run build && node scripts/copy-app.mjs",
     "lint": "oxlint",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "i18n:check": "node scripts/i18n-check.mjs",
@@ -37,7 +37,7 @@
     "check:controls": "node tools/controls-check.mjs",
     "check:home": "node tools/home-check.mjs",
     "perf": "node tools/perf-check.mjs",
-    "check": "node tools/controls-check.mjs && node tools/home-check.mjs && node tools/world-check.mjs && node tools/interior-check.mjs && node tools/outdoor-check.mjs && node tools/pets-check.mjs && node tools/sound-check.mjs && node tools/demo-check.mjs && node tools/street-check.mjs && node tools/building-check.mjs && node tools/sync-check.mjs && node tools/weather-check.mjs",
+    "check": "node tools/controls-check.mjs && node tools/home-check.mjs && node tools/world-check.mjs && node tools/interior-check.mjs && node tools/outdoor-check.mjs && node tools/pets-check.mjs && node tools/sound-check.mjs && node tools/demo-check.mjs && node tools/street-check.mjs && node tools/building-check.mjs && node tools/sync-check.mjs && node tools/data-safety-check.mjs && node tools/weather-check.mjs",
     "check:world": "node tools/world-check.mjs",
     "check:interior": "node tools/interior-check.mjs",
     "check:outdoor": "node tools/outdoor-check.mjs",
@@ -47,6 +47,7 @@
     "check:street": "node tools/street-check.mjs",
     "check:building": "node tools/building-check.mjs",
     "check:sync": "node tools/sync-check.mjs",
+    "check:data": "node tools/data-safety-check.mjs",
     "check:weather": "node tools/weather-check.mjs"
   },
   "dependencies": {

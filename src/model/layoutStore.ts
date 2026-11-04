@@ -45,7 +45,8 @@ export type Theme = 'auto' | 'day' | 'night'
 const HISTORY = 60
 
 const STORE_KEY = 'homescape-layout-v1'
-const STORE_VERSION = 5
+/** Format of saved plans; plans in Home Assistant carry it too (ha/planSync.ts) */
+export const STORE_VERSION = 5
 
 /** Writes a copy of the raw record to a separate key (silently skipped when storage is unavailable). */
 function keepCopy(key: string, raw: string | null) {
@@ -106,7 +107,14 @@ const guardedStorage = createJSONStorage<Partial<LayoutState>>(() => ({
     }
     return raw
   },
-  setItem: (name, value) => localStorage.setItem(name, value),
+  // A full browser storage must not break editing: the app shows a notice (App.tsx)
+  setItem: (name, value) => {
+    try {
+      localStorage.setItem(name, value)
+    } catch {
+      window.dispatchEvent(new Event('homescape:storage-failed'))
+    }
+  },
   removeItem: (name) => localStorage.removeItem(name),
 }))
 
@@ -226,6 +234,28 @@ function mapLevel(layout: Layout, levelId: string | null, fn: (l: Level) => Leve
   return { ...layout, levels: layout.levels.map((l) => (l.id === id ? fn(l) : l)) }
 }
 
+
+/**
+ * Brings a plan saved in format `from` up to STORE_VERSION: plans from the browser and from Home Assistant go through the
+ * same steps. A step that fails is skipped (the plan loads unmigrated), so this never throws.
+ */
+export function migrateLayout(layout: Layout, from: number): Layout {
+  let lay = layout
+  const step = (name: string, fn: (l: Layout) => Layout) => {
+    try {
+      lay = fn(lay)
+    } catch (e) {
+      console.error(`Plan migration (${name}) failed; the plan was loaded unmigrated`, e)
+    }
+  }
+  const items = (fn: (l: Level) => Item[]) => (x: Layout): Layout => ({ ...x, levels: x.levels.map((l) => ({ ...l, items: fn(l) })) })
+  if (from < 1) step('interior doors', items((l) => [...l.items, ...connectRooms(l)]))
+  if (from < 2) step('TV backlight', items((l) => foldTvBacklights(l.items)))
+  if (from < 3) step('centered walls', items((l) => settleWallItems(l)))
+  if (from < 4) step('separate TV unit', items((l) => splitTvUnits(l.items)))
+  if (from < 5) step('actual device as main entity', items((l) => l.items.map(primaryFirst)))
+  return lay
+}
 
 export const useLayout = create<LayoutState>()(
   persist(
@@ -545,42 +575,10 @@ export const useLayout = create<LayoutState>()(
       // v5: a TV/diffuser whose main entity is not the actual device (backlight bound first): the actual device among the extras becomes the main one.
       version: STORE_VERSION,
       migrate: (persisted, from) => {
-        const st = persisted as { layout: Layout | null; backup?: { layout: Layout } | null }
-        const step = (name: string, fn: () => void) => {
-          try {
-            fn()
-          } catch (e) {
-            console.error(`Plan migration (${name}) failed; the plan was loaded unmigrated`, e)
-          }
-        }
-        if (from < 1)
-          step('interior doors', () => {
-            if (st.layout) st.layout = { ...st.layout, levels: st.layout.levels.map((l) => ({ ...l, items: [...l.items, ...connectRooms(l)] })) }
-          })
-        if (from < 2)
-          step('TV backlight', () => {
-            const fold = (lay: Layout): Layout => ({ ...lay, levels: lay.levels.map((l) => ({ ...l, items: foldTvBacklights(l.items) })) })
-            if (st.layout) st.layout = fold(st.layout)
-            if (st.backup?.layout) st.backup = { ...st.backup, layout: fold(st.backup.layout) }
-          })
-        if (from < 3)
-          step('centered walls', () => {
-            const settle = (lay: Layout): Layout => ({ ...lay, levels: lay.levels.map((l) => ({ ...l, items: settleWallItems(l) })) })
-            if (st.layout) st.layout = settle(st.layout)
-            if (st.backup?.layout) st.backup = { ...st.backup, layout: settle(st.backup.layout) }
-          })
-        if (from < 4)
-          step('separate TV unit', () => {
-            const split = (lay: Layout): Layout => ({ ...lay, levels: lay.levels.map((l) => ({ ...l, items: splitTvUnits(l.items) })) })
-            if (st.layout) st.layout = split(st.layout)
-            if (st.backup?.layout) st.backup = { ...st.backup, layout: split(st.backup.layout) }
-          })
-        if (from < 5)
-          step('actual device as main entity', () => {
-            const fix = (lay: Layout): Layout => ({ ...lay, levels: lay.levels.map((l) => ({ ...l, items: l.items.map(primaryFirst) })) })
-            if (st.layout) st.layout = fix(st.layout)
-            if (st.backup?.layout) st.backup = { ...st.backup, layout: fix(st.backup.layout) }
-          })
+        const st = persisted as { layout: Layout | null; backup?: { layout: Layout } | null; homes?: HomeEntry[] }
+        if (st.layout) st.layout = migrateLayout(st.layout, from)
+        if (st.backup?.layout) st.backup = { ...st.backup, layout: migrateLayout(st.backup.layout, from) }
+        if (st.homes) st.homes = st.homes.map((h) => (h.layout ? { ...h, layout: migrateLayout(h.layout, from) } : h))
         return st as LayoutState
       },
       onRehydrateStorage: () => (_state, error) => {
