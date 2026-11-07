@@ -2,7 +2,12 @@
 
 <p align="center">Your Home Assistant home as a live, interactive 3D dollhouse.</p>
 
-<p align="center"><a href="https://homescape.muratozturk.dev/"><b>Try the live demo</b></a> in your browser: a sample home, nothing to install.</p>
+<p align="center">
+  <a href="https://homescape.muratozturk.dev/"><img src="docs/media/button-demo.svg" alt="Try the live demo: no install, runs in your browser" height="64"></a>
+  <a href="https://github.com/muratozturkdev/homescape"><img src="docs/media/button-star.svg" alt="Star Homescape on GitHub" height="64"></a>
+</p>
+
+<p align="center"><b>Free and open source</b> (GPL-3.0): no subscription, no account, no cloud.</p>
 
 <p align="center">
   <a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmuratozturkdev%2Fhomescape"><img src="https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg" alt="Open your Home Assistant instance and show the add app repository dialog with the Homescape repository pre-filled"></a>
@@ -130,6 +135,23 @@ Small fixes can go straight to a pull request; for a bigger change, open an
 [issue](https://github.com/muratozturkdev/homescape/issues) first so we can agree on the direction. The
 [contributing guide](CONTRIBUTING.md) covers running the app and the tests, how the code is organized, how to keep
 people's plans safe and how to add a language.
+
+## Support Homescape
+
+Homescape is **free and open source**: no subscription, no account, no ads. It is built in spare time, and the most
+helpful support costs nothing:
+
+- **⭐ Star the repository.** It takes one click and matters more than it looks: stars are how people find projects on
+  GitHub, they move Homescape up in search and trending lists, they show other Home Assistant users that it is worth a
+  try, and they tell me the work is useful and worth continuing.
+- **Share it** with other Home Assistant users, for example on the
+  [Home Assistant community forum](https://community.home-assistant.io/).
+- **Tell me what you think:** report bugs and ideas in the [issues](https://github.com/muratozturkdev/homescape/issues)
+  or send a pull request.
+
+<p align="center">
+  <a href="https://github.com/muratozturkdev/homescape"><img src="docs/media/button-star.svg" alt="Star Homescape on GitHub" height="64"></a>
+</p>
 
 ## Star history
 
