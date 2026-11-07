@@ -2,6 +2,8 @@
 
 <p align="center">Your Home Assistant home as a live, interactive 3D dollhouse.</p>
 
+<p align="center"><a href="https://homescape.muratozturk.dev/"><b>Try the live demo</b></a> in your browser: a sample home, nothing to install.</p>
+
 <p align="center">
   <a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmuratozturkdev%2Fhomescape"><img src="https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg" alt="Open your Home Assistant instance and show the add app repository dialog with the Homescape repository pre-filled"></a>
 </p>
