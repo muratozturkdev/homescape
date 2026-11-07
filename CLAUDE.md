@@ -47,6 +47,7 @@ npm run typecheck
 npm run lint            # oxlint
 npm run i18n:check      # every t() text has a translation entry
 npm run shot            # screenshot -> shots/scene.png (dev server must be running)
+npm run media           # README screenshots (docs/screenshots) and animations (docs/media, animated WebP; needs ffmpeg and img2webp)
 npm run perf            # performance: fps idle and while rotating, main thread time, draw calls, triangles (Retina emulation, PERF_DPR)
 npm run check           # all regression suites below (dev server must be running)
 npm run check:controls  # camera (rotate by default, right drag and Space pan, hand mode), editing, placement: 43 checks

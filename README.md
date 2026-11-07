@@ -3,7 +3,7 @@
 <p align="center">Your Home Assistant home as a live, interactive 3D dollhouse.</p>
 
 <p align="center">
-  <img src="docs/screenshots/overview.png" alt="Homescape showing a two storey house with its rooms, devices and the street in 3D" width="900">
+  <img src="docs/media/tour.webp" alt="The camera circling the sample home in 3D: two storeys with their rooms and devices, the yard, and the street with cars and people" width="880">
 </p>
 
 Homescape draws your home in 3D in the browser and keeps it in sync with Home Assistant: lights glow in their rooms, the
@@ -13,9 +13,15 @@ Home Assistant areas and entities; you shape it further directly in 3D.
 <table>
   <tr>
     <td><img src="docs/screenshots/room.png" alt="Close-up of a living room: the roof lifts away, people and a dog move through the house"></td>
-    <td><img src="docs/screenshots/dashboard.png" alt="Dashboard view with every room's devices and controls"></td>
+    <td><img src="docs/screenshots/dashboard.png" alt="Dashboard view with every room's devices and controls, and the Customize button"></td>
   </tr>
 </table>
+
+<p align="center">
+  <img src="docs/media/walk.webp" alt="First-person walk through the sample home: in through the front door, past the stairs and into the kitchen, where someone is cooking" width="880">
+  <br>
+  <sub>The first-person walk: in through the front door, past the stairs and into the kitchen.</sub>
+</p>
 
 ## Features
 
@@ -79,6 +85,7 @@ npm run lint          # oxlint
 npm run i18n:check    # every user-facing text has a translation
 npm run check         # browser regression tests (dev server running, Chrome installed)
 npm run shot          # screenshot of the scene to shots/scene.png
+npm run media         # the screenshots and animations of this README (needs ffmpeg and img2webp)
 ```
 
 The architecture, the folder layout and the rules for the 3D scene are in [CLAUDE.md](CLAUDE.md), the visual language in
