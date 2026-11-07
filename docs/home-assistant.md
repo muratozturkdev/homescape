@@ -13,6 +13,10 @@ Apps were called add-ons before Home Assistant 2026.2.
 
 ## Option 1: app
 
+[![Open your Home Assistant instance and show the add app repository dialog with the Homescape repository pre-filled](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmuratozturkdev%2Fhomescape)
+
+The button opens your Home Assistant with the repository ready to add (then continue with step 3). By hand:
+
 1. In Home Assistant go to **Settings > Apps** and select **Install app**.
 2. In the top-right menu select **Repositories**, add `https://github.com/muratozturkdev/homescape` and close the dialog.
 3. Find **Homescape**, install it and start it. Turn on **Show in sidebar**.

@@ -3,6 +3,17 @@
 <p align="center">Your Home Assistant home as a live, interactive 3D dollhouse.</p>
 
 <p align="center">
+  <a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmuratozturkdev%2Fhomescape"><img src="https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg" alt="Open your Home Assistant instance and show the add app repository dialog with the Homescape repository pre-filled"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/muratozturkdev/homescape/releases/latest"><img src="https://img.shields.io/github/v/release/muratozturkdev/homescape" alt="Latest release"></a>
+  <a href="https://github.com/muratozturkdev/homescape/actions/workflows/ci.yml"><img src="https://github.com/muratozturkdev/homescape/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/muratozturkdev/homescape" alt="License: GPL-3.0"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="Pull requests welcome"></a>
+</p>
+
+<p align="center">
   <img src="docs/media/tour.webp" alt="The camera circling the sample home in 3D: two storeys with their rooms and devices, the yard, and the street with cars and people" width="880">
 </p>
 
@@ -49,7 +60,10 @@ Home Assistant areas and entities; you shape it further directly in 3D.
 
 ### In Home Assistant (recommended)
 
-In Home Assistant go to **Settings > Apps > Install app**, open the top-right menu, choose **Repositories** and add:
+[![Open your Home Assistant instance and show the add app repository dialog with the Homescape repository pre-filled](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmuratozturkdev%2Fhomescape)
+
+The button opens your Home Assistant with the repository ready to add. Or go to **Settings > Apps > Install app**, open
+the top-right menu, choose **Repositories** and add:
 
 ```
 https://github.com/muratozturkdev/homescape
@@ -89,14 +103,25 @@ npm run media         # the screenshots and animations of this README (needs ffm
 ```
 
 The architecture, the folder layout and the rules for the 3D scene are in [CLAUDE.md](CLAUDE.md), the visual language in
-[DESIGN.md](DESIGN.md). Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md), including how to improve or add
-a translation.
+[DESIGN.md](DESIGN.md).
 
 Built with Vite, React, three.js with React Three Fiber, zustand, Tailwind CSS and home-assistant-js-websocket. There are
 no external 3D models: every object is generated in code. Third-party licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Contributing
+
+Pull requests are welcome! Bug fixes, new 3D models for devices and furniture, translations, docs and ideas all help.
+Small fixes can go straight to a pull request; for a bigger change, open an
+[issue](https://github.com/muratozturkdev/homescape/issues) first so we can agree on the direction. The
+[contributing guide](CONTRIBUTING.md) covers running the app and the tests, how the code is organized, how to keep
+people's plans safe and how to add a language.
 
 ## License
 
 Homescape is free software under the [GNU General Public License v3.0 or later](LICENSE): you may use, study, share
 and change it, and anyone who distributes it, changed or not, must pass on the source under the same license. The
 libraries, fonts and generated sounds it uses keep their own terms ([THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
+
+---
+
+<p align="center">Made by <a href="https://github.com/muratozturkdev">@muratozturkdev</a> in Türkiye with ❤️</p>
