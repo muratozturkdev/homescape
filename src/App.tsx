@@ -18,6 +18,7 @@ import { kick } from '@/scene/frame'
 import BuildBar from '@/ui/BuildBar'
 import ConnectDialog from '@/ui/ConnectDialog'
 import SiteIntro from '@/ui/SiteIntro'
+import { useSiteIntro } from '@/ui/siteIntroState'
 import { SITE } from '@/site'
 import { isAmericanLayout } from '@/demo/american'
 import Dashboard from '@/ui/Dashboard'
@@ -374,13 +375,29 @@ function useFirstHint() {
       /* storage unavailable */
     }
     if (seen) return
-    const timer = setTimeout(
-      () =>
-        useHa.setState({
-          notice: t('Tip: drag to rotate; to pan, right-drag or hold Space and drag; the wheel zooms. The hand button at the top right switches left drag to pan.'),
-        }),
-      1500,
-    )
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const show = () => {
+      timer = setTimeout(
+        () =>
+          useHa.setState({
+            notice: t('Tip: drag to rotate; to pan, right-drag or hold Space and drag; the wheel zooms. The hand button at the top right switches left drag to pan.'),
+          }),
+        1500,
+      )
+    }
+    // On the demo site the tip waits until the intro card is closed (src/site.ts)
+    if (SITE && useSiteIntro.getState().open) {
+      const off = useSiteIntro.subscribe((s) => {
+        if (s.open) return
+        off()
+        show()
+      })
+      return () => {
+        off()
+        clearTimeout(timer)
+      }
+    }
+    show()
     return () => clearTimeout(timer)
   }, [])
 }
