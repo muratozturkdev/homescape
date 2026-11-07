@@ -222,10 +222,10 @@ function ExampleHomes({ resetAsk, setResetAsk, close }: { resetAsk: boolean; set
     } else switchHomeAnimated(() => openAmericanHome(reset), id ? homeDir(id) : 1, () => (id && !reset && homeLayout(id)) || americanLayout())
     useHa.setState({
       notice: live
-        ? t("American house opened. Even with a live connection the example home's devices run locally; no commands reach your real home.")
+        ? t('Sample home opened. Even with a live connection its devices run locally; no commands reach your real home.')
         : reset
-          ? t('American house reset: street, front and back yard, two floors. The devices run locally, no Home Assistant needed.')
-          : t('American house opened: street, front and back yard, two floors; every item of the app is here. The devices run locally, no Home Assistant needed.'),
+          ? t('Sample home reset: street, front and back yard, two floors. The devices run locally, no Home Assistant needed.')
+          : t('Sample home opened: street, front and back yard, two floors; every item of the app is here. The devices run locally, no Home Assistant needed.'),
     })
   }
   return (

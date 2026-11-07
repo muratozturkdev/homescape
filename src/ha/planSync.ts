@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { AMERICAN_NAME, isAmericanLayout } from '@/demo/american'
+import { isAmericanLayout } from '@/demo/american'
 import { t } from '@/i18n'
 import { activeHomeId, homesOf, importLayout, migrateLayout, STORE_VERSION, useLayout, type HomeEntry } from '@/model/layoutStore'
 import { usePlacement } from '@/model/placement'
@@ -148,7 +148,8 @@ function migrateBackupKey() {
 }
 migrateBackupKey()
 
-const isDemoHome = (h: HomeEntry, layout: Layout | null | undefined) => isAmericanLayout(layout) || h.name === AMERICAN_NAME
+/** The sample home, by its plan only: a home of the user's called "Sample home" is a real home and is synced */
+const isDemoHome = (_h: HomeEntry, layout: Layout | null | undefined) => isAmericanLayout(layout)
 
 /** Synced homes: in list order, the active home's plan from the store; the sample home excluded */
 function localHomes(): SyncHome[] {

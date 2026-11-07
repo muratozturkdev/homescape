@@ -31,7 +31,7 @@ const ok = (c, m) => {
   console.log(`${c ? 'PASS ' : 'FAIL '} ${m}`)
 }
 const shot = (name) => p.screenshot({ path: `shots/us-${name}.png` })
-const NAME = 'Sample home: American house'
+const NAME = 'Sample home'
 /**
  * Active home, homes, floors, entity ids. The stores (layoutStore, ha/store) are not imported in the test: after Vite HMR the
  * import address of the app gets ?t=, a separate import creates a second store. Always use window.__homescape.
@@ -445,6 +445,36 @@ await p.waitForTimeout(1800)
 st = await store()
 ok(st.home === homeId && st.us.length === usCount, `After a page reload the sample home is open and its entities are in the demo source again (${st.us.length}/${usCount})`)
 
+// --- Renamed sample home: the name of earlier versions becomes "Sample home"; a real home called "Sample home" is never taken for it ---
+{
+  await p.evaluate(([id, other]) => {
+    const s = window.__homescape.getState().layout
+    s.renameHome(id, 'Sample home: American house')
+    s.renameHome(other, 'Sample home')
+  }, [homeId, before.home])
+  await p.reload()
+  await p.waitForSelector('body[data-ready="1"]')
+  await p.waitForTimeout(1500)
+  const names = await p.evaluate(() => {
+    const s = window.__homescape.getState().layout
+    return s.homes.map((h) => [h.id, h.name])
+  })
+  const nameOf = (id) => names.find(([i]) => i === id)?.[1]
+  ok(nameOf(homeId) === NAME, `A sample home saved with the old name "Sample home: American house" is renamed "${nameOf(homeId)}" on load`)
+  await p.evaluate((id) => window.__homescape.getState().layout.switchHome(id), before.home)
+  await p.waitForTimeout(500)
+  const rooms = () => p.evaluate(() => window.__homescape.getState().layout.layout.levels.reduce((n, l) => n + l.rooms.length, 0))
+  const realRooms = await rooms()
+  const opened = await p.evaluate(() => window.__homescape.loadDemo('american'))
+  await p.waitForTimeout(800)
+  await p.evaluate((id) => window.__homescape.getState().layout.switchHome(id), before.home)
+  await p.waitForTimeout(500)
+  ok(opened === homeId && (await rooms()) === realRooms, `A real home named "Sample home" is not mistaken for the sample home: opening the sample opens its own home (${opened === homeId}), the real plan keeps its ${realRooms} rooms`)
+  await p.evaluate(([id, name]) => window.__homescape.getState().layout.renameHome(id, name), [before.home, before.name])
+  await p.evaluate((id) => window.__homescape.getState().layout.switchHome(id), homeId)
+  await p.waitForTimeout(800)
+}
+
 // --- Isolation: back in the previous home, the entities of the sample home leave the source ---
 await p.evaluate((id) => window.__homescape.getState().layout.switchHome(id), before.home)
 await p.waitForTimeout(800)
@@ -460,7 +490,7 @@ const leaked = await p.evaluate(async () => {
 })
 ok(st.home === before.home && st.us.length === 0 && leaked === 0, `Back in the previous home the entities of the sample home are gone: they do not leak into the list of unbound devices (${st.us.length} entities, ${leaked} in the list)`)
 
-// --- Home menu: "Sample home: American house" switches to the existing home (no second copy); "Reset" returns the plan to its initial state ---
+// --- Home menu: "Sample home" switches to the existing home (no second copy); "Reset" returns the plan to its initial state ---
 await p.click('#home-switcher')
 await p.waitForSelector('#home-demo-american')
 await p.click('#home-demo-american')
