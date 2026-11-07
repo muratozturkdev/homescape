@@ -32,8 +32,9 @@ does not build anything.
 
 ## Option 2: files in /config/www and a Webpage dashboard
 
-1. Build the app: `npm install && npm run build` (or download the build from a release).
-2. Copy the contents of `dist/` to `/config/www/homescape/` on the Home Assistant machine, so that
+1. Download `homescape-<version>-www.zip` from the [latest release](https://github.com/muratozturkdev/homescape/releases/latest)
+   and unzip it, or build the app yourself: `npm install && npm run build` (the files are in `dist/`).
+2. Copy the files (the contents of the zip, or of `dist/`) to `/config/www/homescape/` on the Home Assistant machine, so that
    `/config/www/homescape/index.html` exists. (Create the `www` folder if it is missing and restart Home Assistant once,
    so it starts serving `/local/`.)
 3. Open **Settings > Dashboards > Add dashboard > Webpage**, enter `/local/homescape/index.html`, give it a title
