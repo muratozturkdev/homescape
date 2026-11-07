@@ -188,7 +188,7 @@ export default function TopBar({ onConnect }: { onConnect: () => void }) {
         <div className="hidden size-9 place-items-center sm:grid rounded-xl bg-gradient-to-br from-[#3f56e0] to-[#3346c4] text-white shadow-md shadow-[#3f56e0]/30">
           <House size={19} strokeWidth={2.2} />
         </div>
-        <div className="hidden leading-tight xl:block">
+        <div className="hidden shrink-0 whitespace-nowrap leading-tight xl:block">
           <p className="text-[17px] font-bold tracking-tight">Homescape</p>
           <p className="text-[11px] text-ink-3">Home Assistant 3D</p>
         </div>
@@ -245,11 +245,11 @@ export default function TopBar({ onConnect }: { onConnect: () => void }) {
             useView.getState().setFps(on)
           }}
           aria-pressed={fps}
-          className={`flex h-9 items-center gap-1.5 rounded-xl border px-2.5 text-[12.5px] font-semibold ${fps ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-ink-2 hover:text-ink'}`}
+          className={`flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl border px-2.5 text-[12.5px] font-semibold ${fps ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-ink-2 hover:text-ink'}`}
           title={fps ? t('Exit first-person walk (Esc)') : t('First-person walk: explore the home through the eyes of a person and control devices')}
         >
           <PersonStanding size={16} />
-          <span className="hidden lg:inline">{fps ? t('Exit walk') : t('Walk')}</span>
+          <span className="hidden xl:inline">{fps ? t('Exit walk') : t('Walk')}</span>
         </button>
         <SoundButton />
         <button
