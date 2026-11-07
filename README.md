@@ -16,6 +16,13 @@
 </p>
 
 <p align="center">
+  <a href="https://analytics.home-assistant.io/apps"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmuratozturkdev%2Fhomescape%2Fstats%2Finstalls.json" alt="Home Assistant installs (installations that share usage analytics)"></a>
+  <a href="https://github.com/muratozturkdev/homescape/releases"><img src="https://img.shields.io/github/downloads/muratozturkdev/homescape/total?label=downloads&color=4c6ef5" alt="Release downloads"></a>
+  <a href="https://github.com/muratozturkdev/homescape/stargazers"><img src="https://img.shields.io/github/stars/muratozturkdev/homescape?color=f5b800" alt="GitHub stars"></a>
+  <img src="https://hits.sh/github.com/muratozturkdev/homescape.svg?label=views&color=4c6ef5" alt="Page views">
+</p>
+
+<p align="center">
   <img src="docs/media/tour.webp" alt="The camera circling the sample home in 3D: two storeys with their rooms and devices, the yard, and the street with cars and people" width="880">
 </p>
 

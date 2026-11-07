@@ -1,0 +1,43 @@
+name: Stats
+
+# Counts Home Assistant installs of the app once a day and publishes them for the README badge
+# (stats branch, installs.json in the shields.io endpoint format).
+on:
+  schedule:
+    - cron: '23 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count Home Assistant installs
+        run: |
+          # Home Assistant analytics (installations that share usage analytics) lists apps by slug: the first 8
+          # characters of the SHA-1 of the repository URL as the user added it, then the app's slug. The usual
+          # spellings of the URL are added up.
+          curl -sf https://analytics.home-assistant.io/addons.json -o addons.json
+          total=0
+          for url in https://github.com/muratozturkdev/homescape https://github.com/muratozturkdev/homescape.git https://github.com/muratozturkdev/homescape/; do
+            slug="$(printf '%s' "$url" | tr '[:upper:]' '[:lower:]' | sha1sum | cut -c1-8)_homescape"
+            n=$(jq -r --arg s "$slug" '.[$s].total // 0' addons.json)
+            echo "$slug: $n"
+            total=$((total + n))
+          done
+          mkdir -p out
+          jq -n --arg n "$total" '{schemaVersion: 1, label: "Home Assistant installs", message: $n, color: "41BDF5", namedLogo: "homeassistant", cacheSeconds: 21600}' > out/installs.json
+          cat out/installs.json
+
+      - name: Publish to the stats branch
+        run: |
+          # One commit, replaced every day: the branch never grows
+          cd out
+          git init -q -b stats
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add installs.json
+          git commit -q -m "Update stats"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" stats
