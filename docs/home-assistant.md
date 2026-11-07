@@ -78,6 +78,9 @@ Homescape has no server and no account, and nothing leaves your network.
 | A working copy and up to 5 replaced versions | This browser's local storage | This browser |
 | Settings of this device (sound, panel, language, connection) | This browser's local storage | This browser |
 
+- **No internet needed.** Homescape makes no requests outside your Home Assistant: no cloud, no account, no tracking.
+  Once installed it keeps working on your home network when the internet is down. (Installing or updating the app
+  downloads it from GitHub, so that step needs a connection.)
 - **The app stores nothing.** Updating, stopping or uninstalling the Homescape app, or deleting the files in `/config/www`,
   does not touch your plan.
 - **Backups:** Home Assistant backups include your plan, because they include `/config/.storage`.

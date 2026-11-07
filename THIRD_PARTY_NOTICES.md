@@ -30,7 +30,8 @@ synthesized in the browser at run time (`src/audio/`).
 
 ## 3D models
 
-There are no external 3D models: every object in the scene is generated in code (`src/scene/kit/`).
+There are no 3D model files (GLB, glTF or any other format) and no external models: every object in the scene is generated
+in code (`src/scene/kit/`), and that code was written by AI.
 
 ## Development tools
 
