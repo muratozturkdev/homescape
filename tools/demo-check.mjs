@@ -475,6 +475,42 @@ ok(st.home === homeId && st.us.length === usCount, `After a page reload the samp
   await p.waitForTimeout(800)
 }
 
+// --- Language: a sample home built in Turkish opens with English names in English; a name the user typed stays ---
+{
+  const made = await p.evaluate(async () => {
+    const i18n = await import('/src/i18n/index.ts')
+    const us = await import('/src/demo/american.ts')
+    const tr = await i18n.inLanguage('tr', () => ({ layout: us.americanLayout(), name: us.sampleName() }))
+    const s = window.__homescape.getState().layout
+    const layout = structuredClone(tr.layout)
+    const ground = layout.levels.find((l) => (l.elevation ?? 0) === 0)
+    ground.rooms.find((r) => r.id === 'us-g-office').name = 'Murat’s studio'
+    s.setLayout(layout)
+    s.renameHome(s.homeId, tr.name)
+    localStorage.setItem('homescape-sample-lang', 'tr')
+    return { foyer: ground.rooms.find((r) => r.id === 'us-g-foyer').name, floor: ground.name, home: tr.name }
+  })
+  await p.waitForTimeout(400)
+  await p.reload()
+  await p.waitForSelector('body[data-ready="1"]')
+  await p.waitForTimeout(1500)
+  const got = await p.evaluate(() => {
+    const s = window.__homescape.getState().layout
+    const ground = s.layout.levels.find((l) => (l.elevation ?? 0) === 0)
+    return {
+      foyer: ground.rooms.find((r) => r.id === 'us-g-foyer')?.name,
+      office: ground.rooms.find((r) => r.id === 'us-g-office')?.name,
+      floor: ground.name,
+      home: s.homes.find((h) => h.id === s.homeId)?.name,
+      lang: localStorage.getItem('homescape-sample-lang'),
+    }
+  })
+  ok(made.foyer !== 'Foyer' && got.foyer === 'Foyer' && got.floor === 'Ground floor' && got.home === NAME && got.lang === 'en', `A sample home built in Turkish opens in English with English names ("${made.foyer}", "${made.floor}", "${made.home}" -> "${got.foyer}", "${got.floor}", "${got.home}")`)
+  ok(got.office === 'Murat’s studio', `A room name the user typed is kept (${got.office})`)
+  await p.evaluate(() => window.__homescape.loadDemo('american', true))
+  await p.waitForTimeout(800)
+}
+
 // --- Isolation: back in the previous home, the entities of the sample home leave the source ---
 await p.evaluate((id) => window.__homescape.getState().layout.switchHome(id), before.home)
 await p.waitForTimeout(800)

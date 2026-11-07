@@ -17,7 +17,9 @@ import type { Item, ItemKind, Layout, Level, Rect, Room } from '@/model/types'
  * ~270 m² (~2900 ft²).
  */
 
-export const AMERICAN_NAME = t('Sample home')
+/** Name of the sample home in the current language (demo/demoHomes.ts translates it again on another language) */
+export const sampleName = () => t('Sample home')
+export const AMERICAN_NAME = sampleName()
 /** The name earlier versions gave it, in English; in other languages it started with the word for "Sample home" and a colon */
 export const LEGACY_NAME = 'Sample home: American house'
 /** Id prefix of the American house's levels: recognizes this plan in the home list (even if renamed) */

@@ -94,6 +94,33 @@ export async function initI18n() {
   }
 }
 
+/**
+ * Runs `fn` with another language's dictionary, so the texts it makes come out in that language. For the few places that
+ * need the same default text in two languages, like the sample home's names (demo/demoHomes.ts). `fn` must be synchronous.
+ * Null if that dictionary cannot be loaded.
+ */
+export async function inLanguage<T>(code: Lang, fn: () => T): Promise<T | null> {
+  let other: Record<string, Entry> = {}
+  if (code !== 'en') {
+    const load = loaders[`./locales/${code}.json`]
+    if (!load) return null
+    try {
+      other = (await load()).default
+    } catch {
+      return null
+    }
+  }
+  const saved = { dict, lang, rules }
+  dict = other
+  lang = code
+  rules = new Intl.PluralRules(code)
+  try {
+    return fn()
+  } finally {
+    ;({ dict, lang, rules } = saved)
+  }
+}
+
 /** Current language code (also a valid BCP 47 locale for Intl and toLocaleString) */
 export const currentLang = () => lang
 
