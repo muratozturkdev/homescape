@@ -314,9 +314,27 @@ export interface Level {
   items: Item[]
 }
 
+/**
+ * How the Dashboard of a home is arranged (ui/Dashboard.tsx, model/dashboardLayout.ts); missing fields mean the default. Card
+ * keys: `room:<roomId>`, `side:<name>`, `chip:<name>`, `scenes`, `favorites`. Row keys: `<itemId>|<entityId>` in a room
+ * card, the entity id in the favorites and scenes cards. Saved with the plan, so it syncs like the plan.
+ */
+export interface DashboardLayout {
+  /** Card order; cards missing from it follow in their default order */
+  order?: string[]
+  /** Hidden cards and summary tiles */
+  hidden?: string[]
+  /** Per card: row order and hidden rows */
+  rows?: Record<string, { order?: string[]; hidden?: string[] }>
+  /** Entities pinned to the Favorites card, in order */
+  favorites?: string[]
+}
+
 export interface Layout {
   version: 1
   levels: Level[]
+  /** Arrangement of the Dashboard of this home (missing: default) */
+  dashboard?: DashboardLayout
   /**
    * Compass direction of the top of the plan (-z), degrees (0 north, 90 east; 0 when not given). The sun's angle on the
    * house follows it (scene/sun.ts): in walk mode sunlight comes in through the right window.

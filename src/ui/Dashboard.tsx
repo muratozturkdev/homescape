@@ -2,9 +2,13 @@ import {
   ArrowDown,
   ArrowUp,
   Camera,
+  Check,
   ChevronDown,
   Droplets,
+  Eye,
+  EyeOff,
   Flame,
+  GripVertical,
   House,
   Lightbulb,
   Lock,
@@ -15,24 +19,28 @@ import {
   Plug,
   Plus,
   Power,
+  RotateCcw,
   Shield,
+  SlidersHorizontal,
   Sparkles,
   Square,
+  Star,
   Thermometer,
   Users,
   Zap,
   type LucideIcon,
 } from 'lucide-react'
-import { Fragment, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createContext, Fragment, useContext, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { canToggle, coverCommand, MOMENTARY, mediaPlayPause, setBrightness, setTemperature, toggle, turnOffAll } from '@/ha/actions'
 import { deviceClass, domainOf, friendlyName, isActive, isReading, isUnavailable, num, stateLabel, supportsBrightness } from '@/ha/derive'
 import { useHa } from '@/ha/store'
 import type { HassEntity } from '@/ha/types'
 import { t, tc, tn } from '@/i18n'
 import { bindingsOf, itemLightIds } from '@/model/bindings'
+import { arrange, isHidden, isPinned, isRowHidden, place, roomKey, rowOrder, step, stepPin, stepRow, toggleHidden, togglePin, toggleRow } from '@/model/dashboardLayout'
 import { inRoom, isOutdoor, isStreetSurface } from '@/model/geometry'
 import { activeHomeId, homesOf, levelName, useLayout } from '@/model/layoutStore'
-import type { Item, Level, Room } from '@/model/types'
+import type { DashboardLayout, Item, Level, Room } from '@/model/types'
 import { useView } from '@/scene/camera'
 import { AlarmControl, alarmTone } from './AlarmControl'
 import { itemName } from './Bindings'
@@ -43,11 +51,110 @@ import { fmt } from './useHome'
 /*
  * Dashboard: the "Dashboard" tab of the top bar. The rooms of every floor as cards, with a direct control on each device
  * row (on/off, brightness, target temperature, cover open/stop/close, play/pause, lock); a summary and quick actions on
- * top (all lights, scenes), and on the side security, cameras, energy, media, people and devices not in the plan. Columns
- * drop as the screen narrows; everything stays reachable by scrolling. Clicking a device name selects it in the 3D view.
+ * top (all lights, favorites, scenes), and on the side security, cameras, energy, media, people and devices not in the
+ * plan. Columns drop as the screen narrows; everything stays reachable by scrolling. Clicking a device name selects it in
+ * the 3D view.
+ *
+ * Customize: cards move by dragging their handle (or with the arrows), cards, summary tiles, device rows and scenes can be
+ * hidden, and devices pinned with the star gather in the Favorites card. The arrangement is saved with the home
+ * (Layout.dashboard, model/dashboardLayout.ts) and syncs like the plan. Hidden things stay visible, dimmed, while
+ * customizing, so they can be shown again.
  */
 
-const card = 'glass rounded-2xl p-4'
+/** Customizing state shared by the cards and rows */
+interface DashEditState {
+  editing: boolean
+  dash: DashboardLayout | undefined
+  drag: { key: string; section: string; over: string | null } | null
+  setDrag: (d: DashEditState['drag'] | ((d: DashEditState['drag']) => DashEditState['drag'])) => void
+}
+const DashEdit = createContext<DashEditState>({ editing: false, dash: undefined, drag: null, setDrag: () => {} })
+const update = (fn: (d: DashboardLayout) => DashboardLayout) => useLayout.getState().updateDashboard(fn)
+
+const toolBtn = 'grid size-8 shrink-0 touch-manipulation place-items-center rounded-lg bg-surface text-ink-2 shadow-sm ring-1 ring-line hover:text-ink pointer-coarse:size-10'
+function Tool({ label, onClick, children, data }: { label: string; onClick: () => void; children: ReactNode; data?: string }) {
+  return (
+    <button type="button" aria-label={label} title={label} onClick={onClick} className={toolBtn} {...(data ? { [data]: '' } : {})}>
+      {children}
+    </button>
+  )
+}
+
+/**
+ * A card while customizing: a tool strip above it (drag handle, earlier, later, hide or show). `keys` are the cards of its
+ * section (cards move only among their section: rooms of one floor, the side column, the top cards). Hidden cards are not
+ * drawn outside customizing.
+ */
+function CardFrame({ k, section, keys, children }: { k: string; section: string; keys: string[]; children: ReactNode }) {
+  const { editing, dash, drag, setDrag } = useContext(DashEdit)
+  const hidden = isHidden(dash, k)
+  if (!editing) return hidden ? null : <>{children}</>
+  const over = (x: number, y: number) => {
+    const el = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-dash-card]')
+    return el && el.dataset.dashSection === section && el.dataset.dashCard !== k ? el.dataset.dashCard! : null
+  }
+  return (
+    <div
+      data-dash-card={k}
+      data-dash-section={section}
+      data-dash-hidden={hidden ? '1' : undefined}
+      className={`grid gap-1.5 rounded-2xl transition-opacity ${drag?.over === k ? 'ring-2 ring-brand ring-offset-2 ring-offset-transparent' : ''} ${drag?.key === k ? 'opacity-40' : hidden ? 'opacity-55' : ''}`}
+    >
+      <div className="flex items-center justify-end gap-1">
+        {hidden && <span className="mr-auto pl-1 text-[11.5px] font-semibold text-ink-3">{t('Hidden')}</span>}
+        <button
+          type="button"
+          data-dash-grip
+          aria-label={t('Drag to move')}
+          title={t('Drag to move')}
+          className={`${toolBtn} cursor-grab touch-none active:cursor-grabbing`}
+          onPointerDown={(ev) => {
+            ev.preventDefault()
+            ev.currentTarget.setPointerCapture(ev.pointerId)
+            setDrag({ key: k, section, over: null })
+          }}
+          onPointerMove={(ev) => {
+            if (drag?.key !== k) return
+            // Near the top or bottom edge the Dashboard scrolls while dragging
+            const box = document.getElementById('dashboard')
+            if (box && ev.clientY < 90) box.scrollBy(0, -14)
+            else if (box && ev.clientY > window.innerHeight - 90) box.scrollBy(0, 14)
+            const target = over(ev.clientX, ev.clientY)
+            setDrag((d) => (d && d.over !== target ? { ...d, over: target } : d))
+          }}
+          onPointerUp={() => {
+            const target = drag?.key === k ? drag.over : null
+            setDrag(null)
+            if (target) update((d) => ({ ...d, order: place(d.order, keys, k, target) }))
+          }}
+          onPointerCancel={() => setDrag(null)}
+        >
+          <GripVertical size={15} />
+        </button>
+        <Tool label={t('Move earlier')} onClick={() => update((d) => ({ ...d, order: step(d.order, keys, k, -1) }))}>
+          <ArrowUp size={14} />
+        </Tool>
+        <Tool label={t('Move later')} onClick={() => update((d) => ({ ...d, order: step(d.order, keys, k, 1) }))}>
+          <ArrowDown size={14} />
+        </Tool>
+        <Tool label={hidden ? t('Show') : t('Hide')} onClick={() => update((d) => toggleHidden(d, k))} data="data-dash-hide">
+          {hidden ? <Eye size={14} /> : <EyeOff size={14} />}
+        </Tool>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+/** Tools of a device row while customizing: pin to favorites; in a room card also earlier, later, hide */
+interface RowTools {
+  up?: () => void
+  down?: () => void
+  hide?: () => void
+  hidden?: boolean
+}
+
+const cardCls = 'glass rounded-2xl p-4'
 const h2 = 'mb-3 flex items-center gap-2 text-[13px] font-semibold text-ink'
 
 /** iOS-like on/off switch. */
@@ -148,7 +255,9 @@ function RowControl({ e }: { e: HassEntity }) {
 }
 
 /** A device row: icon, name, state, control; a brightness slider below a light that is on. */
-function DeviceRow({ e, item, Icon, onOpen }: { e: HassEntity; item?: Item; Icon: LucideIcon; onOpen?: () => void }) {
+function DeviceRow({ e, item, Icon, onOpen, tools }: { e: HassEntity; item?: Item; Icon: LucideIcon; onOpen?: () => void; tools?: RowTools }) {
+  const { editing, dash } = useContext(DashEdit)
+  const pinned = isPinned(dash, e.entity_id)
   const on = isActive(e)
   const [draft, setDraft] = useState<number | null>(null)
   const light = domainOf(e.entity_id) === 'light' && on && supportsBrightness(e)
@@ -156,18 +265,42 @@ function DeviceRow({ e, item, Icon, onOpen }: { e: HassEntity; item?: Item; Icon
   // The item's main entity shows the item's name, extras (like the light behind a TV) their own name
   const name = item && item.entityId === e.entity_id ? itemName(item, e) : friendlyName(e)
   return (
-    <div className="grid grid-cols-1 gap-1.5 rounded-xl px-1.5 py-1.5 hover:bg-surface-2/60" data-dash-row={e.entity_id}>
+    <div className={`grid grid-cols-1 gap-1.5 rounded-xl px-1.5 py-1.5 hover:bg-surface-2/60 ${tools?.hidden ? 'opacity-50' : ''}`} data-dash-row={e.entity_id} data-dash-row-hidden={tools?.hidden ? '1' : undefined}>
       <div className="flex min-h-9 items-center gap-2.5">
         <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${on && !isReading(e) ? 'bg-sun-50 text-sun' : 'bg-surface-2 text-ink-3'}`}>
           <Icon size={16} />
         </span>
-        <button type="button" onClick={onOpen} disabled={!onOpen} className="min-w-0 flex-1 text-left disabled:cursor-default">
+        <button type="button" onClick={onOpen} disabled={!onOpen || editing} className="min-w-0 flex-1 text-left disabled:cursor-default">
           <p className="truncate text-[13px] font-medium text-ink">{name}</p>
           <p className="truncate text-[11.5px] text-ink-3">{stateLabel(e)}</p>
         </button>
-        <RowControl e={e} />
+        {editing ? (
+          // While customizing the controls step aside: no device is switched by accident
+          <div className="flex items-center gap-1" data-dash-row-tools>
+            <Tool label={pinned ? t('Remove from favorites') : t('Pin to favorites')} onClick={() => update((d) => togglePin(d, e.entity_id))} data="data-dash-pin">
+              <Star size={14} className={pinned ? 'fill-sun text-sun' : ''} />
+            </Tool>
+            {tools?.up && (
+              <Tool label={t('Move earlier')} onClick={tools.up}>
+                <ArrowUp size={14} />
+              </Tool>
+            )}
+            {tools?.down && (
+              <Tool label={t('Move later')} onClick={tools.down}>
+                <ArrowDown size={14} />
+              </Tool>
+            )}
+            {tools?.hide && (
+              <Tool label={tools.hidden ? t('Show') : t('Hide')} onClick={tools.hide} data="data-dash-row-hide">
+                {tools.hidden ? <Eye size={14} /> : <EyeOff size={14} />}
+              </Tool>
+            )}
+          </div>
+        ) : (
+          <RowControl e={e} />
+        )}
       </div>
-      {light && (
+      {light && !editing && (
         <input
           type="range"
           min={1}
@@ -211,7 +344,15 @@ function roomDevices(room: Room, level: Level, entities: Record<string, HassEnti
 }
 
 function RoomCard({ room, level, entities, areaEnts, onOpen }: { room: Room; level: Level; entities: Record<string, HassEntity>; areaEnts: HassEntity[]; onOpen: (item: Item) => void }) {
-  const { rows, lights } = useMemo(() => roomDevices(room, level, entities), [room, level, entities])
+  const { editing, dash } = useContext(DashEdit)
+  const { rows: all, lights } = useMemo(() => roomDevices(room, level, entities), [room, level, entities])
+  const card = roomKey(room.id)
+  const keyOf = (r: { e: HassEntity; item: Item }) => `${r.item.id}|${r.e.entity_id}`
+  const keys = all.map(keyOf)
+  const at = new Map(all.map((r) => [keyOf(r), r]))
+  const rows = arrange(keys, rowOrder(dash, card))
+    .filter((k) => editing || !isRowHidden(dash, card, k))
+    .map((k) => at.get(k)!)
   const pool = [...areaEnts, ...rows.map((r) => r.e)]
   const reading = (dc: string) => {
     const xs = pool.filter((e) => e.entity_id.startsWith('sensor.') && deviceClass(e) === dc).map((e) => num(e.state)).filter((n): n is number => n != null)
@@ -221,7 +362,7 @@ function RoomCard({ room, level, entities, areaEnts, onOpen }: { room: Room; lev
   const hum = reading('humidity')
   const lightsOn = lights.filter(isActive)
   return (
-    <section className={card} data-dash-room={room.name}>
+    <section className={cardCls} data-dash-room={room.name}>
       <div className="mb-2 flex items-center gap-2">
         <p className="min-w-0 flex-1 truncate text-[14px] font-semibold">{room.name}</p>
         {temp != null && (
@@ -259,9 +400,16 @@ function RoomCard({ room, level, entities, areaEnts, onOpen }: { room: Room; lev
         <p className="py-2 text-[12.5px] text-ink-3">{t('No bound devices in this room.')}</p>
       ) : (
         <div className="grid grid-cols-1 gap-0.5">
-          {rows.map(({ e, item }) => (
-            <DeviceRow key={`${item.id}-${e.entity_id}`} e={e} item={item} Icon={KIND_ICON[item.kind]} onOpen={() => onOpen(item)} />
-          ))}
+          {rows.map((r) => {
+            const k = keyOf(r)
+            const tools: RowTools = {
+              up: () => update((d) => stepRow(d, card, keys, k, -1)),
+              down: () => update((d) => stepRow(d, card, keys, k, 1)),
+              hide: () => update((d) => toggleRow(d, card, k)),
+              hidden: isRowHidden(dash, card, k),
+            }
+            return <DeviceRow key={`${r.item.id}-${r.e.entity_id}`} e={r.e} item={r.item} Icon={KIND_ICON[r.item.kind]} onOpen={() => onOpen(r.item)} tools={tools} />
+          })}
         </div>
       )}
     </section>
@@ -315,17 +463,44 @@ function roomWeight(room: Room, level: Level, entities: Record<string, HassEntit
   return 64 + (lights.length ? 50 : 0) + Math.max(1, rows.length) * 51 + dim * 12
 }
 
-/** Side card: title and rows; not drawn when empty. */
-function SideCard({ title, Icon, children, empty }: { title: string; Icon: LucideIcon; children: React.ReactNode; empty: boolean }) {
-  if (empty) return null
+/** Side card: title and rows */
+function SideCard({ title, Icon, children }: { title: string; Icon: LucideIcon; children: React.ReactNode }) {
   return (
-    <section className={card}>
+    <section className={cardCls}>
       <p className={h2}>
         <Icon size={15} className="text-brand" />
         {title}
       </p>
       <div className="grid grid-cols-1 gap-1">{children}</div>
     </section>
+  )
+}
+
+/** The room cards of one floor, in the saved order; they move among themselves */
+function LevelRooms({ level, entities, byArea, onOpen }: { level: Level; entities: Record<string, HassEntity>; byArea: Map<string, HassEntity[]>; onOpen: (item: Item) => void }) {
+  const { editing, dash } = useContext(DashEdit)
+  // Street surfaces and outdoor areas without devices (garden, neighbor's lot) are not on the Dashboard
+  const rooms = level.rooms.filter((r) => !isStreetSurface(r) && (!isOutdoor(r) || roomDevices(r, level, entities).rows.length > 0))
+  const keys = rooms.map((r) => roomKey(r.id))
+  const at = new Map(rooms.map((r) => [roomKey(r.id), r]))
+  const shown = arrange(keys, dash?.order).filter((k) => editing || !isHidden(dash, k))
+  return (
+    <Masonry
+      items={shown.map((k, i) => {
+        const r = at.get(k)!
+        return {
+          key: r.id,
+          weight: roomWeight(r, level, entities) + (editing ? 42 : 0),
+          node: (
+            <div className="dash-rise" style={rise(3 + i)} data-dash-pos={i}>
+              <CardFrame k={k} section={`level:${level.id}`} keys={keys}>
+                <RoomCard room={r} level={level} entities={entities} areaEnts={r.areaId ? (byArea.get(r.areaId) ?? []) : []} onOpen={onOpen} />
+              </CardFrame>
+            </div>
+          ),
+        }
+      })}
+    />
   )
 }
 
@@ -349,6 +524,11 @@ export default function Dashboard({ leaving = false }: { leaving?: boolean }) {
   const entities = useHa((s) => s.entities)
   const registry = useHa((s) => s.registry)
   const [others, setOthers] = useState(false)
+  const dash = useLayout((s) => s.layout?.dashboard)
+  const [editing, setEditing] = useState(false)
+  const [resetAsk, setResetAsk] = useState(false)
+  const [drag, setDrag] = useState<DashEditState['drag']>(null)
+  const ctx = useMemo<DashEditState>(() => ({ editing, dash, drag, setDrag }), [editing, dash, drag])
   const home = homesOf({ homes: rawHomes, homeId: rawId }).find((h) => h.id === activeHomeId({ homes: rawHomes, homeId: rawId }))
   const levels = useMemo(() => [...(layout?.levels ?? [])].sort((a, b) => (a.elevation ?? 0) - (b.elevation ?? 0)), [layout])
   const all = useMemo(() => Object.values(entities), [entities])
@@ -390,160 +570,307 @@ export default function Dashboard({ leaving = false }: { leaving?: boolean }) {
     if (room) useView.getState().request({ kind: 'room', id: room.id })
   }
 
-  const chip = (Icon: LucideIcon, label: string, value: string, hot = false) => (
-    <div className="glass flex min-w-0 items-center gap-3 rounded-2xl py-2.5 pl-2.5 pr-4">
-      <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${hot ? 'bg-sun-50 text-sun' : 'icon-tile'}`}>
-        <Icon size={18} />
-      </span>
-      <span className="min-w-0 leading-tight">
-        <span className="block truncate text-[11.5px] text-ink-2">{label}</span>
-        <span className="block truncate font-mono text-[17px] font-semibold tabular-nums">{value}</span>
-      </span>
-    </div>
-  )
+  const chip = (k: string, Icon: LucideIcon, label: string, value: string, hot = false) => {
+    const hidden = isHidden(dash, k)
+    if (hidden && !editing) return null
+    return (
+      <div key={k} data-dash-chip={k} className={`glass relative flex min-w-0 items-center gap-3 rounded-2xl py-2.5 pl-2.5 ${editing ? 'pr-11 pointer-coarse:pr-13' : 'pr-4'} ${hidden ? 'opacity-50' : ''}`}>
+        <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${hot ? 'bg-sun-50 text-sun' : 'icon-tile'}`}>
+          <Icon size={18} />
+        </span>
+        <span className="min-w-0 leading-tight">
+          <span className="block truncate text-[11.5px] text-ink-2">{label}</span>
+          <span className="block truncate font-mono text-[17px] font-semibold tabular-nums">{value}</span>
+        </span>
+        {editing && (
+          <span className="absolute right-1.5 top-1.5">
+            <Tool label={hidden ? t('Show') : t('Hide')} onClick={() => update((d) => toggleHidden(d, k))} data="data-dash-hide">
+              {hidden ? <Eye size={14} /> : <EyeOff size={14} />}
+            </Tool>
+          </span>
+        )}
+      </div>
+    )
+  }
 
-  return (
-    <div id="dashboard" className={`pointer-events-auto absolute inset-0 z-30 overflow-y-auto bg-ground/80 backdrop-blur-md [scrollbar-gutter:stable] ${leaving ? 'dash-out' : 'dash-in'}`}>
-      <div className="mx-auto grid max-w-[1500px] grid-cols-1 gap-4 p-4 pb-10 lg:p-6">
-        <div className="dash-rise flex flex-wrap items-end gap-3" style={rise(0)}>
-          <div className="min-w-0 flex-1">
-            <p className="font-mono text-[10.5px] font-medium uppercase tracking-wider text-brand">{t('Dashboard')}</p>
-            <h1 className="truncate text-[22px] font-bold tracking-tight">{home?.name ?? t('My home')}</h1>
-          </div>
-          {lightsOn.length > 0 && (
-            <button type="button" id="dash-lights-off" onClick={() => turnOffAll(lightsOn)} className="flex h-10 items-center gap-2 rounded-xl bg-sun-50 px-3 text-[13px] font-semibold text-ink ring-1 ring-sun/40">
-              <Power size={15} />
-              {t('Turn off all lights ({count})', { count: lightsOn.length })}
-            </button>
+  const favorites = (dash?.favorites ?? []).map((id) => entities[id]).filter((e): e is HassEntity => Boolean(e))
+  const shownScenes = scenes.filter((e) => editing || !isRowHidden(dash, 'scenes', e.entity_id))
+  /** Cards on top: favorites and scenes (they move among themselves) */
+  const top: { key: string; node: ReactNode }[] = []
+  if (favorites.length || editing)
+    top.push({
+      key: 'favorites',
+      node: (
+        <section className={cardCls} id="dash-favorites">
+          <p className={h2}>
+            <Star size={15} className="fill-sun text-sun" />
+            {t('Favorites')}
+          </p>
+          {favorites.length === 0 ? (
+            <p className="text-[12.5px] text-ink-3">{t('Pin devices with the star to see them here.')}</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-0.5 md:grid-cols-2 xl:grid-cols-3">
+              {favorites.map((e) => (
+                <DeviceRow
+                  key={e.entity_id}
+                  e={e}
+                  Icon={DOMAIN_ICON[domainOf(e.entity_id)] ?? Plug}
+                  tools={{ up: () => update((d) => stepPin(d, e.entity_id, -1)), down: () => update((d) => stepPin(d, e.entity_id, 1)) }}
+                />
+              ))}
+            </div>
           )}
-        </div>
-
-        <div className="dash-rise grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5" style={rise(1)}>
-          {chip(Lightbulb, t('Lights on'), `${lightsOn.length}/${planLights.length}`, lightsOn.length > 0)}
-          {chip(Thermometer, t('Average temperature'), avgTemp == null ? '-' : `${fmt(avgTemp)}°`)}
-          {chip(House, t('Open doors / windows'), openings.length ? String(openings.length) : t('None'), openings.length > 0)}
-          {chip(Zap, t('Power now'), power.length ? (totalW >= 1000 ? `${fmt(totalW / 1000, 2)} kW` : `${fmt(totalW, 0)} W`) : '-')}
-          {alarm ? chip(Shield, t('Security'), stateLabel(alarm), alarm.state === 'triggered') : chip(Users, t('People at home'), people.length ? `${people.filter((p) => p.state === 'home').length}/${people.length}` : '-')}
-        </div>
-
-        {scenes.length > 0 && (
-          <section className={`${card} dash-rise`} style={rise(2)}>
-            <p className={h2}>
-              <Sparkles size={15} className="text-brand" />
-              {t('Scenes and scripts')}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {scenes.map((e) => (
+        </section>
+      ),
+    })
+  if (scenes.length)
+    top.push({
+      key: 'scenes',
+      node: (
+        <section className={cardCls}>
+          <p className={h2}>
+            <Sparkles size={15} className="text-brand" />
+            {t('Scenes and scripts')}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {shownScenes.map((e) => {
+              const off = isRowHidden(dash, 'scenes', e.entity_id)
+              return editing ? (
+                <button
+                  key={e.entity_id}
+                  type="button"
+                  data-dash-scene={e.entity_id}
+                  aria-pressed={!off}
+                  onClick={() => update((d) => toggleRow(d, 'scenes', e.entity_id))}
+                  className={`flex h-10 items-center gap-2 rounded-xl px-3 text-[13px] font-semibold ${off ? 'bg-surface-2 text-ink-3 line-through' : 'bg-surface-2 text-ink'}`}
+                >
+                  {off ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {friendlyName(e)}
+                </button>
+              ) : (
                 <button key={e.entity_id} type="button" onClick={() => void toggle(e)} className="flex h-10 items-center gap-2 rounded-xl bg-surface-2 px-3 text-[13px] font-semibold text-ink hover:bg-brand-50 hover:text-brand">
                   <Sparkles size={14} />
                   {friendlyName(e)}
                 </button>
-              ))}
-            </div>
-          </section>
-        )}
+              )
+            })}
+          </div>
+        </section>
+      ),
+    })
+  const topKeys = top.map((c) => c.key)
+  const topAt = new Map(top.map((c) => [c.key, c]))
 
-        <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="grid grid-cols-1 gap-5">
-            {levels.map((l) => (
-              <div key={l.id} className="grid grid-cols-1 gap-3">
-                {levels.length > 1 && <p className="font-mono text-[11px] font-medium uppercase tracking-wider text-ink-3">{levelName(l)}</p>}
-                {l.rooms.length === 0 ? (
-                  <p className={`${card} text-[13px] text-ink-3`}>{t('No rooms on this floor. Draw rooms in edit mode.')}</p>
-                ) : (
-                  <Masonry
-                    items={l.rooms
-                      // Street surfaces and outdoor areas without devices (garden, neighbor's lot) are not on the Dashboard
-                      .filter((r) => !isStreetSurface(r) && (!isOutdoor(r) || roomDevices(r, l, entities).rows.length > 0))
-                      .map((r, i) => ({
-                        key: r.id,
-                        weight: roomWeight(r, l, entities),
-                        node: (
-                          <div className="dash-rise" style={rise(3 + i)}>
-                            <RoomCard room={r} level={l} entities={entities} areaEnts={r.areaId ? (byArea.get(r.areaId) ?? []) : []} onOpen={(it) => open(it, l)} />
-                          </div>
-                        ),
-                      }))}
-                  />
-                )}
-              </div>
+  /** The side column: only cards with something in them */
+  const side: { key: string; node: ReactNode }[] = []
+  if (alarm)
+    side.push({
+      key: 'side:security',
+      node: (
+        <section className={cardCls}>
+          <p className={h2}>
+            <Shield size={15} className="text-brand" />
+            {t('Security')}
+            <span className={`ml-auto rounded-lg px-2 py-0.5 text-[11.5px] ${alarmTone(alarm.state)}`}>{stateLabel(alarm)}</span>
+          </p>
+          <AlarmControl e={alarm} />
+        </section>
+      ),
+    })
+  if (locks.length)
+    side.push({
+      key: 'side:locks',
+      node: (
+        <SideCard title={t('Locks')} Icon={Lock}>
+          {locks.map((e) => (
+            <DeviceRow key={e.entity_id} e={e} Icon={Lock} />
+          ))}
+        </SideCard>
+      ),
+    })
+  if (safety.length)
+    side.push({
+      key: 'side:safety',
+      node: (
+        <SideCard title={t('Safety sensors')} Icon={Flame}>
+          {safety.map((e) => (
+            <DeviceRow key={e.entity_id} e={e} Icon={e.state === 'on' ? Flame : Shield} />
+          ))}
+        </SideCard>
+      ),
+    })
+  if (cameras.length)
+    side.push({
+      key: 'side:cameras',
+      node: (
+        <SideCard title={t('Cameras')} Icon={Camera}>
+          <div className="grid grid-cols-2 gap-2">
+            {cameras.slice(0, 6).map((e) => (
+              <figure key={e.entity_id} className="grid gap-1">
+                <CameraSnapshot e={e} />
+                <figcaption className="truncate text-[11.5px] text-ink-2">{friendlyName(e)}</figcaption>
+              </figure>
             ))}
           </div>
+        </SideCard>
+      ),
+    })
+  if (media.length)
+    side.push({
+      key: 'side:media',
+      node: (
+        <SideCard title={t('Now playing')} Icon={Play}>
+          {media.map((e) => (
+            <DeviceRow key={e.entity_id} e={e} Icon={Play} />
+          ))}
+        </SideCard>
+      ),
+    })
+  if (power.length)
+    side.push({
+      key: 'side:energy',
+      node: (
+        <SideCard title={t('Energy')} Icon={Zap}>
+          {[...power]
+            .sort((a, b) => (num(b.state) ?? 0) - (num(a.state) ?? 0))
+            .slice(0, 8)
+            .map((e) => (
+              <DeviceRow key={e.entity_id} e={e} Icon={Zap} />
+            ))}
+        </SideCard>
+      ),
+    })
+  if (people.length)
+    side.push({
+      key: 'side:people',
+      node: (
+        <SideCard title={t('People')} Icon={Users}>
+          {people.map((e) => (
+            <DeviceRow key={e.entity_id} e={e} Icon={Users} />
+          ))}
+        </SideCard>
+      ),
+    })
+  if (unplaced.length)
+    side.push({
+      key: 'side:unplaced',
+      node: (
+        <section className={cardCls}>
+          <button type="button" onClick={() => setOthers((o) => !o)} className={`${h2} mb-0 w-full`} aria-expanded={others}>
+            <Plug size={15} className="text-brand" />
+            {t('Devices not in the plan')}
+            <span className="ml-auto flex items-center gap-1 text-[12px] font-normal text-ink-3">
+              {unplaced.length}
+              <ChevronDown size={14} className={others ? 'rotate-180' : ''} />
+            </span>
+          </button>
+          {others && (
+            <div className="mt-3 grid grid-cols-1 gap-1">
+              {unplaced.slice(0, 60).map((e) => (
+                <DeviceRow key={e.entity_id} e={e} Icon={DOMAIN_ICON[domainOf(e.entity_id)] ?? Plug} />
+              ))}
+            </div>
+          )}
+        </section>
+      ),
+    })
+  const sideKeys = side.map((c) => c.key)
+  const sideAt = new Map(side.map((c) => [c.key, c]))
 
-          <div className="dash-rise grid grid-cols-1 gap-4" style={rise(3)}>
-            {alarm && (
-              <section className={card}>
-                <p className={h2}>
-                  <Shield size={15} className="text-brand" />
-                  {t('Security')}
-                  <span className={`ml-auto rounded-lg px-2 py-0.5 text-[11.5px] ${alarmTone(alarm.state)}`}>{stateLabel(alarm)}</span>
-                </p>
-                <AlarmControl e={alarm} />
-              </section>
+  return (
+    <DashEdit.Provider value={ctx}>
+      <div id="dashboard" data-dash-editing={editing ? '1' : undefined} className={`pointer-events-auto absolute inset-0 z-30 overflow-y-auto bg-ground/80 backdrop-blur-md [scrollbar-gutter:stable] ${leaving ? 'dash-out' : 'dash-in'}`}>
+        <div className="mx-auto grid max-w-[1500px] grid-cols-1 gap-4 p-4 pb-10 lg:p-6">
+          <div className="dash-rise flex flex-wrap items-end gap-3" style={rise(0)}>
+            <div className="min-w-0 flex-1">
+              <p className="font-mono text-[10.5px] font-medium uppercase tracking-wider text-brand">{t('Dashboard')}</p>
+              <h1 className="truncate text-[22px] font-bold tracking-tight">{home?.name ?? t('My home')}</h1>
+            </div>
+            {editing && (
+              <button
+                type="button"
+                id="dash-reset"
+                onClick={() => {
+                  if (!resetAsk) return setResetAsk(true)
+                  setResetAsk(false)
+                  useLayout.getState().updateDashboard(() => null)
+                }}
+                className={`flex h-10 items-center gap-2 rounded-xl px-3 text-[13px] font-semibold ${resetAsk ? 'bg-miss text-white' : 'text-ink-2 hover:bg-surface-2 hover:text-ink'}`}
+              >
+                <RotateCcw size={15} />
+                {resetAsk ? t('Click again to reset') : t('Reset layout')}
+              </button>
             )}
-            <SideCard title={t('Locks')} Icon={Lock} empty={!locks.length}>
-              {locks.map((e) => (
-                <DeviceRow key={e.entity_id} e={e} Icon={Lock} />
-              ))}
-            </SideCard>
-            <SideCard title={t('Safety sensors')} Icon={Flame} empty={!safety.length}>
-              {safety.map((e) => (
-                <DeviceRow key={e.entity_id} e={e} Icon={e.state === 'on' ? Flame : Shield} />
-              ))}
-            </SideCard>
-            <SideCard title={t('Cameras')} Icon={Camera} empty={!cameras.length}>
-              <div className="grid grid-cols-2 gap-2">
-                {cameras.slice(0, 6).map((e) => (
-                  <figure key={e.entity_id} className="grid gap-1">
-                    <CameraSnapshot e={e} />
-                    <figcaption className="truncate text-[11.5px] text-ink-2">{friendlyName(e)}</figcaption>
-                  </figure>
-                ))}
-              </div>
-            </SideCard>
-            <SideCard title={t('Now playing')} Icon={Play} empty={!media.length}>
-              {media.map((e) => (
-                <DeviceRow key={e.entity_id} e={e} Icon={Play} />
-              ))}
-            </SideCard>
-            <SideCard title={t('Energy')} Icon={Zap} empty={!power.length}>
-              {[...power]
-                .sort((a, b) => (num(b.state) ?? 0) - (num(a.state) ?? 0))
-                .slice(0, 8)
-                .map((e) => (
-                  <DeviceRow key={e.entity_id} e={e} Icon={Zap} />
-                ))}
-            </SideCard>
-            <SideCard title={t('People')} Icon={Users} empty={!people.length}>
-              {people.map((e) => (
-                <DeviceRow key={e.entity_id} e={e} Icon={Users} />
-              ))}
-            </SideCard>
-            {unplaced.length > 0 && (
-              <section className={card}>
-                <button type="button" onClick={() => setOthers((o) => !o)} className={`${h2} mb-0 w-full`} aria-expanded={others}>
-                  <Plug size={15} className="text-brand" />
-                  {t('Devices not in the plan')}
-                  <span className="ml-auto flex items-center gap-1 text-[12px] font-normal text-ink-3">
-                    {unplaced.length}
-                    <ChevronDown size={14} className={others ? 'rotate-180' : ''} />
-                  </span>
-                </button>
-                {others && (
-                  <div className="mt-3 grid grid-cols-1 gap-1">
-                    {unplaced.slice(0, 60).map((e) => (
-                      <DeviceRow key={e.entity_id} e={e} Icon={DOMAIN_ICON[domainOf(e.entity_id)] ?? Plug} />
-                    ))}
-                  </div>
-                )}
-              </section>
+            <button
+              type="button"
+              id="dash-customize"
+              aria-pressed={editing}
+              onClick={() => {
+                setEditing((v) => !v)
+                setResetAsk(false)
+              }}
+              title={t('Customize the dashboard')}
+              className={`flex h-10 items-center gap-2 rounded-xl px-3 text-[13px] font-semibold ${editing ? 'bg-brand text-white hover:bg-brand-600' : 'bg-surface text-ink ring-1 ring-line hover:bg-surface-2'}`}
+            >
+              {editing ? <Check size={15} /> : <SlidersHorizontal size={15} />}
+              {editing ? t('Done') : t('Customize')}
+            </button>
+            {lightsOn.length > 0 && !editing && (
+              <button type="button" id="dash-lights-off" onClick={() => turnOffAll(lightsOn)} className="flex h-10 items-center gap-2 rounded-xl bg-sun-50 px-3 text-[13px] font-semibold text-ink ring-1 ring-sun/40">
+                <Power size={15} />
+                {t('Turn off all lights ({count})', { count: lightsOn.length })}
+              </button>
             )}
-            <p className="px-1 text-[11.5px] leading-relaxed text-ink-3">
-              {t('Click a device name to select it in the 3D view. Switch to the Edit tab to place devices in the plan.')}
+          </div>
+
+          {editing && (
+            <p id="dash-edit-hint" className="glass rounded-2xl px-4 py-3 text-[12.5px] leading-relaxed text-ink-2">
+              {t('Drag cards by the handle to change their order, hide what you do not need and pin devices with the star. The layout is saved with this home.')}
             </p>
+          )}
+          <div className="dash-rise grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5" style={rise(1)}>
+            {chip('chip:lights', Lightbulb, t('Lights on'), `${lightsOn.length}/${planLights.length}`, lightsOn.length > 0)}
+            {chip('chip:temperature', Thermometer, t('Average temperature'), avgTemp == null ? '-' : `${fmt(avgTemp)}°`)}
+            {chip('chip:openings', House, t('Open doors / windows'), openings.length ? String(openings.length) : t('None'), openings.length > 0)}
+            {chip('chip:power', Zap, t('Power now'), power.length ? (totalW >= 1000 ? `${fmt(totalW / 1000, 2)} kW` : `${fmt(totalW, 0)} W`) : '-')}
+            {alarm ? chip('chip:security', Shield, t('Security'), stateLabel(alarm), alarm.state === 'triggered') : chip('chip:people', Users, t('People at home'), people.length ? `${people.filter((p) => p.state === 'home').length}/${people.length}` : '-')}
+          </div>
+
+          {arrange(topKeys, dash?.order).map((k) => (
+            <div key={k} className="dash-rise" style={rise(2)}>
+              <CardFrame k={k} section="top" keys={topKeys}>
+                {topAt.get(k)!.node}
+              </CardFrame>
+            </div>
+          ))}
+
+          <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
+            <div className="grid grid-cols-1 gap-5">
+              {levels.map((l) => (
+                <div key={l.id} className="grid grid-cols-1 gap-3">
+                  {levels.length > 1 && <p className="font-mono text-[11px] font-medium uppercase tracking-wider text-ink-3">{levelName(l)}</p>}
+                  {l.rooms.length === 0 ? (
+                    <p className={`${cardCls} text-[13px] text-ink-3`}>{t('No rooms on this floor. Draw rooms in edit mode.')}</p>
+                  ) : (
+                    <LevelRooms level={l} entities={entities} byArea={byArea} onOpen={(it) => open(it, l)} />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="dash-rise grid grid-cols-1 gap-4" style={rise(3)}>
+              {arrange(sideKeys, dash?.order).map((k) => (
+                <CardFrame key={k} k={k} section="side" keys={sideKeys}>
+                  {sideAt.get(k)!.node}
+                </CardFrame>
+              ))}
+              <p className="px-1 text-[11.5px] leading-relaxed text-ink-3">
+                {t('Click a device name to select it in the 3D view. Switch to the Edit tab to place devices in the plan.')}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </DashEdit.Provider>
   )
 }

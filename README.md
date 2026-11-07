@@ -21,7 +21,8 @@ Home Assistant areas and entities; you shape it further directly in 3D.
 
 - **Live 3D home**: lights, climate, covers, media players, fans, vacuums, locks, alarms, sensors and more, each with its
   own 3D model and state animation. Day and night follow the sun.
-- **Control everything**: quick actions on hover or tap, a detailed card per device, a dashboard view, and search (⌘K).
+- **Control everything**: quick actions on hover or tap, a detailed card per device, a dashboard view you can arrange
+  (reorder and hide cards, rooms and devices, pin favorites), and search (⌘K).
 - **Build your plan in 3D**: draw rooms and wall segments, add floors and roofs, place more than 150 kinds of furniture,
   devices and outdoor items, bind them to entities. Several homes, each with its own floors.
 - **Walk through it**: a first-person mode with the real sun position, stairs between floors and doors that open.

@@ -6,9 +6,10 @@ import { connectRooms } from './doors'
 import { areaContents, inRoom, rectsOf, settleWallItems, shiftRoom } from './geometry'
 import { dropLoneGroups, groupMates } from './groups'
 import { splitTvUnits } from './migrate'
+import { isDefault as isDefaultDashboard } from './dashboardLayout'
 import { edgePatch, shiftItemsWithEdge, type Edge } from './resize'
 import { uid } from './ids'
-import type { Item, ItemKind, Layout, Level, Rect, Room, Selection } from './types'
+import type { DashboardLayout, Item, ItemKind, Layout, Level, Rect, Room, Selection } from './types'
 
 /*
  * House plan state: plan, selection, mode, tool and undo / redo history.
@@ -149,6 +150,8 @@ interface LayoutState {
   /** Deletes the rooms (with everything in them) and items of the area selection in one undo step */
   deleteMulti: () => void
   setTheme: (theme: Theme) => void
+  /** Changes the arrangement of this home's Dashboard (goes into the undo history; an empty layout is removed) */
+  updateDashboard: (fn: (d: DashboardLayout) => DashboardLayout | null) => void
 
   checkpoint: () => void
   /** Go back to the last checkpoint and drop it from the history (to undo a drag dropped at an invalid spot) */
@@ -327,6 +330,14 @@ export const useLayout = create<LayoutState>()(
           set({ multi: null, selection: null })
         },
         setTheme: (theme) => set({ theme }),
+        updateDashboard: (fn) => {
+          const { layout, past } = get()
+          if (!layout) return
+          const next = fn(layout.dashboard ?? {})
+          const rest = { ...layout }
+          delete rest.dashboard
+          set({ layout: next && !isDefaultDashboard(next) ? { ...rest, dashboard: next } : rest, past: [...past, layout].slice(-HISTORY), future: [] })
+        },
 
         checkpoint: () => {
           const { layout, past } = get()
