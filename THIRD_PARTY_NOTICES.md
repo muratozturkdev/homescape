@@ -1,6 +1,7 @@
 # Third-party notices
 
-Homescape is built on the following open-source software and assets. Their licenses apply to the respective parts.
+Homescape itself is licensed under the GNU General Public License v3.0 or later ([LICENSE](LICENSE)). It is built on the
+following open-source software and assets; their licenses apply to the respective parts.
 
 ## Runtime libraries
 

@@ -61,3 +61,5 @@ tn(count, '{count} light', '{count} lights')
 
 - Keep pull requests focused; describe what changed and how you tested it (a screenshot helps for visual changes).
 - Write commit messages in English, in the imperative ("Add weather effects"), without AI attribution lines.
+- By contributing you agree that your work is licensed under the project's license, the GNU General Public License v3.0
+  or later ([LICENSE](LICENSE)).

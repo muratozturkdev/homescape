@@ -554,5 +554,5 @@ Rules:
 ## 11. References
 
 - Visual inspiration: WareTrack by Dilum Sanjaya.
-- Licenses of the libraries, fonts and generated sounds: `THIRD_PARTY_NOTICES.md` (home-assistant-js-websocket Apache-2.0, Lucide ISC, Stable Audio 3 sounds under the Stability AI Community License).
+- License: GPL-3.0-or-later (`LICENSE`, `package.json > license`). Licenses of the libraries, fonts and generated sounds: `THIRD_PARTY_NOTICES.md` (home-assistant-js-websocket Apache-2.0, Lucide ISC, Stable Audio 3 sounds under the Stability AI Community License).
 - Running inside Home Assistant (user guide): `docs/home-assistant.md`. Contributing: `CONTRIBUTING.md`.

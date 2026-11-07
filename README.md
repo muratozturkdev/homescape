@@ -52,7 +52,7 @@ Home Assistant areas and entities; you shape it further directly in 3D.
 In Home Assistant go to **Settings > Apps > Install app**, open the top-right menu, choose **Repositories** and add:
 
 ```
-https://github.com/muratozturk5/homescape
+https://github.com/muratozturkdev/homescape
 ```
 
 Install **Homescape**, start it and open it from the sidebar. On installations without apps (Container, Core), copy
@@ -97,4 +97,6 @@ no external 3D models: every object is generated in code. Third-party licenses: 
 
 ## License
 
-See [LICENSE](LICENSE).
+Homescape is free software under the [GNU General Public License v3.0 or later](LICENSE): you may use, study, share
+and change it, and anyone who distributes it, changed or not, must pass on the source under the same license. The
+libraries, fonts and generated sounds it uses keep their own terms ([THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).

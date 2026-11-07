@@ -2,6 +2,7 @@
   "name": "homescape",
   "private": true,
   "version": "0.1.0",
+  "license": "GPL-3.0-or-later",
   "description": "Your Home Assistant home as a live, interactive 3D dollhouse in the browser",
   "keywords": [
     "home-assistant",
@@ -13,13 +14,13 @@
     "floor-plan",
     "dashboard"
   ],
-  "homepage": "https://github.com/muratozturk5/homescape#readme",
+  "homepage": "https://github.com/muratozturkdev/homescape#readme",
   "bugs": {
-    "url": "https://github.com/muratozturk5/homescape/issues"
+    "url": "https://github.com/muratozturkdev/homescape/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/muratozturk5/homescape.git"
+    "url": "git+https://github.com/muratozturkdev/homescape.git"
   },
   "engines": {
     "node": ">=20"
