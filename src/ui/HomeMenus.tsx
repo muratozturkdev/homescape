@@ -49,7 +49,8 @@ function useDismiss(open: boolean, close: () => void) {
   return ref
 }
 
-const trigger = 'flex h-9 max-w-[180px] items-center gap-1.5 rounded-xl border border-line bg-surface px-2 text-[12.5px] font-semibold text-ink-2 hover:text-ink sm:px-2.5'
+// Below 1280 px the top bar is full: long home and floor names are cut with an ellipsis
+const trigger = 'flex h-9 max-w-[116px] xl:max-w-[180px] items-center gap-1.5 rounded-xl border border-line bg-surface px-2 text-[12.5px] font-semibold text-ink-2 hover:text-ink sm:px-2.5'
 const menu = 'glass absolute left-0 top-[calc(100%+8px)] z-50 grid w-[290px] gap-1 rounded-2xl p-2'
 const row = (on: boolean) => `group flex min-h-10 items-center gap-2 rounded-xl px-2.5 text-left text-[13px] ${on ? 'bg-brand-50 font-semibold text-brand' : 'text-ink hover:bg-surface-2'}`
 const iconBtn = 'grid size-7 shrink-0 place-items-center rounded-lg text-ink-3 hover:bg-surface hover:text-ink'

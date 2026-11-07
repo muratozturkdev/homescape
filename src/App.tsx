@@ -17,6 +17,9 @@ import { useNight } from '@/scene/useNight'
 import { kick } from '@/scene/frame'
 import BuildBar from '@/ui/BuildBar'
 import ConnectDialog from '@/ui/ConnectDialog'
+import SiteIntro from '@/ui/SiteIntro'
+import { SITE } from '@/site'
+import { isAmericanLayout } from '@/demo/american'
 import Dashboard from '@/ui/Dashboard'
 import FpsHud from '@/ui/FpsHud'
 import { applyPanelVars, usePanel } from '@/ui/panelState'
@@ -50,6 +53,13 @@ function askStandalone() {
   } catch {
     return true
   }
+}
+
+/** Demo site (src/site.ts): every visit opens the sample home */
+function useSiteStart() {
+  useEffect(() => {
+    if (SITE && !isAmericanLayout(useLayout.getState().layout)) openDemoHome('american')
+  }, [])
 }
 
 /** On first start without a plan, generates one from the areas of the connected source (demo or live). */
@@ -396,7 +406,7 @@ export default function App() {
   // Homescape opened from the home screen has storage separate from the browser (iPadOS), so the Home Assistant connection
   // is missing there: without a connection (demo) the connection dialog opens by itself on first start and says why. Once
   // closed, it is not asked again (connect from the top bar).
-  const [welcome, setWelcome] = useState(askStandalone)
+  const [welcome, setWelcome] = useState(() => !SITE && askStandalone())
   const [connectOpen, setConnectOpen] = useState(welcome)
   const mode = useLayout((s) => s.mode)
   const dashboard = useView((s) => s.dashboard) && mode === 'view'
@@ -413,6 +423,7 @@ export default function App() {
   const stats = useRoomStats()
   const totals = useHomeTotals(stats)
 
+  useSiteStart()
   useAutoLayout()
   useShortcuts()
   useFirstHint()
@@ -570,6 +581,7 @@ export default function App() {
       <PlanHistory />
       <HomeScreenGuide />
       <Toast />
+      {SITE && <SiteIntro />}
       {connectOpen && (
         <ConnectDialog
           welcome={welcome}

@@ -42,6 +42,7 @@ npm run dev             # http://localhost:5190 (proxies HA when HA_URL is set)
 npm run dev -- --host   # for a tablet or phone on the same network (http://<computer's IP>:5190); the plan is stored per origin: move it with export / import in Edit, or sign in to HA (plan sync)
 npm run build           # tsc -b + vite build -> dist/ (relative paths, base './')
 npm run build:app       # build, then copy dist/ to homescape/www/ (local install of the Home Assistant app)
+npm run build:site      # the public demo site (site mode, dist-site/); npm run dev:site to work on it
 npm run preview         # the built app, with the same proxy setting
 npm run typecheck
 npm run lint            # oxlint
@@ -192,6 +193,12 @@ All HA access goes through the `HaSource` interface: `subscribe`, `callService`,
 - **Inside Home Assistant** (`ha/embed.ts`, `docs/home-assistant.md`): as an app panel (ingress) or a Webpage dashboard pointing at `/local/homescape/index.html`. Both load the app in a same-origin iframe of the HA frontend, so it reuses the frontend's authenticated connection (`window.parent.hassConnection`): no second login, no stored token. Opened from HA's address without the frontend around it (`/local/...`, an ingress path or `/hacsfiles/...`; `servedByHomeAssistant`), it signs in through HA's login page at that address.
 - **Sign-in:** the recommended path is OAuth: `getAuth({ hassUrl })` sends the user to HA's login page; on return `?auth_callback=1` yields the token, stored in `localStorage['homescape-auth']`. Second path: a long-lived token the user created in their HA profile (optional "remember"). **An AI agent never enters a password or token on the user's behalf; the person runs live connection tests.**
 - **Registry:** `config/area_registry/list`, `config/entity_registry/list`, `config/device_registry/list`. An entity's area is its own, else its device's. Hidden, disabled, config and diagnostic entities are left out of the auto plan. If a non-admin user cannot read the registry, the plan still works.
+
+### Demo site (homescape.muratozturk.dev)
+
+- The same app built in site mode: `npm run build:site` (`vite build --mode site --outDir dist-site`), `npm run dev:site` to work on it. `src/site.ts > SITE` is `import.meta.env.MODE === 'site'`; in every other build it is false and the site parts are dropped from the bundle.
+- What changes (`App > useSiteStart`, `ui/SiteIntro.tsx` + `ui/siteIntroState.ts`, `TopBar > SiteLinks`): every visit opens the sample home (`openDemoHome('american')` when the active plan is not the sample); the intro card opens on the first visit (`homescape-site-intro` in local storage) and again from "Get Homescape" (`#site-intro-open`, on phones in the three-dot menu); the connection pill becomes "Get Homescape" + "GitHub" (`#site-github`), since a public page cannot reach a Home Assistant on a visitor's network; the standalone connection prompt is off. `vite.config.ts > siteMeta` sets the title, description, canonical URL and link previews, and emits `docs/screenshots/social-preview.png` as `og.png`.
+- Deploy: `site/Dockerfile` (build from the repository root, nginx serving `dist-site`), `site/nginx.conf` (cache headers, gzip, short links `/github` and `/install`), `.dockerignore` keeps personal files out. Runs on the maintainer's Coolify (Dockerfile build pack, `/site/Dockerfile`, branch `main`).
 
 ### Running inside Home Assistant
 

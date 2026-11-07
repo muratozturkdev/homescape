@@ -1,4 +1,4 @@
-import { CloudSun, EllipsisVertical, Eye, Feather, House, Languages, LayoutDashboard, Maximize, Minimize, Moon, Pencil, PersonStanding, Search, Sun, SunMoon, Wifi, WifiOff } from 'lucide-react'
+import { CloudSun, Code, Download, EllipsisVertical, Eye, Feather, House, Languages, LayoutDashboard, Maximize, Minimize, Moon, Pencil, PersonStanding, Search, Sun, SunMoon, Wifi, WifiOff } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useHa } from '@/ha/store'
 import { useLayout, type Theme } from '@/model/layoutStore'
@@ -11,6 +11,8 @@ import { WeatherPicker } from './WeatherTile'
 import { skyLabel, useWeather } from '@/ha/weather'
 import { currentLang, LANGUAGES, t } from '@/i18n'
 import { LanguageButton, LanguageList } from './LanguageMenu'
+import { REPO_URL, SITE } from '@/site'
+import { openSiteIntro } from './siteIntroState'
 
 const THEMES: { id: Theme; label: string; Icon: typeof Sun }[] = [
   { id: 'auto', label: t('Automatic (follows the sun)'), Icon: SunMoon },
@@ -40,6 +42,35 @@ function ConnectionPill({ onOpen }: { onOpen: () => void }) {
 }
 
 /** Lite mode, theme and connection on narrow screens */
+/** Demo site (src/site.ts): instead of the connection, how to get Homescape and the source on GitHub */
+function SiteLinks() {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        id="site-intro-open"
+        onClick={openSiteIntro}
+        className="flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-brand px-2.5 text-[12.5px] font-semibold text-white hover:bg-brand-600"
+        title={t('About Homescape and how to install it')}
+      >
+        <Download size={15} />
+        <span className="hidden 2xl:inline">{t('Get Homescape')}</span>
+      </button>
+      <a
+        id="site-github"
+        href={REPO_URL}
+        target="_blank"
+        rel="noopener"
+        className="flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl border border-line bg-surface px-2.5 text-[12.5px] font-semibold text-ink-2 hover:text-ink"
+        title={t('Source code on GitHub')}
+      >
+        <Code size={15} />
+        <span className="hidden 2xl:inline">GitHub</span>
+      </a>
+    </div>
+  )
+}
+
 function MoreMenu({ onConnect }: { onConnect: () => void }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -67,6 +98,7 @@ function MoreMenu({ onConnect }: { onConnect: () => void }) {
   }, [open])
   const next = THEMES[(THEMES.findIndex((th) => th.id === theme) + 1) % THEMES.length]
   const row = 'flex min-h-11 w-full items-center gap-2.5 rounded-xl px-3 text-left text-[13px] text-ink hover:bg-surface-2'
+  const fullscreen = useFullscreen()
   return (
     <div ref={ref} className="relative lg:hidden">
       <button
@@ -115,6 +147,21 @@ function MoreMenu({ onConnect }: { onConnect: () => void }) {
               <WeatherPicker />
             </div>
           )}
+          {/* On phones the fullscreen button lives here: the top bar has no room for it under 640 px */}
+          {!isStandalone() && (
+            <button
+              type="button"
+              id="fullscreen-toggle-mobile"
+              className={`${row} sm:hidden`}
+              onClick={() => {
+                setOpen(false)
+                fullscreenButton()
+              }}
+            >
+              {fullscreen ? <Minimize size={16} className="text-ink-3" /> : <Maximize size={16} className="text-ink-3" />}
+              {fullscreen ? t('Exit fullscreen') : t('Fullscreen')}
+            </button>
+          )}
           <button type="button" id="language-menu-mobile" className={row} aria-expanded={lang} onClick={() => setLangOpen((v) => !v)}>
             <Languages size={16} className="text-ink-3" />
             {t('Language: {name}', { name: LANGUAGES.find((l) => l.code === currentLang())?.name ?? currentLang() })}
@@ -124,17 +171,38 @@ function MoreMenu({ onConnect }: { onConnect: () => void }) {
               <LanguageList />
             </div>
           )}
-          <button
-            type="button"
-            className={row}
-            onClick={() => {
-              setOpen(false)
-              onConnect()
-            }}
-          >
-            <span className={`size-2 rounded-full ${status === 'connected' ? (source?.kind === 'live' ? 'bg-ok' : 'bg-sun') : 'bg-miss'}`} />
-            {source?.kind === 'live' ? t('Connected · {name}', { name: source.label }) : t('Demo mode')}
-          </button>
+          {SITE ? (
+            <>
+              <button
+                type="button"
+                id="site-intro-open-mobile"
+                className={row}
+                onClick={() => {
+                  setOpen(false)
+                  openSiteIntro()
+                }}
+              >
+                <Download size={16} className="text-brand" />
+                {t('Get Homescape')}
+              </button>
+              <a href={REPO_URL} target="_blank" rel="noopener" className={row}>
+                <Code size={16} className="text-ink-3" />
+                GitHub
+              </a>
+            </>
+          ) : (
+            <button
+              type="button"
+              className={row}
+              onClick={() => {
+                setOpen(false)
+                onConnect()
+              }}
+            >
+              <span className={`size-2 rounded-full ${status === 'connected' ? (source?.kind === 'live' ? 'bg-ok' : 'bg-sun') : 'bg-miss'}`} />
+              {source?.kind === 'live' ? t('Connected · {name}', { name: source.label }) : t('Demo mode')}
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -152,7 +220,7 @@ function FullscreenButton() {
       id="fullscreen-toggle"
       onClick={fullscreenButton}
       aria-pressed={on}
-      className="grid size-9 touch-manipulation place-items-center rounded-xl border border-line bg-surface text-ink-2 hover:text-ink"
+      className="hidden size-9 touch-manipulation place-items-center rounded-xl border border-line bg-surface text-ink-2 hover:text-ink sm:grid"
       title={on ? t('Exit fullscreen') : t('Fullscreen')}
     >
       {on ? <Minimize size={16} /> : <Maximize size={16} />}
@@ -211,7 +279,7 @@ export default function TopBar({ onConnect }: { onConnect: () => void }) {
             aria-selected={tab === id}
             aria-label={label}
             onClick={() => pick(id)}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-semibold transition-colors sm:px-3 ${
               tab === id ? 'bg-surface text-brand shadow-sm' : 'text-ink-2 hover:text-ink'
             }`}
           >
@@ -277,9 +345,7 @@ export default function TopBar({ onConnect }: { onConnect: () => void }) {
           <Current size={16} />
         </button>
         <LanguageButton />
-        <div className="hidden lg:block">
-          <ConnectionPill onOpen={onConnect} />
-        </div>
+        <div className="hidden lg:block">{SITE ? <SiteLinks /> : <ConnectionPill onOpen={onConnect} />}</div>
         <MoreMenu onConnect={onConnect} />
       </div>
     </header>

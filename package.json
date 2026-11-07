@@ -30,6 +30,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:app": "npm run build && node scripts/copy-app.mjs",
+    "build:site": "tsc -b && vite build --mode site --outDir dist-site",
+    "dev:site": "vite --mode site",
     "lint": "oxlint",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "i18n:check": "node scripts/i18n-check.mjs",

@@ -1,0 +1,12 @@
+# Docker builds of the demo site (site/Dockerfile). Personal and generated files never enter an image.
+node_modules
+dist
+dist-site
+shots
+.homescape-dump
+src/demo/local-snapshot.json
+.env
+.env.*
+!.env.example
+homescape/www
+.git
