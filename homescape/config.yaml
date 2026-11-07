@@ -2,7 +2,7 @@ name: Homescape
 version: "0.1.0"
 slug: homescape
 description: Your home as a live 3D dollhouse in the Home Assistant sidebar
-url: https://github.com/muratozturk5/homescape
+url: https://github.com/muratozturkdev/homescape
 arch:
   - aarch64
   - amd64

@@ -10,4 +10,4 @@ configure.
   your plan, and Homescape keeps its own copies under **Plan history** in the home menu.
 - The interface follows your Home Assistant language; another language can be picked in Homescape's language menu.
 
-More: https://github.com/muratozturk5/homescape
+More: https://github.com/muratozturkdev/homescape
