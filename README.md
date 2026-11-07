@@ -131,6 +131,15 @@ Small fixes can go straight to a pull request; for a bigger change, open an
 [contributing guide](CONTRIBUTING.md) covers running the app and the tests, how the code is organized, how to keep
 people's plans safe and how to add a language.
 
+## Star history
+
+<a href="https://star-history.com/#muratozturkdev/homescape&amp;Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=muratozturkdev/homescape&amp;type=Date&amp;theme=dark">
+    <img alt="Star history of Homescape" src="https://api.star-history.com/svg?repos=muratozturkdev/homescape&amp;type=Date" width="700">
+  </picture>
+</a>
+
 ## License
 
 Homescape is free software under the [GNU General Public License v3.0 or later](LICENSE): you may use, study, share
