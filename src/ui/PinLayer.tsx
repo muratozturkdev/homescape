@@ -9,6 +9,7 @@ import { hasQuick } from './quickState'
 import type { Item, Room } from '@/model/types'
 import { isStreetSurface, roomArea } from '@/model/geometry'
 import { registerLabel } from '@/scene/labels'
+import { useView } from '@/scene/camera'
 import { t, tn } from '@/i18n'
 import { fmt, type RoomStats } from './useHome'
 
@@ -39,7 +40,7 @@ function Anchor({ id, children }: { id: string; children: React.ReactNode }) {
 function RoomTag({ room, stats, edit }: { room: Room; stats?: RoomStats; edit: boolean }) {
   return (
     <Anchor id={`room-${room.id}`}>
-      <div className="flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--glass-border)] bg-[var(--surface)] py-1 pl-3 pr-3 shadow-sm backdrop-blur">
+      <div data-room-tag={room.id} className="flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--glass-border)] bg-[var(--surface)] py-1 pl-3 pr-3 shadow-sm backdrop-blur">
         <span className="text-[12px] font-semibold text-ink">{room.name}</span>
         {edit ? (
           <span className="hidden font-mono text-[11px] tabular-nums text-ink-3 sm:inline">
@@ -149,12 +150,14 @@ export default function PinLayer({ stats }: { stats: Record<string, RoomStats> }
   const edit = useLayout((s) => s.mode === 'edit')
   // While placing, the ghost's tag stands out: room tags fade and the selection tag hides
   const placing = usePlacement((s) => Boolean(s.target))
+  // Room names can be turned off for view mode (MapControls > #labels-toggle): from afar they crowd the home
+  const labels = useView((s) => s.labels)
   return (
     <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
       <div className={`transition-opacity duration-200 ${placing ? 'opacity-25' : ''}`}>
         {/* Street surfaces (road, sidewalk, crosswalk, parking) show no name in view mode; in edit mode they show with their size */}
         {(level?.rooms ?? [])
-          .filter((r) => edit || !isStreetSurface(r))
+          .filter((r) => edit || (labels && !isStreetSurface(r)))
           .map((r) => (
             <RoomTag key={r.id} room={r} stats={stats[r.id]} edit={edit} />
           ))}

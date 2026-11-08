@@ -1,4 +1,4 @@
-import { Box, BrickWall, CircleHelp, Hand, House, Map, Minus, PanelRightClose, PanelRightOpen, Plus, Rotate3d, RotateCcw, RotateCw, Users, Warehouse, X } from 'lucide-react'
+import { Box, BrickWall, CircleHelp, Hand, House, Map, Minus, PanelRightClose, PanelRightOpen, Plus, Rotate3d, RotateCcw, RotateCw, Tag, Users, Warehouse, X } from 'lucide-react'
 import { useState } from 'react'
 import { cameraApi, type StreetKinds, toggleRoof, useView } from '@/scene/camera'
 import { usePeoplePlan } from '@/scene/People'
@@ -165,6 +165,7 @@ export default function MapControls() {
   const leftDrag = useView((s) => s.leftDrag)
   const innerWalls = useView((s) => s.innerWalls)
   const roof = useView((s) => s.roof)
+  const labels = useView((s) => s.labels)
   const setInnerWalls = useView((s) => s.setInnerWalls)
   const setLeftDrag = useView((s) => s.setLeftDrag)
   const panelOpen = usePanel((s) => s.open)
@@ -233,6 +234,17 @@ export default function MapControls() {
           aria-pressed={roof !== 'off'}
         >
           <Warehouse size={16} />
+        </button>
+        {/* Room names in view mode (remembered); edit mode always shows them */}
+        <button
+          type="button"
+          id="labels-toggle"
+          className={`${btn} ${labels ? 'text-brand' : 'text-ink-3'}`}
+          onClick={() => useView.getState().setLabels(!labels)}
+          title={labels ? t('Room names are shown. Click to hide them (edit mode always shows them)') : t('Room names are hidden. Click to show them')}
+          aria-pressed={labels}
+        >
+          <Tag size={16} />
         </button>
         <div className="mx-2 h-px bg-line [@media(max-height:820px)]:hidden" />
         <button type="button" className={`${btn} ${people ? 'text-brand' : ''}`} onClick={() => (setPeople((v) => !v), setHelp(false))} title={t('People: at home and outside (cars, pedestrians)')} aria-pressed={people}>

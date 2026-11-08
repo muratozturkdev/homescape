@@ -1,4 +1,4 @@
-import { CloudSun, Code, Download, EllipsisVertical, Eye, Feather, House, Languages, LayoutDashboard, Maximize, Minimize, Moon, Pencil, PersonStanding, Search, Sun, SunMoon, Wifi, WifiOff } from 'lucide-react'
+import { CloudSun, Code, Download, EllipsisVertical, Eye, Feather, House, Languages, LayoutDashboard, Maximize, Minimize, Moon, Pencil, PersonStanding, Search, Sun, SunMoon, Tag, Wifi, WifiOff } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useHa } from '@/ha/store'
 import { useLayout, type Theme } from '@/model/layoutStore'
@@ -99,6 +99,7 @@ function MoreMenu({ onConnect }: { onConnect: () => void }) {
   const next = THEMES[(THEMES.findIndex((th) => th.id === theme) + 1) % THEMES.length]
   const row = 'flex min-h-11 w-full items-center gap-2.5 rounded-xl px-3 text-left text-[13px] text-ink hover:bg-surface-2'
   const fullscreen = useFullscreen()
+  const labels = useView((s) => s.labels)
   return (
     <div ref={ref} className="relative lg:hidden">
       <button
@@ -147,6 +148,10 @@ function MoreMenu({ onConnect }: { onConnect: () => void }) {
               <WeatherPicker />
             </div>
           )}
+          <button type="button" id="labels-toggle-mobile" className={row} aria-pressed={labels} onClick={() => useView.getState().setLabels(!labels)}>
+            <Tag size={16} className={labels ? 'text-brand' : 'text-ink-3'} />
+            {labels ? t('Hide room names') : t('Show room names')}
+          </button>
           {/* On phones the fullscreen button lives here: the top bar has no room for it under 640 px */}
           {!isStandalone() && (
             <button

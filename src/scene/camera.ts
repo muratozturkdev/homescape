@@ -36,6 +36,7 @@ const LITE_KEY = 'homescape-lite'
 const INNER_KEY = 'homescape-inner-walls'
 const PEOPLE_KEY = 'homescape-people'
 const STREET_KEY = 'homescape-street'
+const LABELS_KEY = 'homescape-labels'
 
 export interface StreetKinds {
   cars: boolean
@@ -115,6 +116,8 @@ interface ViewState {
   residents: number
   /** Whether lower floors are drawn below the active floor (building view in a multi-storey home). Remembered. */
   lowerFloors: boolean
+  /** Room names on the 3D view in view mode (remembered); edit mode always shows them with their size */
+  labels: boolean
   /** Roof display (scene/Roofs.tsx). Remembered. */
   roof: RoofMode
   /** Roof type of the homes (by home id; tile when missing). Remembered. */
@@ -136,6 +139,7 @@ interface ViewState {
   setStreet: (kind: keyof StreetKinds, on: boolean) => void
   setResidents: (n: number) => void
   setLowerFloors: (on: boolean) => void
+  setLabels: (on: boolean) => void
   setRoof: (mode: RoofMode) => void
   setRoofStyle: (homeId: string, style: RoofStyle) => void
   setFps: (on: boolean) => void
@@ -154,6 +158,7 @@ export const useView = create<ViewState>()((set, get) => ({
   street: readStreet(),
   residents: Math.min(4, Math.max(1, Number(readPref(RESIDENTS_KEY)) || 2)),
   lowerFloors: readPref(LOWER_KEY) !== '0',
+  labels: readPref(LABELS_KEY) !== '0',
   roof: (['auto', 'on', 'off'] as const).find((m) => m === readPref(ROOF_KEY)) ?? 'auto',
   roofStyle: readRoofStyle(),
   fps: false,
@@ -191,6 +196,10 @@ export const useView = create<ViewState>()((set, get) => ({
   setLowerFloors: (lowerFloors) => {
     writePref(LOWER_KEY, lowerFloors ? '1' : '0')
     set({ lowerFloors })
+  },
+  setLabels: (labels) => {
+    writePref(LABELS_KEY, labels ? '1' : '0')
+    set({ labels })
   },
   setRoof: (roof) => {
     writePref(ROOF_KEY, roof)
