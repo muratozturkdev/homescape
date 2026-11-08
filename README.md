@@ -36,7 +36,9 @@ TV plays, doors and windows open with their sensors, and people and pets move th
 Home Assistant areas and entities; you shape it further directly in 3D.
 
 <p align="center">
-  <a href="https://homescape.muratozturk.dev/promo.mp4"><img src="docs/media/promo-poster.jpg" alt="Watch the video (41 seconds): furniture placed in edit mode, night falling, lights switched on with clicks and every light turned off from the Dashboard" width="880"></a>
+  <a href="https://homescape.muratozturk.dev/promo.mp4"><img src="docs/media/promo.gif" alt="Homescape in 41 seconds: furniture placed in edit mode, night falling, lights switched on with clicks and every light turned off from the Dashboard" width="880"></a>
+  <br>
+  <sub>Click it for the full video in 1080p.</sub>
 </p>
 
 <table>
