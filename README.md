@@ -35,6 +35,10 @@ Homescape draws your home in 3D in the browser and keeps it in sync with Home As
 TV plays, doors and windows open with their sensors, and people and pets move through the house. Hover or tap anything to switch it, click it for every control. The first plan is built automatically from your
 Home Assistant areas and entities; you shape it further directly in 3D.
 
+<p align="center">
+  <a href="https://homescape.muratozturk.dev/promo.mp4"><img src="docs/media/promo-poster.jpg" alt="Watch the video (41 seconds): furniture placed in edit mode, night falling, lights switched on with clicks and every light turned off from the Dashboard" width="880"></a>
+</p>
+
 <table>
   <tr>
     <td><img src="docs/screenshots/room.png" alt="Close-up of a living room: the roof lifts away, people and a dog move through the house"></td>

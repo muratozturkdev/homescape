@@ -48,7 +48,7 @@ npm run typecheck
 npm run lint            # oxlint
 npm run i18n:check      # every t() text has a translation entry
 npm run shot            # screenshot -> shots/scene.png (dev server must be running)
-npm run promo           # promo video of the sample home for social media (shots/promo.mp4, 1920x1080, ~40 s; FPS=12 for a quick preview; needs ffmpeg)
+npm run promo           # promo video of the sample home for social media (shots/promo.mp4, 1920x1080, ~40 s; FPS=12 for a quick preview; needs ffmpeg). Its web copy docs/media/promo.mp4 (x264 CRF 26) is what the README poster links to: the demo site serves it at /promo.mp4
 npm run media           # README screenshots (docs/screenshots) and animations (docs/media, animated WebP; needs ffmpeg and img2webp)
 npm run perf            # performance: fps idle and while rotating, main thread time, draw calls, triangles (Retina emulation, PERF_DPR)
 npm run check           # all regression suites below (dev server must be running)

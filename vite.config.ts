@@ -29,7 +29,8 @@ function planDump(): Plugin {
 
 /**
  * Demo site (`npm run build:site`, src/site.ts): the page title, description and link previews for
- * homescape.muratozturk.dev; the preview image (docs/screenshots/social-preview.png) goes out as og.png.
+ * homescape.muratozturk.dev; the preview image (docs/screenshots/social-preview.png) goes out as og.png and the promo video
+ * (docs/media/promo.mp4, linked from the README) as promo.mp4. Only site builds carry them, not the Home Assistant app.
  */
 const SITE_URL = 'https://homescape.muratozturk.dev/'
 function siteMeta(): Plugin {
@@ -58,6 +59,7 @@ function siteMeta(): Plugin {
     },
     generateBundle() {
       this.emitFile({ type: 'asset', fileName: 'og.png', source: readFileSync('docs/screenshots/social-preview.png') })
+      this.emitFile({ type: 'asset', fileName: 'promo.mp4', source: readFileSync('docs/media/promo.mp4') })
     },
   }
 }
