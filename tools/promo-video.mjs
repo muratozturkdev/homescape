@@ -1,31 +1,33 @@
-// Promo video of the sample home for social media (1920x1080 MP4, silent), in close shots: the home by day, furniture placed
+// Promo video of the sample home for social media (2560x1440 and 1920x1080 MP4, silent), in close shots: the home by day, furniture placed
 // in edit mode like in a building game, night falls, lights switched on with clicks, the whole home at night, every light off
 // from the Dashboard, and day again (it ends where it starts, so it loops).
 // Recorded frame by frame on a paused clock (page.clock), so it is smooth however slowly the scene renders headless. A drawn
 // cursor and click ring show what is clicked (a screenshot has no mouse pointer). Run with a dev server open (automated
-// browsers use the sample data): `npm run promo`. Needs ffmpeg. Output: shots/promo.mp4 (PROMO_OUT to change it).
+// browsers use the sample data): `npm run promo`. Needs ffmpeg. Output: shots/promo.mp4 (1920x1080) and shots/promo-1440.mp4
+// (PROMO_OUT to change the name). The page runs in capture mode (`homescape-capture`, scene/Scene.tsx): the 3D view is drawn at
+// 2x all the time instead of dropping its resolution while the camera moves. Frames are 2560x1440 and go straight to ffmpeg;
+// the 1080p file is scaled down from them, so its edges are sharper than a frame drawn at 1080p.
 //
 //   FPS=12 npm run promo   quick preview at a lower frame rate
 import { chromium } from 'playwright'
-import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, rmSync, statSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { spawn } from 'node:child_process'
+import { mkdirSync, renameSync, rmSync, statSync } from 'node:fs'
 
 const BASE = process.env.HOMESCAPE_URL ?? 'http://localhost:5190/'
 const FPS = Number(process.env.FPS ?? 30)
 const OUT = process.env.PROMO_OUT ?? 'shots/promo.mp4'
 const LIVING = 'us-g-living'
 
+const OUT_1440 = OUT.replace(/\.mp4$/, '-1440.mp4')
 mkdirSync('shots', { recursive: true })
-const dir = mkdtempSync(join(tmpdir(), 'homescape-promo-'))
 const b = await chromium.launch({ channel: 'chrome', args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] })
-const p = await b.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5, locale: 'en-US' })
+const p = await b.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2, locale: 'en-US' })
 const errors = []
 p.on('pageerror', (e) => errors.push(e.message))
 await p.addInitScript(() => {
   localStorage.setItem('homescape-hint-controls', '1')
   localStorage.setItem('homescape-labels', '0')
+  localStorage.setItem('homescape-capture', '1')
 })
 await p.clock.install({ time: new Date('2026-10-27T13:00:00') })
 await p.goto(BASE)
@@ -68,6 +70,19 @@ const center = async (locator) => {
   return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
 }
 
+// ffmpeg starts only once the page is up; it writes to .tmp.mp4 files that replace the outputs only when all went well
+const tmp = (f) => f.replace(/\.mp4$/, '.tmp.mp4')
+// x264 at a high quality; aq-mode 3 keeps the dark night gradients from banding
+const x264 = ['-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-x264-params', 'aq-mode=3', '-pix_fmt', 'yuv420p', '-movflags', '+faststart']
+const ffmpeg = spawn('ffmpeg', [
+  '-y', '-loglevel', 'error', '-f', 'image2pipe', '-c:v', 'png', '-framerate', String(FPS), '-i', '-',
+  '-filter_complex', '[0:v]split=2[hi][lo];[lo]scale=1920:1080:flags=lanczos[lo2]',
+  '-map', '[hi]', ...x264, tmp(OUT_1440),
+  '-map', '[lo2]', ...x264, tmp(OUT),
+], { stdio: ['pipe', 'inherit', 'inherit'] })
+const done = new Promise((resolve, reject) => ffmpeg.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`ffmpeg exited with ${code}`)))))
+const write = (buf) => (ffmpeg.stdin.write(buf) ? Promise.resolve() : new Promise((r) => ffmpeg.stdin.once('drain', r)))
+
 await p.clock.pauseAt(new Date(await p.evaluate(() => Date.now() + 50)))
 
 /** One frame: the cursor and ring drawn, the clock moved on by one frame, a screenshot */
@@ -88,7 +103,8 @@ async function shot() {
   )
   if (ring && ++ring.f > 0.45 * FPS) ring = null
   await p.clock.runFor(Math.round(1000 / FPS))
-  await p.screenshot({ path: join(dir, `f${String(frame++).padStart(5, '0')}.png`) })
+  await write(await p.screenshot())
+  frame++
 }
 const hold = async (sec) => {
   for (let i = 0; i < Math.round(sec * FPS); i++) await shot()
@@ -250,12 +266,9 @@ await moveTo({ x: 1190, y: 700 }, 0.9)
 await fade(0, 0.3)
 
 await b.close()
+ffmpeg.stdin.end()
+await done
+for (const f of [OUT_1440, OUT]) renameSync(tmp(f), f)
 console.log(`${frame} frames (${(frame / FPS).toFixed(1)} s)`)
-execFileSync('ffmpeg', [
-  '-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(dir, 'f%05d.png'),
-  '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', OUT,
-])
-if (process.env.PROMO_KEEP) console.log(`frames kept in ${dir}`)
-else rmSync(dir, { recursive: true, force: true })
-console.log(`${OUT}: ${(statSync(OUT).size / 1e6).toFixed(1)} MB`)
+for (const f of [OUT_1440, OUT]) console.log(`${f}: ${(statSync(f).size / 1e6).toFixed(1)} MB`)
 if (errors.length) console.log(`Page errors: ${errors.join(' | ')}`)

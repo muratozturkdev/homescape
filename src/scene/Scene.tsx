@@ -44,6 +44,7 @@ setGridHoles((level) => stairwellsOf(useLayout.getState().layout?.levels ?? [], 
  * - frameloop="demand": the idle scene is never drawn; it is drawn on camera moves, changes or animations.
  * - The shadow map only when the scene changes (ShadowManager), not while the camera turns.
  * - Resolution at most 1.5x; it drops temporarily while the camera moves (AdaptiveDpr + regress).
+ * - Recordings (tools/promo-video.mjs) set `homescape-capture` in local storage: 2x all the time, no drop while moving.
  * - Ambient animations at 24 fps (AmbientTicker).
  * - Lite mode: no shadows, no ambient animations, 1x resolution.
  * - Lamps are room lights (roomLights.ts), not three.js point lights: cheap in numbers and they do not pass through walls.
@@ -622,13 +623,22 @@ function ButtonMap() {
   return null
 }
 
+/** Recording a video (local storage `homescape-capture`): sharp frames matter, the frame rate does not */
+const CAPTURE = (() => {
+  try {
+    return localStorage.getItem('homescape-capture') === '1'
+  } catch {
+    return false
+  }
+})()
+
 export default function Scene() {
   const plan = useView((s) => s.plan)
   const lite = useView((s) => s.lite)
   // In first person walk mode the orbit camera is removed and FpsControls drives the camera
   const fps = useView((s) => s.fps)
   // At most 1.5x instead of 2x on Retina screens: nearly halves the pixel count, the difference is hard to see.
-  const dpr: [number, number] = lite ? [1, 1] : [1, 1.5]
+  const dpr: [number, number] = CAPTURE ? [2, 2] : lite ? [1, 1] : [1, 1.5]
 
   return (
     <Canvas
@@ -656,11 +666,11 @@ export default function Scene() {
           polarRotateSpeed={0.6}
           smoothTime={0.45}
           dollyToCursor
-          regress
+          regress={!CAPTURE}
         />
       )}
       <FpsControls />
-      <AdaptiveDpr />
+      {!CAPTURE && <AdaptiveDpr />}
       <FrameRegistrar />
       {!lite && <ShadowManager />}
       <AmbientTicker />
