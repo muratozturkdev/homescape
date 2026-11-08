@@ -53,7 +53,8 @@
     "check:data": "node tools/data-safety-check.mjs",
     "check:weather": "node tools/weather-check.mjs",
     "check:dashboard": "node tools/dashboard-check.mjs",
-    "media": "node tools/readme-media.mjs"
+    "media": "node tools/readme-media.mjs",
+    "promo": "node tools/promo-video.mjs"
   },
   "dependencies": {
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",

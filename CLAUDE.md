@@ -48,11 +48,12 @@ npm run typecheck
 npm run lint            # oxlint
 npm run i18n:check      # every t() text has a translation entry
 npm run shot            # screenshot -> shots/scene.png (dev server must be running)
+npm run promo           # promo video of the sample home for social media (shots/promo.mp4, 1920x1080, ~40 s; FPS=12 for a quick preview; needs ffmpeg)
 npm run media           # README screenshots (docs/screenshots) and animations (docs/media, animated WebP; needs ffmpeg and img2webp)
 npm run perf            # performance: fps idle and while rotating, main thread time, draw calls, triangles (Retina emulation, PERF_DPR)
 npm run check           # all regression suites below (dev server must be running)
 npm run check:controls  # camera (rotate by default, right drag and Space pan, hand mode), editing, placement: 43 checks
-npm run check:world     # homes, floors, outdoor walls, View clickability, quick pill (position, touch, one thing at a time), Dashboard (layout, animation), search, walk (walls, stairs, sun without leaks), garage door, home flight, tablet panel, fullscreen guide, home screen app: 48 checks
+npm run check:world     # homes, floors, outdoor walls, View clickability, quick pill (position, touch, one thing at a time), Dashboard (layout, animation), search, walk (walls, stairs, sun without leaks), garage door, home flight, tablet panel, fullscreen guide, home screen app, room names on and off: 51 checks
 npm run check:interior  # cabinet interiors and doors, screens and the TV film, people moving, pressing devices, watching TV, the counter sink, routes, pets roaming: 22 checks
 npm run check:outdoor   # ground surfaces and road markings, rotating roads, street furniture rules, street lamp light: 34 checks
 npm run check:pets      # cat and dog: placement, doors, reactions, sleep, passing animals: 24 checks
@@ -228,6 +229,7 @@ All HA access goes through the `HaSource` interface: `subscribe`, `callService`,
 - **Coordinates:** meters; x to the right, z forward (toward the camera), y up. A room is its back-left corner `(x, z)` + `w`, `d`. In item space the origin is the center of the footprint on the floor and the front faces +z; wall items have their back at -z. Exception `ledStrip`: its origin is the strip itself, its height `item.y` or `DEFAULT_Y`.
 - **Visual state:** `ItemNode` derives a `Visual` from the entities (`on`, `level`, `color`, `unavailable`, `state`, `attrs`, `domain`, `night`, `at`: the item's world position). Components receive only `v`. Lit surfaces use `useLitMaterial`, halos `Glow`. `v.related` holds the extra entities (Scene passes one shared empty array to items without extras, so Visual is not recomputed needlessly), `v.interior` says whether a door or window sits in an interior wall.
 - **Labels:** drei `Html` is not used (under React 19 each one is a separate root and throws errors). Labels live in a single DOM layer, `ui/PinLayer.tsx`; `LabelProjector` writes their `transform` every frame.
+  - **Room names can be hidden** in view mode (`useView.labels`, remembered in `homescape-labels`; tool column `#labels-toggle`, on phones a row in the three-dot menu `#labels-toggle-mobile`): from afar they crowd the home. Edit mode always shows them with their size. Room tags carry `data-room-tag` (tests). Check: `check:world`.
 
 ### Walls, rooms and openings
 
