@@ -29,7 +29,7 @@ and set `HA_URL`; the dev server then proxies Home Assistant and you sign in wit
 the address only: never put a token there or anywhere in the repository.
 
 The regression suites drive the system Chrome through Playwright. Without Chrome, run `npx playwright install chromium`.
-`npm run media` (the README images) also needs ffmpeg and img2webp (`brew install ffmpeg webp` on macOS).
+`npm run promo:x` (the README video) also needs ffmpeg (`brew install ffmpeg` on macOS).
 
 ## How the code is organized
 

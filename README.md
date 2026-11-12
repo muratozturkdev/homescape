@@ -28,30 +28,18 @@
 </p>
 
 <p align="center">
-  <img src="docs/media/tour.webp" alt="The camera circling the sample home in 3D: two storeys with their rooms and devices, the yard, and the street with cars and people" width="880">
-</p>
-
-Homescape draws your home in 3D in the browser and keeps it in sync with Home Assistant: lights glow in their rooms, the
-TV plays, doors and windows open with their sensors, and people and pets move through the house. Hover or tap anything to switch it, click it for every control. The first plan is built automatically from your
-Home Assistant areas and entities; you shape it further directly in 3D.
-
-<p align="center">
-  <a href="https://homescape.muratozturk.dev/promo.mp4"><img src="docs/media/promo.gif" alt="Homescape in 41 seconds: furniture placed in edit mode, night falling, lights switched on with clicks and every light turned off from the Dashboard" width="880"></a>
+  <a href="https://homescape.muratozturk.dev/promo.mp4"><img src="docs/media/promo.gif" alt="Homescape in 26 seconds: the sample home at night lighting up room by room, lamps switched on with clicks, the cat and the dog petted, rain and snow by day, a first-person walk into the kitchen and an armchair placed in edit mode" width="880"></a>
   <br>
   <sub>Click it for the full video in 1080p.</sub>
 </p>
 
-<table>
-  <tr>
-    <td><img src="docs/screenshots/room.png" alt="Close-up of a living room: the roof lifts away, people and a dog move through the house"></td>
-    <td><img src="docs/screenshots/dashboard.png" alt="Dashboard view with every room's devices and controls, and the Customize button"></td>
-  </tr>
-</table>
+Homescape draws your home in 3D in the browser and keeps it in sync with Home Assistant: lights glow in their rooms, the
+TV plays, doors and windows open with their sensors, and people and pets move through the house. Hover or tap anything
+to switch it, click it for every control. The first plan is built automatically from your Home Assistant areas and
+entities; you shape it further directly in 3D.
 
 <p align="center">
-  <img src="docs/media/walk.webp" alt="First-person walk through the sample home: in through the front door, past the stairs and into the kitchen, where someone is cooking" width="880">
-  <br>
-  <sub>The first-person walk: in through the front door, past the stairs and into the kitchen.</sub>
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard view with every room's devices and controls, and the Customize button" width="880">
 </p>
 
 ## Features
@@ -124,7 +112,8 @@ npm run lint          # oxlint
 npm run i18n:check    # every user-facing text has a translation
 npm run check         # browser regression tests (dev server running, Chrome installed)
 npm run shot          # screenshot of the scene to shots/scene.png
-npm run media         # the screenshots and animations of this README (needs ffmpeg and img2webp)
+npm run media         # the screenshots of this README and the Home Assistant app page
+npm run promo:x       # the video of this README (needs ffmpeg)
 ```
 
 The architecture, the folder layout and the rules for the 3D scene are in [CLAUDE.md](CLAUDE.md), the visual language in
