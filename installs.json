@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "label": "Home Assistant installs",
+  "message": "8",
+  "color": "41BDF5",
+  "namedLogo": "homeassistant",
+  "cacheSeconds": 21600
+}
