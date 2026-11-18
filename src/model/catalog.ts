@@ -323,6 +323,8 @@ export const CATALOG: Record<ItemKind, KindMeta> = {
   treadmill: { label: t('Treadmill'), group: 'furniture', domains: ['switch', 'sensor'], size: [0.8, 1.8], labelY: 1.6 },
   // Exercise bike: the flywheel spins while on
   exerciseBike: { label: t('Exercise bike'), group: 'furniture', domains: ['switch', 'sensor'], size: [0.55, 1.1], labelY: 1.4 },
+  // Rowing Machine: the flywheel spins while on
+  rowingMachine: { label: t('Rowing machine'), group: 'furniture', domains: ['switch', 'sensor'], size: [0.65, 2.2], labelY: 1.15, },
   // Yoga mat, walked on like a rug; rolled out or rolled up
   yogaMat: { label: t('Yoga mat'), group: 'furniture', domains: [], size: [0.61, 1.83], labelY: 0.2 },
   // Upright or digital piano against a wall

@@ -236,6 +236,7 @@ export const KIT: Record<ItemKind, ComponentType<{ v: Visual }>> = {
   coatRack: H.CoatRack,
   treadmill: H.Treadmill,
   exerciseBike: H.ExerciseBike,
+  rowingMachine: H.RowingMachine,
   yogaMat: H.YogaMat,
   piano: H.Piano,
   officeChair: H.OfficeChair,
