@@ -173,7 +173,7 @@ const TUCKS: Partial<Record<ItemKind, ItemKind[]>> = { barStool: ['kitchenCounte
  * Ceiling items (ceiling layer: no collision with floor and wall items). The pergola / gazebo is in this layer too, like a
  * roof: a garden table, bench or sun lounger goes under it.
  */
-export const CEILING: ItemKind[] = ['pendant', 'downlight', 'ceilingStrip', 'ceilingFan', 'ceilingLight', 'trackLight', 'projector', 'smokeDetector', 'pergola', 'hangingPlant', 'skylight']
+export const CEILING: ItemKind[] = ['pendant', 'downlight', 'ceilingStrip', 'ceilingFan', 'ceilingLight', 'trackLight', 'projector', 'smokeDetector', 'pergola', 'hangingPlant', 'skylight', 'utilityLight']
 
 export function layerOf(kind: ItemKind, y?: number, variant?: string, mount?: Item['mount']): Layer {
   if (kind === 'rug' || kind === 'doormat' || kind === 'yogaMat') return 'rug'

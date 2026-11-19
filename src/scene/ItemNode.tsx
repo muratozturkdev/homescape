@@ -94,12 +94,12 @@ function ItemNodeImpl({ item, entity, related, night, levelId, still = false }: 
   const swingOut = item.swing === 'out'
   const fixed = item.kind === 'window' && Boolean(item.fixed)
   const double = item.kind === 'window' && !fixed && Boolean(item.double)
-  const { len, drawers, top, body, fedAt, shape, variant, len2, led, ledEntity, intensity, mount, beam, sink, dishwasher, walls } = item
+  const { len, drawers, top, body, fedAt, shape, variant, cover, len2, led, ledEntity, intensity, mount, beam, sink, dishwasher, walls } = item
   // Built-in sink of the kitchen counter (model/counter.ts): in the middle unless there is a separate sink next to it
   const sinkAt = useLayout((s) => (item.kind === 'kitchenCounter' ? (counterSink(lvOf(s)?.items ?? [], item) ?? undefined) : undefined))
   const opts = useMemo(
-    () => ({ len, drawers, top, body, fedAt, shape, variant, len2, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls }),
-    [len, drawers, top, body, fedAt, shape, variant, len2, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls],
+    () => ({ len, drawers, top, body, fedAt, shape, variant, cover, len2, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls }),
+    [len, drawers, top, body, fedAt, shape, variant, cover, len2, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls],
   )
   useCursor(hover && interactive && !busy())
   // If the quick on/off pill opens on this item, it is placed by this group's body (scene/QuickAnchor.tsx)

@@ -53,6 +53,7 @@ export interface ItemOpts {
   fedAt?: string
   shape?: 'square' | 'round'
   variant?: string
+  cover?: Item['cover']
   len2?: number
   led?: 'none' | 'under' | 'plinth' | 'back' | 'strip'
   /** Entity that drives the LED (picked on the card; one of the related entities) */

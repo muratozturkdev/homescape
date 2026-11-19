@@ -259,6 +259,7 @@ const SPEC: Partial<Record<ItemKind, { at: [number, number, number]; range: numb
   ledStrip: { at: [0, 0, 0.05], range: 4, power: 2.4, type: 3, half: 1 },
   mirrorLight: { at: [0, 1.9, 0.15], range: 3.5, power: 1.8, type: 0 },
   downlight: { at: [0, 2.55, 0], range: 4.2, power: 3.4, type: 1 },
+  utilityLight: { at: [0, 2.5, 0], range: 5, power: 3.2, type: 3, half: 0.6, },
   ceilingStrip: { at: [0, 2.5, 0], range: 99, power: 1.6, type: 2 },
   // A ceiling light lights the whole room like a chandelier, a track spot its surroundings, a table lamp what is near (kit/smart.tsx)
   ceilingLight: { at: [0, 2.45, 0], range: 'room', power: 3.6, type: 0 },
@@ -486,7 +487,26 @@ export function computeRoomLights(level: Level, entities: Record<string, HassEnt
         // The tree scales with its height (Item.len): the light rises to its middle, a big outdoor tree reaches further and shines brighter
         const k = treeScale(it.len)
         push(it, [0, spec.at[1] * k, 0], (spec.range as number) * Math.max(0.7, k), spec.power * Math.max(0.6, Math.sqrt(k)), 0, _c.set(lightColor(e)).multiplyScalar(level))
-      } else push(it, spec.at, spec.range, spec.power, spec.type, _c.set(lightColor(e)).multiplyScalar(level), it.kind === 'ledStrip' && it.len ? it.len / 2 : spec.half)
+      } 
+else {
+  const half =
+    it.kind === 'utilityLight'
+      ? (it.len ?? 1.2) / 2
+      : it.kind === 'ledStrip' && it.len
+        ? it.len / 2
+        : spec.half
+
+  push(
+    it,
+    spec.at,
+    spec.range,
+    spec.power,
+    spec.type,
+    _c.set(lightColor(e)).multiplyScalar(level),
+    half,
+  )
+}
+
       continue
     }
     // Under-counter LED: onto the front of the counter, from below the wall cabinets (source chosen on the card, or the main entity)

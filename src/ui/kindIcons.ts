@@ -223,6 +223,7 @@ export const KIND_ICON: Record<ItemKind, LucideIcon> = {
   dresser: PanelTop,
   downlight: CircleDot,
   ceilingStrip: SquareDashed,
+  utilityLight: Rows3,
   mirrorCabinet: PanelTopOpen,
   laundryBasket: ShoppingBasket,
   trashBin: Trash2,

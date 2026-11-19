@@ -22,6 +22,7 @@ export const KIT: Record<ItemKind, ComponentType<{ v: Visual }>> = {
   mirrorLight: D.MirrorLight,
   downlight: D.Downlight,
   ceilingStrip: D.CeilingStrip,
+  utilityLight: D.UtilityLight,
   tv: D.Tv,
   console: D.Console,
   monitor: D.Monitor,

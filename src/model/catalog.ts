@@ -49,6 +49,7 @@ export const CATALOG: Record<ItemKind, KindMeta> = {
   mirrorLight: { label: t('Mirror light'), group: 'light', domains: LIGHTISH, size: [0.8, 0.2], labelY: 2.3, wall: true },
   downlight: { label: t('Downlight'), group: 'light', domains: LIGHTISH, size: [0.15, 0.15], labelY: 2.75 },
   ceilingStrip: { label: t('Ceiling LED strip'), group: 'light', domains: LIGHTISH, size: [3, 3], labelY: 2.75 },
+  utilityLight: { label: t('Utility light'), group: 'light', domains: LIGHTISH, size: [1.2, 0.34], labelY: 2.75, },
 
   // TV and TV unit are separate items: the TV goes on a unit/table or hangs on the wall.
   tv: { label: t('TV'), group: 'media', domains: ['media_player', 'switch', 'remote'], size: [1.3, 0.2], labelY: 1.75, wall: true },
@@ -625,6 +626,18 @@ export const OPTIONS: Partial<
     ],
     ledHint: t("Pick the diffuser's light (like \"Diffuser Light\") separately: the ring strip around the body lights up with it and takes its color, and so does the mist. Without one, the first light bound to the diffuser."),
   },
+  utilityLight: {
+  variantLabel: t('Fixture style'),
+  variants: [
+    ['fluorescent1', t('Fluorescent · 1 tube')],
+    ['fluorescent2', t('Fluorescent · 2 tubes')],
+    ['fluorescent4', t('Fluorescent · 4 tubes')],
+    ['ledBatten', t('LED batten')],
+    ['ledShop2', t('LED shop · 2 tubes')],
+    ['ledShop4', t('LED shop · 4 tubes')],
+  ],
+  variantDef: 'fluorescent2',
+  },
   downlight: {
     variantLabel: t('Light spread'),
     variants: [
@@ -1096,6 +1109,7 @@ export const RESIZABLE: Partial<Record<ItemKind, { min: number; max: number; lab
   speedBump: { min: 1, max: 10, label: t('Speed bump length') },
   ledStrip: { min: 0.3, max: 8 },
   christmasTree: { min: 0.6, max: 5, label: t('Tree height'), def: 2 },
+  utilityLight: { min: 0.6, max: 2.4, label: t('Fixture length'), def: 1.2, },
 }
 /**
  * Christmas tree size: Item.len is the tree's HEIGHT (not its width), 2 m by default. The whole model scales with it, so the
@@ -1217,7 +1231,7 @@ export const consoleModel = (variant?: string) => ({ brand: variant?.startsWith(
 /** Beam angle of a downlight (degrees, full cone): limits of the card slider and the default (Item.beam). */
 export const BEAM = { min: 20, max: 150, def: 90 }
 
-export const LIGHT_KINDS: ItemKind[] = ['pendant', 'floorLamp', 'deskLamp', 'wallLight', 'ledStrip', 'mirrorLight', 'downlight', 'ceilingStrip', 'ceilingLight', 'trackLight', 'tableLamp', 'gardenLight', 'stringLights', 'streetLamp']
+export const LIGHT_KINDS: ItemKind[] = ['pendant', 'floorLamp', 'deskLamp', 'wallLight', 'ledStrip', 'mirrorLight', 'downlight', 'ceilingStrip', 'ceilingLight', 'trackLight', 'tableLamp', 'gardenLight', 'stringLights', 'streetLamp', 'utilityLight']
 
 export function isLightKind(kind: ItemKind) {
   return LIGHT_KINDS.includes(kind)
