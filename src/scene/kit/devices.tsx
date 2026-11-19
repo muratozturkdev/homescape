@@ -6,7 +6,7 @@ import { deviceClass, domainOf, friendlyName, isActive, lightColor, lightLevel, 
 import { isSocketEntity, SOCKET_DOMAINS, socketCount } from '@/model/bindings'
 import { isSashSensor, sashesOpen } from '@/model/sashes'
 import { BEAM, consoleModel, OPENING_DOOR_H, OPENING_FULL_H, STRIP_PITCH, STRIP_WALL_Y, stripWidth, WALL_OPENING, WINDOW_BOTTOM, windowSize } from '@/model/catalog'
-import { APERTURE_INSET, inRoom, roomAt, WALL_CUT_H, WALL_H, WALL_IN, WALL_INNER_H, wallRuns, type Side } from '@/model/geometry'
+import { APERTURE_INSET, inRoom, roomAt, WALL_CUT_H, WALL_H, WALL_IN, WALL_INNER_H, wallRuns, HALF_WALL_H, type Side } from '@/model/geometry'
 import { roofView } from '../camera'
 import { activeLevel, useLayout } from '@/model/layoutStore'
 import type { Room } from '@/model/types'
@@ -1312,7 +1312,8 @@ function WallOpening({ v }: P) {
   const tall = useRef<THREE.Group>(null)
   const W = v.opts.len ?? WALL_OPENING.def
   const H = Math.min(OPENING_FULL_H, v.opts.len2 ?? OPENING_DOOR_H)
-  const full = H >= OPENING_FULL_H - 0.005
+  const half = H <= HALF_WALL_H + 0.005
+  const full = H >= OPENING_FULL_H - 0.005 || half
   useWallHeight(root, v.interior, (h) => {
     // Standing walls: the whole casing; a low or cut wall takes the casing down with it
     const top = h >= FULL_H - 0.001 ? H : Math.min(H, h)

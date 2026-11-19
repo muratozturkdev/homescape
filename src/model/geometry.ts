@@ -393,6 +393,65 @@ export function apertureOf(it: Item) {
   if (Math.abs(Math.abs(fx) - 1) < 0.01) return { horizontal: false, line: it.x - Math.sign(fx) * APERTURE_INSET, along: it.z, ...spec }
   return null
 }
+/** Whether an opening belongs to a half-height wall. */
+export function openingOnHalfWall(
+  item: Item,
+  rooms: Room[],
+): boolean {
+  const a = apertureOf(item)
+  if (!a) return false
+
+  return rooms
+    .filter((room) => !isOutdoor(room))
+    .some((room) =>
+      wallRuns(room, rooms).some((run) =>
+        Boolean(run.half) &&
+        run.horizontal === a.horizontal &&
+        Math.abs(run.line - a.line) <= 0.08 &&
+        a.along >= run.a0 &&
+        a.along <= run.a1,
+      ),
+    )
+}
+/** Find the wall run containing an existing opening. */
+export function openingWallRun(
+  item: Item,
+  rooms: Room[],
+): WallRun | undefined {
+  const a = apertureOf(item)
+  if (!a) return undefined
+
+  for (const room of rooms) {
+    if (isOutdoor(room)) continue
+
+    const run = wallRuns(room, rooms).find((r) =>
+      r.horizontal === a.horizontal &&
+      Math.abs(r.line - a.line) <= 0.08 &&
+      a.along >= r.a0 &&
+      a.along <= r.a1,
+    )
+
+    if (run) return run
+  }
+
+  return undefined
+}
+
+/** Maximum opening width, allowing for wall thickness. */
+export function openingMaxWidth(
+  item: Item,
+  rooms: Room[],
+): number | undefined {
+  const run = openingWallRun(item, rooms)
+  if (!run) return undefined
+
+  const available = run.a1 - run.a0 - 2 * WALL_IN
+
+  return Math.max(
+    0,
+    Math.floor((available + 0.000001) * 20) / 20,
+  )
+}
 
 /** Openings in a wall run. A door in the neighbor room cuts the shared wall too. */
 export function runOpenings(run: WallRun, items: Item[]): Opening[] {
