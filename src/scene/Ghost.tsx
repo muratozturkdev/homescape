@@ -70,7 +70,7 @@ function ItemGhost({ kind, extra }: { kind: ItemKind; extra?: Partial<Item> }) {
   const [variant, setVariant] = useState<string | undefined>(undefined)
   // The preset card's settings (height of a full-height window, a fixed window's single pane) show in the ghost too
   const ghostV = useMemo(
-    () => (variant || extra ? { ...GHOST_VISUAL, opts: { len: extra?.len, len2: extra?.len2, variant: variant ?? extra?.variant, mount: extra?.mount, sink: extra?.sink, dishwasher: extra?.dishwasher }, at: { x: 0, z: 0, rot: 0, y: extra?.y }, fixed: Boolean(extra?.fixed), double: Boolean(extra?.double) } : GHOST_VISUAL),
+    () => (variant || extra ? { ...GHOST_VISUAL, opts: { len: extra?.len, len2: extra?.len2, variant: variant ?? extra?.variant, cover: extra?.cover, mount: extra?.mount, sink: extra?.sink, dishwasher: extra?.dishwasher }, at: { x: 0, z: 0, rot: 0, y: extra?.y }, fixed: Boolean(extra?.fixed), double: Boolean(extra?.double) } : GHOST_VISUAL),
     [variant, extra],
   )
   useGhostMaterials(inner, `${kind}-${variant ?? ''}`)
