@@ -360,6 +360,26 @@ export interface Item {
   shape?: 'square' | 'round'
   /** Kind-specific option (catalog OPTIONS.variants): TV 'stand' (on a unit/table) | 'wall' (on the wall), mirror 'tall' | 'small', oven 'under' | 'tall', counter 'straight' | 'lLeft' | 'lRight', power strip '2'...'8' (outlets), rug 'rect' | 'round' | 'cowhide' | 'zebra' | 'sheep' (shape), ceiling fan '3' | '4' | '5' (blades) */
   variant?: string
+
+  /** Camera mounting surface; defaults to wall. */
+  mountSurface?: 'wall' | 'tree' | 'fence' | 'gate' | 'pole'
+
+  /** ID of the supporting item. */
+  mountTargetId?: string
+
+  /** Position on the supporting item. */
+  mountPoint?:
+   | 'trunk'
+   | 'branch'
+   | 'panel'
+   | 'postLeft'
+   | 'postRight'
+   | 'postCenter'
+
+/** Camera heading relative to its support, in degrees. */
+  mountYaw?: number
+  mountSide?: 'front' | 'back'
+
   /** Second size: arm length of an L counter (from the back wall), depth (length) of a ceiling LED strip and of a rug */
   len2?: number
   /**

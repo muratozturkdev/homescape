@@ -29,6 +29,7 @@ import { rotateRoom } from './rotateRoom'
 import { regenerateFromHa } from './regenerate'
 import { KIND_ICON } from './kindIcons'
 import { fmt, type RoomStats } from './useHome'
+import { cameraAnchor, CAMERA_BASE_HEIGHT, defaultCameraHeight, } from '@/model/cameraMount'
 
 const panel = 'glass pointer-events-auto flex max-h-full flex-col overflow-hidden rounded-2xl'
 /** Card body: a single column that never scrolls sideways (index.css > .panel-body). */
@@ -242,6 +243,11 @@ function WindowPresets({ item }: { item: Item }) {
 
 /** Height of a wall-mounted item: its center above the floor (m). The slider changes Item.y and is checked against the rules (ui/mount.ts). */
 function MountHeight({ item }: { item: Item }) {
+  if (
+  item.kind === 'camera' &&
+  item.mountSurface &&
+  item.mountSurface !== 'wall'
+) return null
   if (!isWallMounted(item.kind, item.variant, item.mount)) return null
   const { min, max } = mountRange(item.kind, item.variant, item.len2)
   const base = mountY(item)
@@ -1090,6 +1096,267 @@ function Placement({ item }: { item: Item }) {
   )
 }
 
+/** Mount an existing camera to a building wall or outdoor support. */
+function CameraMountOptions({ item }: { item: Item }) {
+  const items = useLayout((s) => activeLevel(s)?.items ?? [])
+
+  if (item.kind !== 'camera') return null
+
+  type Surface = NonNullable<Item['mountSurface']>
+  type Point = NonNullable<Item['mountPoint']>
+
+  const surface = item.mountSurface ?? 'wall'
+  const available = items.filter((other) => {
+    if (other.id === item.id) return false
+
+    if (surface === 'tree') return other.kind === 'tree'
+    if (surface === 'fence') return other.kind === 'fence'
+    if (surface === 'gate') return other.kind === 'gate'
+
+    return false
+  })
+
+  const points: [Point, string][] =
+    surface === 'tree'
+      ? [['trunk', t('Trunk')]]
+      : surface === 'fence'
+        ? [
+            ['panel', t('Panel / rail')],
+            ['postLeft', t('Left post')],
+            ['postRight', t('Right post')],
+            ['postCenter', t('Middle post')],
+          ]
+        : surface === 'gate'
+          ? [
+              ['postLeft', t('Left post')],
+              ['postRight', t('Right post')],
+            ]
+          : []
+
+  const defaultPoint: Point =
+    surface === 'tree' ? 'trunk'
+      : surface === 'gate' ? 'postLeft'
+        : 'panel'
+
+  const patchCamera = (patch: Partial<Item>) => {
+    const next = { ...item, ...patch }
+
+    if (next.mountSurface !== 'wall' &&
+        next.mountSurface !== undefined &&
+        next.mountTargetId) {
+      const target = items.find(
+        (other) => other.id === next.mountTargetId,
+      )
+
+      if (target) {
+        const anchor = cameraAnchor(next, target)
+
+        if (anchor) {
+          patch = {
+            ...patch,
+            x: anchor.x,
+            z: anchor.z,
+            rot: anchor.rot,
+            y: anchor.y,
+          }
+        }
+      }
+    }
+
+    useLayout.getState().updateItem(item.id, patch)
+  }
+
+  const changeSurface = (next: Surface) => {
+    if (next === 'wall') {
+      patchCamera({
+        mountSurface: undefined,
+        mountTargetId: undefined,
+        mountPoint: undefined,
+        mountYaw: undefined,
+        y: 0,
+      })
+      return
+    }
+
+    const first = items.find((other) =>
+      next === 'tree' ? other.kind === 'tree'
+      : next === 'fence' ? other.kind === 'fence'
+      : next === 'gate' ? other.kind === 'gate'
+      : false,
+    )
+
+    patchCamera({
+      mountSurface: next,
+      mountTargetId: first?.id,
+      mountPoint:
+        next === 'tree' ? 'trunk'
+        : next === 'gate' ? 'postLeft'
+        : 'panel',
+      mountYaw: 0,
+      y: defaultCameraHeight(next) - CAMERA_BASE_HEIGHT,
+    })
+  }
+
+  const attached = surface !== 'wall'
+  const height = CAMERA_BASE_HEIGHT + (item.y ?? 0)
+
+  return (
+    <div className="grid gap-3">
+      <div className="grid gap-1.5">
+        <span className="text-[12px] font-semibold text-ink-2">
+          {t('Camera mounting surface')}
+        </span>
+
+        <div className="grid grid-cols-2 gap-1.5">
+          {([
+            ['wall', t('Building wall')],
+            ['tree', t('Tree')],
+            ['fence', t('Fence')],
+            ['gate', t('Gate post')],
+          ] as [Surface, string][]).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className={seg(surface === value)}
+              onClick={() => changeSurface(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {attached && (
+        <>
+          <label className="grid gap-1.5">
+            <span className="text-[12px] font-semibold text-ink-2">
+              {t('Mount to')}
+            </span>
+
+            <select
+              value={item.mountTargetId ?? ''}
+              onChange={(e) => patchCamera({
+                mountTargetId: e.target.value || undefined,
+              })}
+              className="rounded-xl border border-line bg-surface px-3 py-2 text-[13px] text-ink outline-none focus:border-brand"
+            >
+              {available.length === 0 && (
+                <option value="">{t('No matching objects')}</option>
+              )}
+
+              {available.map((target, index) => (
+                <option key={target.id} value={target.id}>
+                  {target.name || `${CATALOG[target.kind].label} ${index + 1}`}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {available.length === 0 && (
+            <p className="text-[11px] text-ink-3">
+              {t('Add a matching tree, fence, or gate first.')}
+            </p>
+          )}
+
+          <div className="grid gap-1.5">
+            <span className="text-[12px] font-semibold text-ink-2">
+              {t('Mounting position')}
+            </span>
+
+            <div className="grid grid-cols-2 gap-1.5">
+              {points.map(([point, label]) => (
+                <button
+                  key={point}
+                  type="button"
+                  className={seg(
+                    (item.mountPoint ?? defaultPoint) === point,
+                  )}
+                  onClick={() => patchCamera({
+                    mountPoint: point,
+                  })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <label className="grid gap-1.5">
+            <span className="flex justify-between text-[12px] font-semibold text-ink-2">
+              {t('Mounting height')}
+              <span className="font-mono">{height.toFixed(2)} m</span>
+            </span>
+
+            <input
+              type="range"
+              min={0.4}
+              max={surface === 'tree' ? 3.5 : 1.3}
+              step={0.05}
+              value={height}
+              onPointerDown={() => useLayout.getState().checkpoint()}
+              onChange={(e) => patchCamera({
+                y: Number(e.target.value) - CAMERA_BASE_HEIGHT,
+              })}
+            />
+                      {(surface === 'fence' || surface === 'gate') && (
+            <div className="grid gap-1.5">
+              <span className="text-[12px] font-semibold text-ink-2">
+                {t('Mounting side')}
+              </span>
+
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  className={seg(
+                    (item.mountSide ?? 'front') === 'front'
+                  )}
+                  onClick={() => patchCamera({
+                    mountSide: 'front',
+                  })}
+                >
+                  {t('Front')}
+                </button>
+
+                <button
+                  type="button"
+                  className={seg(item.mountSide === 'back')}
+                  onClick={() => patchCamera({
+                    mountSide: 'back',
+                  })}
+                >
+                  {t('Back')}
+                </button>
+              </div>
+            </div>
+          )}
+          </label>
+
+          <label className="grid gap-1.5">
+            <span className="flex justify-between text-[12px] font-semibold text-ink-2">
+              {t('Camera direction')}
+              <span className="font-mono">
+                {item.mountYaw ?? 0}°
+              </span>
+            </span>
+
+            <input
+              type="range"
+              min={0}
+              max={355}
+              step={5}
+              value={item.mountYaw ?? 0}
+              onPointerDown={() => useLayout.getState().checkpoint()}
+              onChange={(e) => patchCamera({
+                mountYaw: Number(e.target.value),
+              })}
+            />
+          </label>
+        </>
+      )}
+    </div>
+  )
+}
+
 function ItemEdit({ item, room }: { item: Item; room?: Room }) {
   const { updateItem, deleteItem, duplicateItem, select } = useLayout.getState()
   const entity = useHa((s) => (item.entityId ? s.entities[item.entityId] : undefined))
@@ -1121,6 +1388,7 @@ function ItemEdit({ item, room }: { item: Item; room?: Room }) {
         <Placement item={item} />
         <WindowPresets item={item} />
         <MountHeight item={item} />
+        <CameraMountOptions item={item} />
         <FurnitureOptions item={item} />
         <LightIntensity item={item} />
         <BeamAngle item={item} />
@@ -1128,18 +1396,35 @@ function ItemEdit({ item, room }: { item: Item; room?: Room }) {
         <GroupInfo item={item} />
         <BindingEditor key={item.id} item={item} room={room} />
 
-        <div className="grid gap-1.5">
-          <span className="text-[12px] font-semibold text-ink-2">{t('Rotate')}</span>
-          <div className="flex gap-2">
-            {[-90, -15, 15, 90].map((d) => (
-              <button key={d} type="button" onClick={() => rotate(d)} className="flex min-h-10 flex-1 items-center justify-center gap-1 rounded-lg bg-surface-2 text-[12.5px] font-semibold text-ink-2 hover:bg-surface hover:text-ink">
-                {d < 0 ? <RotateCcw size={13} /> : <RotateCw size={13} />}
-                {Math.abs(d)}°
-              </button>
-            ))}
+               {!(
+          item.kind === 'camera' &&
+          item.mountSurface &&
+          item.mountSurface !== 'wall'
+        ) && (
+          <div className="grid gap-1.5">
+            <span className="text-[12px] font-semibold text-ink-2">
+              {t('Rotate')}
+            </span>
+
+            <div className="flex gap-2">
+              {[-90, -15, 15, 90].map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => rotate(d)}
+                  className="flex min-h-10 flex-1 items-center justify-center gap-1 rounded-lg bg-surface-2 text-[12.5px] font-semibold text-ink-2 hover:bg-surface hover:text-ink"
+                >
+                  {d < 0 ? <RotateCcw size={13} /> : <RotateCw size={13} />}
+                  {Math.abs(d)}°
+                </button>
+              ))}
+            </div>
+
+            <p className="text-[11px] text-ink-3">
+              {t('Tip: drag the item to move it; wall items snap to the nearest wall. The R key rotates by 90°.')}
+            </p>
           </div>
-          <p className="text-[11px] text-ink-3">{t('Tip: drag the item to move it; wall items snap to the nearest wall. The R key rotates by 90°.')}</p>
-        </div>
+        )}
       </div>
       <div className="flex gap-2 border-t border-line px-5 py-3">
         <button type="button" onClick={() => duplicateItem(item.id)} className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-line py-2 text-[13px] font-semibold text-ink-2 hover:bg-surface-2">

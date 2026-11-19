@@ -13,6 +13,7 @@ import type { Item, ItemKind } from '@/model/types'
 import { C } from './kit/palette'
 import { DEFAULT_Y, KIT } from './kit/registry'
 import { OFF_VISUAL, type Visual } from './kit/visual'
+import { findCameraMount } from '@/model/cameraMount'
 
 /*
  * Placement ghost: follows the pointer, snaps to the grid and to walls, climbs onto a surface when there is one and checks
@@ -108,8 +109,35 @@ function ItemGhost({ kind, extra }: { kind: ItemKind; extra?: Partial<Item> }) {
       if (tvMode !== variant) setVariant(tvMode)
     }
     if (extra?.y != null && y == null) y = extra.y
-    const chk = checkItem(level, { kind, x, z, rot, y, variant: tvMode ?? extra?.variant, mount: extra?.mount, len: extra?.len, len2: extra?.len2 }, undefined, onWall)
+        const cameraMount = kind === 'camera'
+      ? findCameraMount(level.items, p.x, p.z)
+      : null
 
+    if (
+      cameraMount &&
+      (
+        !onWall ||
+        Math.hypot(
+          cameraMount.x - p.x,
+          cameraMount.z - p.z,
+        ) < Math.hypot(x - p.x, z - p.z)
+      )
+    ) {
+      x = cameraMount.x
+      z = cameraMount.z
+      rot = cameraMount.rot
+      y = cameraMount.y
+    }
+
+    const attachedCamera =
+      cameraMount &&
+      x === cameraMount.x &&
+      z === cameraMount.z &&
+      rot === cameraMount.rot &&
+      y === cameraMount.y
+        ? cameraMount
+        : null
+    const chk = checkItem(level, { kind, x, z, rot, y, variant: tvMode ?? extra?.variant, mount: extra?.mount, len: extra?.len, len2: extra?.len2, ...(attachedCamera ?? {}),}, undefined, onWall,)
     // A ceiling strip fits the room part under the pointer; the ghost stretches the 3 × 3 model to that size.
     const fit = kind === 'ceilingStrip' ? ceilingFit(level.rooms, x, z) : null
     if (fit) {
@@ -123,7 +151,21 @@ function ItemGhost({ kind, extra }: { kind: ItemKind; extra?: Partial<Item> }) {
     g.rotation.y = rot
     inner.current?.position.set(0, (y ?? DEFAULT_Y[kind] ?? 0) + Math.sin(clock.elapsedTime * 5) * 0.015 + 0.02, 0)
     plate.current?.color.copy(chk.ok ? OK : BAD)
-    usePlacement.getState().setResult({ x, z, rot, y, ok: chk.ok, reason: chk.reason })
+        usePlacement.getState().setResult({
+      x,
+      z,
+      rot,
+      y,
+      ok: chk.ok,
+      reason: chk.reason,
+      ...(attachedCamera ? {
+        mountSurface: attachedCamera.mountSurface,
+        mountTargetId: attachedCamera.mountTargetId,
+        mountPoint: attachedCamera.mountPoint,
+        mountYaw: attachedCamera.mountYaw,
+        mountSide: attachedCamera.mountSide,
+      } : {}),
+    })
   })
 
   return (
