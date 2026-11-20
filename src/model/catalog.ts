@@ -1096,6 +1096,7 @@ export const RESIZABLE: Partial<Record<ItemKind, { min: number; max: number; lab
   speedBump: { min: 1, max: 10, label: t('Speed bump length') },
   ledStrip: { min: 0.3, max: 8 },
   christmasTree: { min: 0.6, max: 5, label: t('Tree height'), def: 2 },
+  tree: { min: 0.8, max: 8, label: t('Tree height'), def: 4, },
 }
 /**
  * Christmas tree size: Item.len is the tree's HEIGHT (not its width), 2 m by default. The whole model scales with it, so the
@@ -1104,8 +1105,20 @@ export const RESIZABLE: Partial<Record<ItemKind, { min: number; max: number; lab
  */
 export const TREE_DEF_H = 2
 export const treeScale = (len?: number) => (len ?? TREE_DEF_H) / TREE_DEF_H
+/** Trees */
+export const REGULAR_TREE_DEF_H = 4
+export const regularTreeScale = (height?: number) => Math.max(0.8, Math.min(8, height ?? REGULAR_TREE_DEF_H)) / REGULAR_TREE_DEF_H
 /** Height of an item's DOM label: the catalog's labelY, scaled for kinds whose size changes their height (Christmas tree). */
-export const labelYOf = (kind: ItemKind, len?: number) => (kind === 'christmasTree' ? CATALOG[kind].labelY * treeScale(len) : CATALOG[kind].labelY)
+export const labelYOf = (kind: ItemKind, len?: number) => {
+  if (kind === 'christmasTree') {
+    return CATALOG[kind].labelY * treeScale(len)
+  }
+
+  if (kind === 'tree') {
+    return CATALOG[kind].labelY * regularTreeScale(len)
+  }
+    return CATALOG[kind].labelY
+}    
 /**
  * Sliding glass door (a door with Item.variant 'sliding', GitHub issue #6): its width is Item.len, set in the card; a hinged
  * door keeps its fixed 1 m.
@@ -1204,6 +1217,12 @@ export function sizeOf(kind: ItemKind, len?: number, len2?: number): [number, nu
   if (kind === 'ceilingFan') return [len ?? w, len ?? d]
   // A Christmas tree's len is its height; the round footprint grows with it
   if (kind === 'christmasTree') return [w * treeScale(len), d * treeScale(len)]
+ // For regular trees, Item.len represents height.
+ // Scale both footprint dimensions together.
+  if (kind === 'tree') {const s = regularTreeScale(len)
+  return [w * s, d * s]
+}
+  // All other items use their existing dimensions.
   return [len ?? w, d]
 }
 
