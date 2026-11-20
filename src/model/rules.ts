@@ -128,6 +128,8 @@ export function wallSpan(s: { kind: ItemKind; variant?: string; y?: number; len2
  * items below its top); undefined for items standing on the floor, which may lean on a half wall.
  */
 export function wallTop(s: { kind: ItemKind; variant?: string; mount?: Item['mount']; y?: number; len2?: number }) {
+  // A doorless opening cuts through a full or a half wall; doors and windows need a full wall
+  if (isWallOpening(s)) return undefined
   if (isAperture(s.kind)) return WALL_H
   return isWallMounted(s.kind, s.variant, s.mount) ? wallSpan(s)[1] : undefined
 }
@@ -181,7 +183,7 @@ const TUCKS: Partial<Record<ItemKind, ItemKind[]>> = { barStool: ['kitchenCounte
  * Ceiling items (ceiling layer: no collision with floor and wall items). The pergola / gazebo is in this layer too, like a
  * roof: a garden table, bench or sun lounger goes under it.
  */
-export const CEILING: ItemKind[] = ['pendant', 'downlight', 'ceilingStrip', 'ceilingFan', 'ceilingLight', 'trackLight', 'projector', 'smokeDetector', 'pergola', 'hangingPlant', 'skylight']
+export const CEILING: ItemKind[] = ['pendant', 'downlight', 'ceilingStrip', 'ceilingFan', 'ceilingLight', 'trackLight', 'projector', 'smokeDetector', 'pergola', 'hangingPlant', 'skylight', 'utilityLight']
 
 export function layerOf(kind: ItemKind, y?: number, variant?: string, mount?: Item['mount']): Layer {
   if (kind === 'rug' || kind === 'doormat' || kind === 'yogaMat') return 'rug'

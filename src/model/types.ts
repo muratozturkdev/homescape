@@ -62,6 +62,7 @@ export type ItemKind =
   | 'mirrorLight'
   | 'downlight'
   | 'ceilingStrip'
+  | 'utilityLight'
   // devices
   | 'tv'
   | 'console'
@@ -284,6 +285,7 @@ export type ItemKind =
   | 'coatRack'
   | 'treadmill'
   | 'exerciseBike'
+  | 'rowingMachine'
   | 'yogaMat'
   | 'piano'
   | 'officeChair'
@@ -360,6 +362,8 @@ export interface Item {
   shape?: 'square' | 'round'
   /** Kind-specific option (catalog OPTIONS.variants): TV 'stand' (on a unit/table) | 'wall' (on the wall), mirror 'tall' | 'small', oven 'under' | 'tall', counter 'straight' | 'lLeft' | 'lRight', power strip '2'...'8' (outlets), rug 'rect' | 'round' | 'cowhide' | 'zebra' | 'sheep' (shape), ceiling fan '3' | '4' | '5' (blades) */
   variant?: string
+  /** Utility light cover: none, frosted panel, wraparound diffuser or louvered grid. */
+  cover?: 'none' | 'frosted' | 'wrap' | 'louver'
   /** Second size: arm length of an L counter (from the back wall), depth (length) of a ceiling LED strip and of a rug */
   len2?: number
   /**

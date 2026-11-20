@@ -6,7 +6,7 @@ import { deviceClass, domainOf, friendlyName, isActive, lightColor, lightLevel, 
 import { isSocketEntity, SOCKET_DOMAINS, socketCount } from '@/model/bindings'
 import { isSashSensor, sashesOpen } from '@/model/sashes'
 import { BEAM, consoleModel, OPENING_DOOR_H, OPENING_FULL_H, STRIP_PITCH, STRIP_WALL_Y, stripWidth, WALL_OPENING, WINDOW_BOTTOM, windowSize } from '@/model/catalog'
-import { APERTURE_INSET, inRoom, roomAt, WALL_CUT_H, WALL_H, WALL_IN, WALL_INNER_H, wallRuns, type Side } from '@/model/geometry'
+import { APERTURE_INSET, inRoom, roomAt, WALL_CUT_H, WALL_H, WALL_IN, WALL_INNER_H, wallRuns, HALF_WALL_H, type Side } from '@/model/geometry'
 import { roofView } from '../camera'
 import { activeLevel, useLayout } from '@/model/layoutStore'
 import type { Room } from '@/model/types'
@@ -348,6 +348,77 @@ export function LedStrip({ v }: P) {
           <Wash length={L + 0.2} depth={0.7} position={[0, -0.35, -0.105]} color={v.color} opacity={v.level * (v.night ? 0.55 : 0.25)} />
           <Wash length={L + 0.2} depth={0.5} position={[0, 0.25, -0.105]} rotation={[0, 0, Math.PI]} color={v.color} opacity={v.level * (v.night ? 0.45 : 0.2)} />
         </>
+      )}
+    </group>
+  )
+}
+
+/**
+ * Utility light on the ceiling (a garage or a workshop): fluorescent tubes, an LED batten or LED shop tubes; Item.len is the
+ * fixture's length (local x), Item.cover an optional frosted panel, wraparound diffuser or louvered grid.
+ */
+export function UtilityLight({ v }: P) {
+  const length = Math.max(0.6, Math.min(2.4, v.opts.len ?? 1.2))
+  const variant = v.opts.variant ?? 'fluorescent2'
+  const cover = v.opts.cover ?? 'none'
+  const isBatten = variant === 'ledBatten'
+  const count = isBatten ? 1 : variant.endsWith('4') ? 4 : variant.endsWith('1') ? 1 : 2
+  const housingColor = v.unavailable ? '#9aa0b8' : '#e8e9eb'
+  const lens = useLitMaterial('#c8cbd0', v.on, v.color, v.level, variant.startsWith('led') ? 2.8 : 2.0)
+  const housingWidth = isBatten ? 0.13 : count === 4 ? 0.34 : 0.24
+  const tubeLength = Math.max(0.35, length - 0.14)
+  // Diffuser: milky plastic when off, glowing softly when on
+  const coverMaterial = useMemo(() => {
+    const lit = v.on && v.level > 0
+    return new THREE.MeshStandardMaterial({ color: lit ? v.color : '#eef0f2', emissive: lit ? v.color : '#000000', emissiveIntensity: lit ? v.level * 0.75 : 0, transparent: true, opacity: 0.86, roughness: 0.65, metalness: 0, side: THREE.DoubleSide })
+  }, [v.on, v.level, v.color])
+  useEffect(() => () => coverMaterial.dispose(), [coverMaterial])
+  // Tubes spread evenly across the fixture's width
+  const spacing = count === 4 ? 0.075 : 0.09
+  const tubes = Array.from({ length: count }, (_, i) => (i - (count - 1) / 2) * spacing)
+  const bars = Math.max(3, Math.ceil(length / 0.12))
+  return (
+    <group>
+      {/* Metal housing against the ceiling, with its end caps */}
+      <Box size={[length, 0.055, housingWidth]} position={[0, 2.555, 0]} color={housingColor} />
+      {[-1, 1].map((s) => (
+        <Box key={s} size={[0.045, 0.085, housingWidth]} position={[s * (length / 2 - 0.025), 2.54, 0]} color="#c5c8cc" />
+      ))}
+      {isBatten ? (
+        // LED batten: one continuous diffuser
+        <Box size={[tubeLength, 0.025, 0.095]} position={[0, 2.515, 0]} material={lens} shadow={false} />
+      ) : (
+        tubes.map((z, i) => (
+          <group key={i}>
+            <Cyl r={0.023} h={tubeLength} rotation={[0, 0, Math.PI / 2]} position={[0, 2.505, z]} material={lens} shadow={false} />
+            {/* The tube's two holders */}
+            {[-1, 1].map((s) => (
+              <Box key={s} size={[0.045, 0.045, 0.058]} position={[(s * tubeLength) / 2, 2.51, z]} color="#858b92" />
+            ))}
+          </group>
+        ))
+      )}
+      {/* Flat frosted panel */}
+      {cover === 'frosted' && <Box size={[length - 0.045, 0.022, housingWidth - 0.015]} position={[0, 2.465, 0]} material={coverMaterial} shadow={false} />}
+      {/* Wraparound diffuser: the underside and two side walls */}
+      {cover === 'wrap' && (
+        <group>
+          <Box size={[length - 0.05, 0.022, housingWidth + 0.035]} position={[0, 2.445, 0]} material={coverMaterial} shadow={false} />
+          {[-1, 1].map((s) => (
+            <Box key={s} size={[length - 0.05, 0.075, 0.022]} position={[0, 2.49, (s * (housingWidth + 0.02)) / 2]} material={coverMaterial} shadow={false} />
+          ))}
+        </group>
+      )}
+      {/* Louvered grid: rails along the fixture (a middle one for four tubes) and crossbars */}
+      {cover === 'louver' && (
+        <group>
+          {(count === 4 ? [-1, 0, 1] : [-1, 1]).map((s) => (
+            <Box key={`rail-${s}`} size={[length - 0.045, 0.035, 0.018]} position={[0, 2.465, (s * housingWidth) / 2]} color="#d3d5d8" shadow={false} />
+          ))}
+          {Array.from({ length: bars }, (_, i) => -length / 2 + 0.05 + (i * (length - 0.1)) / (bars - 1)).map((x, i) => (
+            <Box key={`bar-${i}`} size={[0.018, 0.035, housingWidth]} position={[x, 2.465, 0]} color="#d3d5d8" shadow={false} />
+          ))}
+        </group>
       )}
     </group>
   )
@@ -1567,7 +1638,8 @@ function WallOpening({ v }: P) {
   const tall = useRef<THREE.Group>(null)
   const W = v.opts.len ?? WALL_OPENING.def
   const H = Math.min(OPENING_FULL_H, v.opts.len2 ?? OPENING_DOOR_H)
-  const full = H >= OPENING_FULL_H - 0.005
+  const half = H <= HALF_WALL_H + 0.005
+  const full = H >= OPENING_FULL_H - 0.005 || half
   useWallHeight(root, v.interior, (h) => {
     // Standing walls: the whole casing; a low or cut wall takes the casing down with it
     const top = h >= FULL_H - 0.001 ? H : Math.min(H, h)
