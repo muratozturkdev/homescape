@@ -74,9 +74,8 @@ function onRun(it: Item, r: WallRun) {
   return Math.abs(perp - r.line) < CATALOG[it.kind].size[1] / 2 + 0.15 && along >= r.a0 - 0.05 && along <= r.a1 + 0.05
 }
 
-/** Whether the item still fits on a half wall: a wall-mounted item whose top is below the wall's top (a plug, a strip). */
-const fitsHalf = (it: Item) => isWallOpening(it) || ( !isAperture(it.kind) && wallSpan(it)[1] <= HALF_WALL_H - 0.02
-)
+/** Whether the item still fits on a half wall: a doorless opening, or a wall-mounted item whose top is below the wall's top (a plug, a strip). */
+const fitsHalf = (it: Item) => isWallOpening(it) || (!isAperture(it.kind) && wallSpan(it)[1] <= HALF_WALL_H - 0.02)
 
 /**
  * Items that go when a wall changes to `to`: left out, the doors and windows in it and every item hanging on it; made a
