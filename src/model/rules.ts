@@ -120,6 +120,8 @@ export function wallSpan(s: { kind: ItemKind; variant?: string; y?: number; len2
  * items below its top); undefined for items standing on the floor, which may lean on a half wall.
  */
 export function wallTop(s: { kind: ItemKind; variant?: string; mount?: Item['mount']; y?: number; len2?: number }) {
+  // A doorless opening cuts through a full or a half wall; doors and windows need a full wall
+  if (isWallOpening(s)) return undefined
   if (isAperture(s.kind)) return WALL_H
   return isWallMounted(s.kind, s.variant, s.mount) ? wallSpan(s)[1] : undefined
 }

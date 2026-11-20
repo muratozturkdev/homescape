@@ -285,6 +285,7 @@ export type ItemKind =
   | 'coatRack'
   | 'treadmill'
   | 'exerciseBike'
+  | 'rowingMachine'
   | 'yogaMat'
   | 'piano'
   | 'officeChair'

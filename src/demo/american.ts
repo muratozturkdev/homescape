@@ -704,10 +704,11 @@ function upperFloor(): Level {
   put('bathScale', 0.4, 1.6, 0, bind('sensor.us_bath_scale'))
   put('toothbrush', 1.15, 1.0, -PI / 2, { ...bind('sensor.us_toothbrush'), y: 0.8 })
 
-  /* --- furniture: a treadmill, an exercise bike and a yoga mat in the gym; a crib in the master bedroom --- */
+  /* --- furniture: a treadmill, an exercise bike and a rowing machine in the gym, a yoga mat in the bonus room; a crib in the master bedroom --- */
   put('treadmill', 9.5 - WALL_IN - 0.4 - 0.02, 1.6, 0, bind('switch.us_treadmill'))
   put('exerciseBike', 7.9, 1.0, 0)
-  put('yogaMat', 6.7, 1.6, 0, { body: '#8f6cf0' })
+  put('rowingMachine', 7, 1.2, PI)
+  put('yogaMat', 9.1, 5.4, PI / 2, { body: '#8f6cf0' })
   put('crib', -2.9, 6.6, 0)
   wall(bonus, 'right', 8.3, 'piano')
   /* --- furniture: a loveseat facing the bonus room sideboard, an office chair at its desk, a piano --- */

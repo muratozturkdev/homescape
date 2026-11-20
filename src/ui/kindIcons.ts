@@ -385,6 +385,7 @@ export const KIND_ICON: Record<ItemKind, LucideIcon> = {
   pouf: Circle,
   coatRack: Shirt,
   treadmill: Footprints,
+  rowingMachine: Activity,
   exerciseBike: Bike,
   yogaMat: RectangleHorizontal,
   piano: Piano,
