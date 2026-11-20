@@ -1104,48 +1104,27 @@ function Placement({ item }: { item: Item }) {
   )
 }
 
-/** Cover styles for ceiling-mounted utility lights. */
+/** Cover of a utility light: bare tubes, a flat frosted panel, a wraparound diffuser or a louvered grid. */
 function UtilityCoverOptions({ item }: { item: Item }) {
   if (item.kind !== 'utilityLight') return null
-
   const choices: [NonNullable<Item['cover']>, string][] = [
     ['none', t('Exposed tubes')],
     ['frosted', t('Flat frosted cover')],
     ['wrap', t('Wraparound diffuser')],
     ['louver', t('Louvered grid')],
   ]
-
   const current = item.cover ?? 'none'
-
-  const selectCover = (cover: NonNullable<Item['cover']>) => {
-    useLayout.getState().updateItem(
-      item.id,
-      { cover: cover === 'none' ? undefined : cover },
-    )
-  }
-
   return (
     <div className="grid gap-1.5">
-      <span className="text-[12px] font-semibold text-ink-2">
-        {t('Cover style')}
-      </span>
-
+      <span className="text-[12px] font-semibold text-ink-2">{t('Cover style')}</span>
       <div className="grid grid-cols-2 gap-1.5">
         {choices.map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            className={seg(current === value)}
-            onClick={() => selectCover(value)}
-          >
+          <button key={value} type="button" className={seg(current === value)} onClick={() => useLayout.getState().updateItem(item.id, { cover: value === 'none' ? undefined : value })}>
             {label}
           </button>
         ))}
       </div>
-
-      <p className="text-[11px] text-ink-3">
-        {t('Choose a cover or leave the fixture tubes exposed.')}
-      </p>
+      <p className="text-[11px] text-ink-3">{t('Choose a cover or leave the fixture tubes exposed.')}</p>
     </div>
   )
 }

@@ -99,216 +99,76 @@ export function LedStrip({ v }: P) {
 }
 
 /**
- * Ceiling-mounted utility lighting:
- * fluorescent tubes, LED batten and LED shop lights.
- *
- * Local X = fixture length.
- * Ceiling height is approximately 2.6 m.
+ * Utility light on the ceiling (a garage or a workshop): fluorescent tubes, an LED batten or LED shop tubes; Item.len is the
+ * fixture's length (local x), Item.cover an optional frosted panel, wraparound diffuser or louvered grid.
  */
 export function UtilityLight({ v }: P) {
   const length = Math.max(0.6, Math.min(2.4, v.opts.len ?? 1.2))
   const variant = v.opts.variant ?? 'fluorescent2'
   const cover = v.opts.cover ?? 'none'
-  const hasCover = cover !== 'none'
   const isBatten = variant === 'ledBatten'
-  const isLed = variant.startsWith('led')
-  const count = isBatten
-    ? 1
-    : variant.endsWith('4')
-      ? 4
-      : variant.endsWith('1')
-        ? 1
-        : 2
-
+  const count = isBatten ? 1 : variant.endsWith('4') ? 4 : variant.endsWith('1') ? 1 : 2
   const housingColor = v.unavailable ? '#9aa0b8' : '#e8e9eb'
-  const lens = useLitMaterial(
-    '#c8cbd0',
-    v.on,
-    v.color,
-    v.level,
-    isLed ? 2.8 : 2.0,
-  )
-
+  const lens = useLitMaterial('#c8cbd0', v.on, v.color, v.level, variant.startsWith('led') ? 2.8 : 2.0)
   const housingWidth = isBatten ? 0.13 : count === 4 ? 0.34 : 0.24
   const tubeLength = Math.max(0.35, length - 0.14)
-
-/** Diffuser: milky plastic when off, glowing softly when on. */
-const coverMaterial = useMemo(() => {
-  const lit = v.on && v.level > 0
-
-  return new THREE.MeshStandardMaterial({
-    color: lit ? v.color : '#eef0f2',
-    emissive: lit ? v.color : '#000000',
-    emissiveIntensity: lit ? v.level * 0.75 : 0,
-    transparent: true,
-    opacity: 0.86,
-    roughness: 0.65,
-    metalness: 0,
-    side: THREE.DoubleSide,
-  })
-}, [v.on, v.level, v.color])
-
-useEffect(() => () => coverMaterial.dispose(), [coverMaterial])
-
-
-  // Evenly distribute tubes across the fixture width.
+  // Diffuser: milky plastic when off, glowing softly when on
+  const coverMaterial = useMemo(() => {
+    const lit = v.on && v.level > 0
+    return new THREE.MeshStandardMaterial({ color: lit ? v.color : '#eef0f2', emissive: lit ? v.color : '#000000', emissiveIntensity: lit ? v.level * 0.75 : 0, transparent: true, opacity: 0.86, roughness: 0.65, metalness: 0, side: THREE.DoubleSide })
+  }, [v.on, v.level, v.color])
+  useEffect(() => () => coverMaterial.dispose(), [coverMaterial])
+  // Tubes spread evenly across the fixture's width
   const spacing = count === 4 ? 0.075 : 0.09
-  const tubePositions = Array.from(
-    { length: count },
-    (_, index) => (index - (count - 1) / 2) * spacing,
-  )
-
+  const tubes = Array.from({ length: count }, (_, i) => (i - (count - 1) / 2) * spacing)
+  const bars = Math.max(3, Math.ceil(length / 0.12))
   return (
     <group>
-      {/* Main metal housing mounted against ceiling */}
-      <Box
-        size={[length, 0.055, housingWidth]}
-        position={[0, 2.555, 0]}
-        color={housingColor}
-      />
-
-      {/* LED batten: one continuous diffuser */}
+      {/* Metal housing against the ceiling, with its end caps */}
+      <Box size={[length, 0.055, housingWidth]} position={[0, 2.555, 0]} color={housingColor} />
+      {[-1, 1].map((s) => (
+        <Box key={s} size={[0.045, 0.085, housingWidth]} position={[s * (length / 2 - 0.025), 2.54, 0]} color="#c5c8cc" />
+      ))}
       {isBatten ? (
-        <Box
-          size={[tubeLength, 0.025, 0.095]}
-          position={[0, 2.515, 0]}
-          material={lens}
-          shadow={false}
-        />
+        // LED batten: one continuous diffuser
+        <Box size={[tubeLength, 0.025, 0.095]} position={[0, 2.515, 0]} material={lens} shadow={false} />
       ) : (
-        <>
-          {/* Tube ends and glowing tube bodies */}
-          {tubePositions.map((z, index) => (
-            <group key={index}>
-              <Cyl
-                r={0.023}
-                h={tubeLength}
-                rotation={[0, 0, Math.PI / 2]}
-                position={[0, 2.505, z]}
-                material={lens}
-                shadow={false}
-              />
-
-              {/* Two tube holders */}
-              <Box
-                size={[0.045, 0.045, 0.058]}
-                position={[-tubeLength / 2, 2.51, z]}
-                color="#858b92"
-              />
-              <Box
-                size={[0.045, 0.045, 0.058]}
-                position={[tubeLength / 2, 2.51, z]}
-                color="#858b92"
-              />
-            </group>
-          ))}
-        </>
+        tubes.map((z, i) => (
+          <group key={i}>
+            <Cyl r={0.023} h={tubeLength} rotation={[0, 0, Math.PI / 2]} position={[0, 2.505, z]} material={lens} shadow={false} />
+            {/* The tube's two holders */}
+            {[-1, 1].map((s) => (
+              <Box key={s} size={[0.045, 0.045, 0.058]} position={[(s * tubeLength) / 2, 2.51, z]} color="#858b92" />
+            ))}
+          </group>
+        ))
       )}
-
-      {/* End caps of the fixture housing */}
-      <Box
-        size={[0.045, 0.085, housingWidth]}
-        position={[-length / 2 + 0.025, 2.54, 0]}
-        color="#c5c8cc"
-      />
-      <Box
-        size={[0.045, 0.085, housingWidth]}
-        position={[length / 2 - 0.025, 2.54, 0]}
-        color="#c5c8cc"
-      />
-
-
-{/* Optional fixture cover */}
-{hasCover && (
-  <group>
-    {/* Flat frosted panel */}
-    {cover === 'frosted' && (
-      <Box
-        size={[length - 0.045, 0.022, housingWidth - 0.015]}
-        position={[0, 2.465, 0]}
-        material={coverMaterial}
-        shadow={false}
-      />
-    )}
-
-    {/* Wraparound diffuser: underside plus two side walls */}
-    {cover === 'wrap' && (
-      <group>
-        <Box
-          size={[length - 0.05, 0.022, housingWidth + 0.035]}
-          position={[0, 2.445, 0]}
-          material={coverMaterial}
-          shadow={false}
-        />
-
-        <Box
-          size={[length - 0.05, 0.075, 0.022]}
-          position={[0, 2.49, -(housingWidth + 0.02) / 2]}
-          material={coverMaterial}
-          shadow={false}
-        />
-
-        <Box
-          size={[length - 0.05, 0.075, 0.022]}
-          position={[0, 2.49, (housingWidth + 0.02) / 2]}
-          material={coverMaterial}
-          shadow={false}
-        />
-      </group>
-    )}
-
-    
-    {/* Louvered cover: longitudinal rails and crossbars */}
-    {cover === 'louver' && (
-      <group>
-        {/* Outer rails */}
-        {[-1, 1].map((side) => (
-          <Box
-            key={`rail-${side}`}
-            size={[length - 0.045, 0.035, 0.018]}
-            position={[0, 2.465, side * housingWidth / 2]}
-            color="#d3d5d8"
-            shadow={false}
-          />
-        ))}
-
-        {/* Crossbars along the fixture length */}
-        {Array.from(
-          { length: Math.max(3, Math.ceil(length / 0.12)) },
-          (_, index) => {
-            const barCount = Math.max(3, Math.ceil(length / 0.12))
-            return (
-              -length / 2 +
-              0.05 +
-              (index * (length - 0.1)) / (barCount - 1)
-            )
-          },
-        ).map((x, index) => (
-          <Box
-            key={`cross-${index}`}
-            size={[0.018, 0.035, housingWidth]}
-            position={[x, 2.465, 0]}
-            color="#d3d5d8"
-            shadow={false}
-          />
-        ))}
-
-        {/* One center rail for a four-tube fixture */}
-        {count === 4 && (
-          <Box
-            size={[length - 0.045, 0.035, 0.018]}
-            position={[0, 2.465, 0]}
-            color="#d3d5d8"
-            shadow={false}
-          />
-        )}
-      </group>
-    )}
-  </group>
-)}
+      {/* Flat frosted panel */}
+      {cover === 'frosted' && <Box size={[length - 0.045, 0.022, housingWidth - 0.015]} position={[0, 2.465, 0]} material={coverMaterial} shadow={false} />}
+      {/* Wraparound diffuser: the underside and two side walls */}
+      {cover === 'wrap' && (
+        <group>
+          <Box size={[length - 0.05, 0.022, housingWidth + 0.035]} position={[0, 2.445, 0]} material={coverMaterial} shadow={false} />
+          {[-1, 1].map((s) => (
+            <Box key={s} size={[length - 0.05, 0.075, 0.022]} position={[0, 2.49, (s * (housingWidth + 0.02)) / 2]} material={coverMaterial} shadow={false} />
+          ))}
+        </group>
+      )}
+      {/* Louvered grid: rails along the fixture (a middle one for four tubes) and crossbars */}
+      {cover === 'louver' && (
+        <group>
+          {(count === 4 ? [-1, 0, 1] : [-1, 1]).map((s) => (
+            <Box key={`rail-${s}`} size={[length - 0.045, 0.035, 0.018]} position={[0, 2.465, (s * housingWidth) / 2]} color="#d3d5d8" shadow={false} />
+          ))}
+          {Array.from({ length: bars }, (_, i) => -length / 2 + 0.05 + (i * (length - 0.1)) / (bars - 1)).map((x, i) => (
+            <Box key={`bar-${i}`} size={[0.018, 0.035, housingWidth]} position={[x, 2.465, 0]} color="#d3d5d8" shadow={false} />
+          ))}
+        </group>
+      )}
     </group>
   )
 }
+
 /** Downlight: small ring in the ceiling; when on, the lens glows and a faint light cone falls downward. */
 export function Downlight({ v }: P) {
   const lens = useLitMaterial(C.offWhite, v.on, v.color, v.level, 2)

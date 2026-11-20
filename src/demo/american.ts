@@ -295,7 +295,7 @@ function groundFloor(): Level {
   put('leakSensor', 8.75, 1.5, 0, bind('binary_sensor.us_laundry_leak'))
   put('ceilingLight', 7.75, 1.75, 0, { ...bind('light.us_laundry'), variant: 'round' })
 
-  /* --- garage: SUV, motorcycle, bikes, EV charger, workbench, boiler and water heater --- */
+  /* --- garage: SUV, motorcycle, bikes, EV charger, workbench with a shop light, boiler and water heater --- */
   wall(garage, 'front', 7.35, 'garageDoor', bind('cover.us_garage_door_left'))
   wall(garage, 'front', 11.15, 'garageDoor', bind('cover.us_garage_door_right'))
   put('doormat', 8.95, 3.75, PI, { len: 0.9, len2: 0.45, variant: 'striped', body: '#2f3f73' })
@@ -322,6 +322,8 @@ function groundFloor(): Level {
   wall(garage, 'left', 6.2, 'motionSensor', bind('binary_sensor.us_garage_motion'))
   put('ceilingLight', 7.6, 6.7, 0, { ...bind('light.us_garage'), group: 'us-grp-garage', variant: 'square' })
   put('ceilingLight', 10.9, 6.7, 0, { ...bind('light.us_garage'), group: 'us-grp-garage', variant: 'square' })
+  // A two-tube shop light over the workbench, on with the garage lights
+  put('utilityLight', 11.15, 4.3, 0, { ...bind('light.us_garage'), variant: 'ledShop2', len: 1.5 })
 
   /* --- front porch: doorbell, wall lights, seating corner --- */
   put('doormat', 0.5, 10.55, 0, { len: 1, len2: 0.6, variant: 'welcome', body: '#7a2f3a' })
