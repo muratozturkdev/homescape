@@ -365,9 +365,9 @@ export interface Item {
   /** Utility light cover: none, frosted panel, wraparound diffuser or louvered grid. */
   cover?: 'none' | 'frosted' | 'wrap' | 'louver'
   /** Camera mount (model/cameraMount.ts): the surface (a wall by default), the item it is on and where on it */
-  mountSurface?: 'wall' | 'tree' | 'fence' | 'gate' | 'pole'
+  mountSurface?: 'wall' | 'tree' | 'fence' | 'gate'
   mountTargetId?: string
-  mountPoint?: 'trunk' | 'branch' | 'panel' | 'postLeft' | 'postRight' | 'postCenter'
+  mountPoint?: 'trunk' | 'panel' | 'postLeft' | 'postRight' | 'postCenter'
   /** Camera heading relative to its support, in degrees; the side of a fence or a gate it faces */
   mountYaw?: number
   mountSide?: 'front' | 'back'

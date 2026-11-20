@@ -43,7 +43,8 @@ function commit(keep: boolean) {
     else
       L.addItem(target.kind, result.x, result.z, result.rot, target.entityId ?? null, result.y, {
         ...target.extra,
-        ...(target.kind === 'camera' ? { mountSurface: result.mountSurface, mountTargetId: result.mountTargetId, mountPoint: result.mountPoint, mountYaw: result.mountYaw, mountSide: result.mountSide} : {}),
+        // A camera dropped on a tree, a fence or a gate (scene/Ghost.tsx)
+        ...(target.kind === 'camera' && result.mountTargetId ? { mountSurface: result.mountSurface, mountTargetId: result.mountTargetId, mountPoint: result.mountPoint, mountYaw: result.mountYaw, mountSide: result.mountSide } : {}),
         ...(target.kind === 'tv' ? { variant: result.y != null ? 'stand' : 'wall' } : {}),
       })
   } else {

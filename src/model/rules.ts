@@ -4,8 +4,7 @@ import { behindWall, inRoom, isAperture, isOutdoor, rectsOf, roomAt, wallSnap, W
 import { sectionalArm } from './sofa'
 import { wallSides } from './stairs'
 import type { Item, ItemKind, Level, Rect, Room } from './types'
-import { resolveCameraAnchor } from './cameraMount'
-import type { CameraMountData } from './cameraMount'
+import { resolveCameraAnchor, type CameraMountData } from './cameraMount'
 
 /*
  * Placement rules (like in a game): an item can only be dropped at a valid spot.
@@ -347,7 +346,7 @@ export const TREE_INDOOR_MAX = WALL_H - 0.1
 /** Can the item go at this spot? ignoreId: the moved item itself. */
 export function checkItem(level: Level, cand: Cand, ignoreId?: string, onWall = true): Check {
   // A camera can be mounted on a tree, a fence or a gate (model/cameraMount.ts), outside any room
-  const attachedCamera = cand.kind === 'camera' ? resolveCameraAnchor({ ...cand, id: ignoreId ?? 'preview' }, level.items) : null
+  const attachedCamera = resolveCameraAnchor(cand, level.items)
   let room = roomAt(level.rooms, cand.x, cand.z)
   // A wall light may hang on the outside of a house wall with no garden in front: it belongs to the room behind the wall
   if (!room && cand.kind === 'wallLight' && onWall) {

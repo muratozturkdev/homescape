@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { t } from '@/i18n'
 import { rectBounds } from './geometry'
-import type { FloorMaterial, Item, ItemKind, Rect, RoomType } from './types'
 import type { CameraMountData } from './cameraMount'
+import type { FloorMaterial, Item, ItemKind, Rect, RoomType } from './types'
 
 /*
  * Placement (the "build" mode of a game): a card from the bottom bar is dragged or clicked, and a ghost follows the

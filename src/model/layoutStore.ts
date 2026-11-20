@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { floorNumber, t } from '@/i18n'
 import { asMain, foldTvBacklights, isBound, primaryFirst, withBinding, withoutBinding } from './bindings'
 import { connectRooms } from './doors'
+import { settleCameras } from './cameraMount'
 import { areaContents, ownsItem, rectsOf, settleWallItems, shiftRoom } from './geometry'
 import { dropLoneGroups, groupMates } from './groups'
 import { splitTvUnits } from './migrate'
@@ -282,7 +283,8 @@ export const useLayout = create<LayoutState>()(
         const { layout, levelId, past } = get()
         if (!layout) return
         set({
-          layout: mapLevel(layout, levelId, fn),
+          // Cameras on a tree, a fence or a gate follow their support (model/cameraMount.ts)
+          layout: mapLevel(layout, levelId, (l) => settleCameras(fn(l))),
           ...(record ? { past: [...past, layout].slice(-HISTORY), future: [] } : {}),
         })
       }

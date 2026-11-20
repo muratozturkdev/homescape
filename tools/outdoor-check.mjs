@@ -514,6 +514,58 @@ ok(Lend.rooms.length === L0.rooms.length && !Lend.items.some((i) => STREET.inclu
   ok(!r.left, 'It goes when its room is deleted')
 }
 
+// --- Camera on a fence (PR #14): placed on its support, follows it, back onto a wall from its card, goes with the fence ---
+{
+  const r = await p.evaluate(async () => {
+    const M = await import('/src/model/cameraMount.ts')
+    const R = await import('/src/model/rules.ts')
+    const s = window.__homescape.getState().layout
+    s.setMode('edit')
+    const lv = () => {
+      const st = window.__homescape.getState().layout
+      return st.layout.levels.find((l) => l.id === st.levelId)
+    }
+    const house = s.addRoom({ name: 'Camera house', floor: 'wood', type: 'room', x: 600, z: 0, w: 4, d: 4 })
+    const garden = s.addRoom({ name: 'Camera garden', floor: 'grass', type: 'garden', x: 600, z: 4, w: 6, d: 5 })
+    const fence = s.addItem('fence', 603, 8.7, 0)
+    // The ghost finds the fence next to the pointer, on the side the pointer is on
+    const found = M.findCameraMount(lv().items, 603, 8.6)
+    const id = s.addItem('camera', 0, 0, 0, null, found?.y, { mountSurface: found?.mountSurface, mountTargetId: found?.mountTargetId, mountPoint: found?.mountPoint, mountYaw: 0, mountSide: found?.mountSide })
+    const cam = () => lv().items.find((it) => it.id === id)
+    const placed = cam() && { x: cam().x, z: cam().z, y: cam().y }
+    const chk = R.checkItem(lv(), cam(), id)
+    s.updateItem(fence, { x: 604, rot: Math.PI / 2 })
+    const moved = cam() && { x: cam().x, z: cam().z, rot: cam().rot }
+    const want = M.cameraAnchor(cam(), lv().items.find((it) => it.id === fence))
+    s.select({ type: 'item', id })
+    return { house, garden, fence, id, found, placed, chk, moved, want }
+  })
+  ok(r.found?.mountSurface === 'fence' && r.found.mountTargetId === r.fence, `A camera dropped next to a fence goes on it (${JSON.stringify(r.found && { surface: r.found.mountSurface, point: r.found.mountPoint, side: r.found.mountSide })})`)
+  ok(r.placed && Math.abs(r.placed.z - 8.6) < 0.2 && Math.abs(r.placed.x - 603) < 0.5 && r.chk?.ok, `It sits on the fence, in the garden (${JSON.stringify(r.placed)}, rules ${JSON.stringify(r.chk)})`)
+  ok(r.moved && r.want && Math.abs(r.moved.x - r.want.x) < 0.001 && Math.abs(r.moved.z - r.want.z) < 0.001 && Math.abs(r.moved.rot - r.want.rot) < 0.001 && Math.abs(r.moved.x - 604) < 0.5, `It follows the fence when the fence moves and turns (${JSON.stringify(r.moved)})`)
+  await p.waitForTimeout(400)
+  await p.click('aside [data-camera-surface="wall"]')
+  await p.waitForTimeout(300)
+  const back = await p.evaluate(async ({ id, fence, house, garden }) => {
+    const R = await import('/src/model/rules.ts')
+    const st = window.__homescape.getState().layout
+    const level = st.layout.levels.find((l) => l.id === st.levelId)
+    const cam = level.items.find((it) => it.id === id)
+    const wall = cam && { surface: cam.mountSurface ?? 'wall', target: cam.mountTargetId ?? null, x: cam.x, z: cam.z, ok: R.checkItem(level, cam, id).ok }
+    // On the fence again, then the fence goes: the camera goes too
+    st.updateItem(id, { mountSurface: 'fence', mountTargetId: fence, mountPoint: 'panel', y: 0.85 - 2.3 })
+    st.deleteItem(fence)
+    const after = window.__homescape.getState().layout
+    const left = Boolean(after.layout.levels.find((l) => l.id === after.levelId).items.find((it) => it.id === id))
+    after.select(null)
+    for (const r of [house, garden]) after.deleteRoom(r)
+    after.setMode('view')
+    return { wall, left }
+  }, r)
+  ok(back.wall && back.wall.surface === 'wall' && !back.wall.target && back.wall.z <= 4.2 && back.wall.ok, `"Building wall" in its card puts it back on the closest house wall (${JSON.stringify(back.wall)})`)
+  ok(!back.left, 'It goes when its fence is deleted')
+}
+
 ok(errors.length === 0, `No page errors${errors.length ? `: ${errors.slice(0, 3).join(' | ')}` : ''}`)
 await b.close()
 console.log(failures ? `\n${failures} checks failed` : '\nAll checks passed')

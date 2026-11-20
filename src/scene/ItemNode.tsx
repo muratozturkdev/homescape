@@ -27,7 +27,6 @@ import { quickObjects } from './hoverTargets'
 import { ItemSelection } from './Selection'
 import { OFF_VISUAL, type Visual } from './kit/visual'
 import { binsDebug, useBinOpen, useBins } from './bins'
-import { cameraAnchor } from '@/model/cameraMount'
 
 const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
 /** Cabinets whose drawer slides out when opened (the others swing a door) */
@@ -67,32 +66,6 @@ function ItemNodeImpl({ item, entity, related, night, levelId, still = false }: 
   // The item's floor (the active floor when not given)
   const lvOf = (s: Parameters<typeof activeLevel>[0]) => (levelId ? s.layout?.levels.find((l) => l.id === levelId) : activeLevel(s))
   const meta = CATALOG[item.kind]
-
-  const cameraTarget = useLayout((s) => {
-    if (item.kind !== 'camera' || !item.mountTargetId) {
-      return undefined
-    }
-
-    return lvOf(s)?.items.find(
-      (other) => other.id === item.mountTargetId,
-    )
-  })
-
-  const cameraMount = useMemo(
-    () =>
-      item.kind === 'camera' && cameraTarget
-        ? cameraAnchor(item, cameraTarget)
-        : null,
-    [item, cameraTarget],
-  )
-
-  const placedX = cameraMount?.x ?? item.x
-  const placedZ = cameraMount?.z ?? item.z
-  const placedRot = cameraMount?.rot ?? item.rot
-  const placedY =
-    cameraMount?.y ??
-    (item.y ?? DEFAULT_Y[item.kind] ?? 0)
-
   const single = useLayout((s) => s.selection?.type === 'item' && s.selection.id === item.id)
   const inMulti = useLayout((s) => Boolean(s.multi?.items.includes(item.id)))
   const outer = useRef<THREE.Group>(null)
@@ -220,12 +193,8 @@ function ItemNodeImpl({ item, entity, related, night, levelId, still = false }: 
    * While moving the rules are checked (the ring turns red); dropped on an invalid spot, the item goes back.
    */
   const onDown = (e: ThreeEvent<PointerEvent>) => {
-    if (
-  item.kind === 'camera' &&
-  item.mountSurface !== undefined &&
-  item.mountSurface !== 'wall' &&
-  item.mountTargetId
-) return
+    // A camera on a tree, a fence or a gate stays on it (model/cameraMount.ts): it moves with its support or from its card
+    if (item.kind === 'camera' && item.mountTargetId && (item.mountSurface ?? 'wall') !== 'wall') return
     const s = useLayout.getState()
     if (s.mode !== 'edit' || s.tool !== 'select' || e.button !== 0 || busy()) return
     if (!e.ray.intersectPlane(plane, hit)) return
@@ -295,43 +264,11 @@ function ItemNodeImpl({ item, entity, related, night, levelId, still = false }: 
     usePlacement.getState().setMoving(null)
   }
 
-useEffect(() => {
-  if (still || item.kind !== 'camera' || !cameraMount) return
-
-  const changed =
-    Math.abs(item.x - cameraMount.x) > 0.0001 ||
-    Math.abs(item.z - cameraMount.z) > 0.0001 ||
-    Math.abs(item.rot - cameraMount.rot) > 0.0001 ||
-    Math.abs((item.y ?? 0) - cameraMount.y) > 0.0001
-
-  if (!changed) return
-
-  useLayout.getState().updateItem(
-    item.id,
-    {
-      x: cameraMount.x,
-      z: cameraMount.z,
-      rot: cameraMount.rot,
-      y: cameraMount.y,
-    },
-    false,
-  )
-  }, [
-    still,
-    item.id,
-    item.kind,
-    item.x,
-    item.z,
-    item.rot,
-    item.y,
-    cameraMount,
-  ])
-
   return (
-    <group ref={outer} position={[placedX, 0, placedZ]} rotation-y={placedRot}>
+    <group ref={outer} position={[item.x, 0, item.z]} rotation-y={item.rot}>
       <group
         ref={inner}
-        position={[0, placedY, 0]}
+        position={[0, y, 0]}
         userData={{ itemId: item.id }}
         onPointerDown={interactive ? onDown : undefined}
         onPointerMove={interactive ? onMove : undefined}

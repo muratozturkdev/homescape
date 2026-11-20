@@ -1,34 +1,16 @@
+import type { Item, ItemKind, Level } from './types'
 
-import type { Item } from './types'
+/*
+ * Camera mounts (GitHub PR #14): a camera hangs on a house wall (the default) or outside on a tree trunk, a fence or a gate
+ * post. A mounted camera keeps its support's id (Item.mountTargetId) and follows it: settleCameras puts it back on the
+ * support after every plan change (layoutStore > change), and it goes when the support goes.
+ */
 
-export type CameraMountSurface =
-  NonNullable<Item['mountSurface']>
-
-export const CAMERA_BASE_HEIGHT = 2.3
-
-export function cameraSurface(
-  item: Item,
-): CameraMountSurface {
-  return item.kind === 'camera'
-    ? (item.mountSurface ?? 'wall')
-    : 'wall'
-}
-
-export function isCameraMountTarget(
-  camera: Item,
-  target: Item,
-): boolean {
-  switch (cameraSurface(camera)) {
-    case 'tree':
-      return target.kind === 'tree'
-    case 'fence':
-      return target.kind === 'fence'
-    case 'gate':
-      return target.kind === 'gate'
-    default:
-      return false
-  }
-}
+export type CameraMountSurface = NonNullable<Item['mountSurface']>
+export type CameraMountData = Pick<Item, 'mountSurface' | 'mountTargetId' | 'mountPoint' | 'mountYaw' | 'mountSide'>
+type MountPoint = NonNullable<Item['mountPoint']>
+/** What cameraAnchor reads from a camera */
+type Mounted = CameraMountData & { kind: ItemKind; y?: number }
 
 export interface CameraAnchor {
   x: number
@@ -37,194 +19,110 @@ export interface CameraAnchor {
   y: number
 }
 
-/** Default mounting heights, measured from the floor. */
-export function defaultCameraHeight(
-  surface: CameraMountSurface,
-): number {
-  switch (surface) {
-    case 'tree':
-      return 1.8
-    case 'fence':
-      return 0.85
-    case 'gate':
-      return 1.0
-    default:
-      return CAMERA_BASE_HEIGHT
-  }
+/** Height the camera model is drawn at (kit): a camera's Item.y is the offset from it. */
+export const CAMERA_BASE_HEIGHT = 2.3
+
+/** The item kind of each support and the points a camera can go on; a wall is no item. */
+export const CAMERA_SUPPORTS: Record<Exclude<CameraMountSurface, 'wall'>, { kind: ItemKind; points: MountPoint[] }> = {
+  tree: { kind: 'tree', points: ['trunk'] },
+  fence: { kind: 'fence', points: ['panel', 'postLeft', 'postRight', 'postCenter'] },
+  gate: { kind: 'gate', points: ['postLeft', 'postRight'] },
 }
 
-/**
- * Calculate a camera position from an existing support.
- *
- * x/z: camera position in world coordinates
- * rot: camera heading in radians
- * y: offset for the existing Camera model,
- *    which already draws at 2.3 m.
- */
-export function cameraAnchor(
-  camera: Item,
-  target: Item,
-): CameraAnchor | null {
-  if (!isCameraMountTarget(camera, target)) return null
+const supportOf = (surface?: CameraMountSurface) => (surface && surface !== 'wall' ? CAMERA_SUPPORTS[surface] : undefined)
 
+export const cameraSurface = (item: Mounted): CameraMountSurface => (item.kind === 'camera' ? (item.mountSurface ?? 'wall') : 'wall')
+
+export const isCameraMountTarget = (camera: Mounted, target: Item) => supportOf(cameraSurface(camera))?.kind === target.kind
+
+/** Default mounting height above the ground. */
+export const defaultCameraHeight = (surface: CameraMountSurface) => (surface === 'tree' ? 1.8 : surface === 'fence' ? 0.85 : surface === 'gate' ? 1 : CAMERA_BASE_HEIGHT)
+
+/** Where a camera sits on its support: position, heading (rot) and Item.y (offset from the model's own height). */
+export function cameraAnchor(camera: Mounted, target: Item): CameraAnchor | null {
+  if (!isCameraMountTarget(camera, target)) return null
   const surface = cameraSurface(camera)
   const point = camera.mountPoint
-  const yaw = ((camera.mountYaw ?? 0) * Math.PI) / 180
-
-  const reversed =
-    (surface === 'fence' || surface === 'gate') &&
-    camera.mountSide === 'back'
-
-  const rot = target.rot + yaw + (reversed ? Math.PI : 0)
-  const height =
-    camera.y != null
-      ? CAMERA_BASE_HEIGHT + camera.y
-      : defaultCameraHeight(surface)
-
+  // Mounted on the far side of a fence or a gate, the camera faces the other way
+  const reversed = (surface === 'fence' || surface === 'gate') && camera.mountSide === 'back'
+  const rot = target.rot + ((camera.mountYaw ?? 0) * Math.PI) / 180 + (reversed ? Math.PI : 0)
+  const height = camera.y != null ? CAMERA_BASE_HEIGHT + camera.y : defaultCameraHeight(surface)
+  // In the support's own frame: out from the trunk, on a fence's panel or one of its posts, on a gate's posts (they stay
+  // put while the leaf swings)
   let localX = 0
   let localZ = 0
-
-  if (surface === 'tree') {
-    // Initial approximate trunk clearance.
-    // We'll refine this using tree variant and size.
-    localZ = 0.2
-  }
-
+  if (surface === 'tree') localZ = 0.2
   if (surface === 'fence') {
     const length = target.len ?? 2
     const posts = Math.max(1, Math.round(length / 1.2))
     const left = -length / 2 + 0.035
     const right = length / 2 - 0.035
-
-    if (point === 'postLeft') {
-      localX = left
-    } else if (point === 'postRight') {
-      localX = right
-    } else if (point === 'postCenter') {
-      const middle = Math.round(posts / 2)
-      localX = left + middle * (right - left) / posts
-    }
-
+    if (point === 'postLeft') localX = left
+    else if (point === 'postRight') localX = right
+    else if (point === 'postCenter') localX = left + (Math.round(posts / 2) * (right - left)) / posts
     localZ = point === 'panel' ? 0.1 : 0.12
   }
-
   if (surface === 'gate') {
-    // Gate leaf moves, but the gate posts remain fixed.
     localX = point === 'postRight' ? 0.55 : -0.55
     localZ = 0.12
   }
-
-    // Mount the camera on the opposite face of the support.
   if (reversed) localZ = -localZ
-
-  // Convert support-local position to world coordinates.
   const c = Math.cos(target.rot)
   const s = Math.sin(target.rot)
-
-return {
-  x: target.x + localX * c + localZ * s,
-  z: target.z - localX * s + localZ * c,
-  rot,
-  y: height - CAMERA_BASE_HEIGHT,
- }
+  return { x: target.x + localX * c + localZ * s, z: target.z - localX * s + localZ * c, rot, y: height - CAMERA_BASE_HEIGHT }
 }
-/** Find and resolve a camera's selected supporting item. */
-export function resolveCameraAnchor(
-  camera: Item,
-  items: Item[],
-): CameraAnchor | null {
-  if (camera.kind !== 'camera') return null
-  if (!camera.mountTargetId) return null
 
-  const target = items.find(
-    (item) => item.id === camera.mountTargetId,
-  )
-
-  if (!target) return null
-
-  return cameraAnchor(camera, target)
+/** The anchor of a camera on its support among the items; null when it is not mounted or the support is not there. */
+export function resolveCameraAnchor(camera: Mounted, items: Item[]): CameraAnchor | null {
+  if (camera.kind !== 'camera' || !camera.mountTargetId) return null
+  const target = items.find((it) => it.id === camera.mountTargetId)
+  return target ? cameraAnchor(camera, target) : null
 }
-export type CameraMountData = Pick<
-  Item,
-  'mountSurface' |
-  'mountTargetId' |
-  'mountPoint' |
-  'mountYaw' |
-  'mountSide'
->
 
-export function findCameraMount(
-  items: Item[],
-  x: number,
-  z: number,
-  maxDistance = 0.45,
-): (CameraAnchor & CameraMountData) | null {
+/** The closest mounting point on a tree, a fence or a gate within maxDistance of x, z (placing a camera, scene/Ghost.tsx). */
+export function findCameraMount(items: Item[], x: number, z: number, maxDistance = 0.45): (CameraAnchor & CameraMountData) | null {
   let best: (CameraAnchor & CameraMountData) | null = null
   let bestDistance = maxDistance
-
   for (const target of items) {
-    const surface = target.kind
-
-    if (
-      surface !== 'tree' &&
-      surface !== 'fence' &&
-      surface !== 'gate'
-    ) continue
-
-    const points: NonNullable<Item['mountPoint']>[] =
-      surface === 'tree'
-        ? ['trunk']
-        : surface === 'fence'
-          ? ['panel', 'postLeft', 'postCenter', 'postRight']
-          : ['postLeft', 'postRight']
-
-        // Determine which side of the support the pointer is on.
-    const dx = x - target.x
-    const dz = z - target.z
-
-    const localZ =
-      dx * Math.sin(target.rot) +
-      dz * Math.cos(target.rot)
-
-    const side: Item['mountSide'] =
-      surface === 'tree'
-        ? undefined
-        : localZ < 0 ? 'back' : 'front'
-
-    for (const point of points) {
-    const mount: CameraMountData = {
-      mountSurface: surface,
-      mountTargetId: target.id,
-      mountPoint: point,
-      mountYaw: 0,
-      mountSide: side,
-      }
-
-      const anchor = cameraAnchor(
-        {
-          id: 'preview',
-          kind: 'camera',
-          x,
-          z,
-          rot: 0,
-          ...mount,
-        },
-        target,
-      )
-
+    const surface = (Object.keys(CAMERA_SUPPORTS) as Exclude<CameraMountSurface, 'wall'>[]).find((k) => CAMERA_SUPPORTS[k].kind === target.kind)
+    if (!surface) continue
+    // The side of the fence or gate the pointer is on
+    const localZ = (x - target.x) * Math.sin(target.rot) + (z - target.z) * Math.cos(target.rot)
+    const side: Item['mountSide'] = surface === 'tree' ? undefined : localZ < 0 ? 'back' : 'front'
+    for (const point of CAMERA_SUPPORTS[surface].points) {
+      const mount: CameraMountData = { mountSurface: surface, mountTargetId: target.id, mountPoint: point, mountYaw: 0, mountSide: side }
+      const anchor = cameraAnchor({ kind: 'camera', ...mount }, target)
       if (!anchor) continue
-
-      const distance = Math.hypot(
-        x - anchor.x,
-        z - anchor.z,
-      )
-
+      const distance = Math.hypot(x - anchor.x, z - anchor.z)
       if (distance < bestDistance) {
         bestDistance = distance
         best = { ...anchor, ...mount }
       }
     }
   }
-
   return best
+}
+
+const near = (a: number, b: number) => Math.abs(a - b) < 1e-4
+
+/**
+ * Puts every mounted camera back on its support (moved, turned or resized with it); a camera whose support is gone goes
+ * too. Runs after every plan change (layoutStore > change).
+ */
+export function settleCameras(level: Level): Level {
+  if (!level.items.some((it) => it.kind === 'camera' && it.mountTargetId)) return level
+  let changed = false
+  const items = level.items.flatMap((it) => {
+    if (it.kind !== 'camera' || !it.mountTargetId || cameraSurface(it) === 'wall') return [it]
+    const target = level.items.find((o) => o.id === it.mountTargetId)
+    if (!target) {
+      changed = true
+      return []
+    }
+    const a = cameraAnchor(it, target)
+    if (!a || (near(a.x, it.x) && near(a.z, it.z) && near(a.rot, it.rot) && near(a.y, it.y ?? 0))) return [it]
+    changed = true
+    return [{ ...it, x: a.x, z: a.z, rot: a.rot, y: a.y }]
+  })
+  return changed ? { ...level, items } : level
 }
