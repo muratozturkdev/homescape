@@ -4,7 +4,7 @@ import { canToggle, toggle, turnOffAll } from '@/ha/actions'
 import { friendlyName, isActive, relativeTime, stateLabel } from '@/ha/derive'
 import { useHa } from '@/ha/store'
 import { bindingsOf, boundAnywhere, emitsLight, isBound, ledOf, ledSource } from '@/model/bindings'
-import { BEAM, BODY_COLORS, CATALOG, CONSOLE_LEN, consoleModel, GARAGE_DOOR, isSlidingDoor, isWallOpening, ITEM_PRESETS, OPENING_DOOR_H, OPENING_FULL_H, OPTIONS, RESIZABLE, RESIZABLE2, SLIDING_DOOR, sizeOf, TOP_COLORS, WALL_OPENING } from '@/model/catalog'
+import { BEAM, BODY_COLORS, CATALOG, CONSOLE_LEN, consoleModel, GARAGE_DOOR, isSlidingDoor, isWallOpening, ITEM_PRESETS, OPENING_DOOR_H, OPENING_FULL_H, OPTIONS, RESIZABLE, RESIZABLE2, SLIDING_DOOR, sizeOf, TOP_COLORS, WALL_OPENING, gardenLightDimensions, } from '@/model/catalog'
 import { kindFor, modelName, variantFor } from '@/model/generate'
 import { doorSides, isOutdoor, isStreetSurface, rectsOf, openingMaxWidth, openingWallRun, ownsItem, roomArea, roomAt, WALL_IN, wallLengthAt, wallSnap, type Side } from '@/model/geometry'
 import { groupFamily, groupMates, heatingSummary } from '@/model/groups'
@@ -461,8 +461,22 @@ function FurnitureOptions({ item }: { item: Item }) {
   const { updateItem, checkpoint } = useLayout.getState()
   if (!opt && !range) return null
   // A kind can give its own default (the Christmas tree's len is its height, 2 m; a garage door is 2.4 m wide)
-  const len = item.len ?? (item.kind === 'garageDoor' ? GARAGE_DOOR.def : undefined) ?? (range && 'def' in range ? range.def : undefined) ?? CATALOG[item.kind].size[0]
-  const len2 = item.len2 ?? range2?.def ?? 0
+  const gardenDimensions = item.kind === 'gardenLight'
+    ? gardenLightDimensions(item.variant)
+    : undefined
+
+  const len =
+    item.len ??
+    gardenDimensions?.height ??
+    (item.kind === 'garageDoor' ? GARAGE_DOOR.def : undefined) ??
+    (range && 'def' in range ? range.def : undefined) ??
+    CATALOG[item.kind].size[0]
+
+  const len2 =
+    item.len2 ??
+    gardenDimensions?.width ??
+    range2?.def ??
+    0
   const isL = item.variant === 'lLeft' || item.variant === 'lRight'
   /**
    * Settings that change the length, shape or height go through the rules first; if the result does not fit, the reason is
@@ -589,6 +603,70 @@ function FurnitureOptions({ item }: { item: Item }) {
               </button>
             ))}
           </div>
+        </div>
+      )}
+      {item.kind === 'gardenLight' && item.variant === 'spike' && (
+        <label className="grid gap-1.5">
+          <span className="flex justify-between text-[12px] font-semibold text-ink-2">
+            {t('Spotlight tilt')}
+            <span className="font-mono tabular-nums text-ink">
+              {item.tilt ?? 20}°
+            </span>
+          </span>
+
+          <input
+            type="range"
+            min={0}
+            max={90}
+            step={5}
+            value={item.tilt ?? 20}
+            onPointerDown={() => checkpoint()}
+            onChange={(e) =>
+              updateItem(
+                item.id,
+                { tilt: Number(e.target.value) },
+                false,
+              )
+            }
+          />
+        </label>
+      )}
+            {item.kind === 'gardenLight' && (
+        <div className="grid gap-1.5">
+          <span className="text-[12px] font-semibold text-ink-2">
+            {t('Power source')}
+          </span>
+
+          <div className="grid grid-cols-3 gap-1.5">
+            {([
+              ['wired', t('Wired')],
+              ['solar', t('Solar')],
+              ['battery', t('Battery')],
+            ] as const).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                className={seg(
+                  (item.powerSource ?? 'wired') === value
+                )}
+                onClick={() =>
+                  updateItem(item.id, {
+                    powerSource: value === 'wired'
+                      ? undefined
+                      : value,
+                  })
+                }
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {item.powerSource === 'solar' && (
+            <p className="text-[11px] text-ink-3">
+              {t('Unbound solar lights turn on automatically at night.')}
+            </p>
+          )}
         </div>
       )}
       {item.kind === 'stairs' && (

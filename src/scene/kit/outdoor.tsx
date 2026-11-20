@@ -5,7 +5,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { deviceClass, domainOf, isActive, lightColor, lightLevel, num } from '@/ha/derive'
 import type { HassEntity } from '@/ha/types'
-import { GARAGE_DOOR, regularTreeScale } from '@/model/catalog'
+import { GARAGE_DOOR, regularTreeScale,gardenLightScale, gardenLightDimensions, } from '@/model/catalog'
 import { APERTURE_INSET, WALL_CUT_H, WALL_H, WALL_INNER_H, WALL_T } from '@/model/geometry'
 import { U_FLIGHT, U_GAP, U_LANDING, U_SIZE, wallSides } from '@/model/stairs'
 import { roofView, useView } from '../camera'
@@ -437,14 +437,89 @@ export function FlowerBed({ v }: P) {
 /** Light beam: full at the cone's tip (uv v = 1), fading towards its wide mouth (built once). */
 const beamTexture = () => pixelTexture('beam', 4, 64, (_u, v) => [1, 1, 1, Math.pow(v, 1.6)])
 
+function GardenSolarPanel({
+  width,
+}: {
+  width: number
+}) {
+  return (
+    <group>
+      {/* Panel housing */}
+      <Box
+        size={[width, 0.012, width]}
+        position={[0, 0.006, 0]}
+        color="#252a30"
+      />
+
+      {/* Photovoltaic cells */}
+      {[-1, 0, 1].flatMap((x) =>
+        [-1, 0, 1].map((z) => (
+          <Box
+            key={`${x}-${z}`}
+            size={[
+              width * 0.28,
+              0.002,
+              width * 0.28,
+            ]}
+            position={[
+              x * width * 0.30,
+              0.013,
+              z * width * 0.30,
+            ]}
+            color="#203957"
+            shadow={false}
+          />
+        ))
+      )}
+    </group>
+  )
+}
 /**
  * Garden lamp. Item.variant 'post' (default): ~1.1 m post with a lantern; 'bollard': ~0.6 m path light with a light band
  * on top; 'spike': ~0.15 m spotlight staked into the ground, facing up. The lamp follows v.on / v.color / v.level; at night
  * also a soft halo (a faint upward beam for the spotlight). Unavailable: the body is dimmed.
  */
 export function GardenLight({ v }: P) {
-  const kind = v.opts.variant === 'bollard' || v.opts.variant === 'spike' ? v.opts.variant : 'post'
-  const body = v.unavailable ? DIM : '#2c3140'
+  const scale = gardenLightScale(
+    v.opts.variant,
+    v.opts.len,
+    v.opts.len2,
+  )
+
+  const dimensions = gardenLightDimensions(
+    v.opts.variant,
+  )
+
+  const solar = v.opts.powerSource === 'solar'
+  const spike = v.opts.variant === 'spike'
+
+  return (
+    <group scale={[scale.xz, scale.y, scale.xz]}>
+      <GardenLightModel v={v} />
+
+      {solar && !spike && (
+        <group position={[0, dimensions.height, 0]}>
+          <GardenSolarPanel
+            width={Math.min(0.09, dimensions.width * 0.45)}
+          />
+        </group>
+      )}
+
+      {solar && spike && (
+        <group
+          position={[0, 0.025, -0.025]}
+          rotation-x={-0.35}
+        >
+          <GardenSolarPanel width={0.045} />
+        </group>
+      )}
+    </group>
+  )
+}
+
+function GardenLightModel({ v }: P) {
+  const kind = v.opts.variant ?? 'post'
+  const body = v.unavailable ? DIM : (v.opts.body ?? '#2c3140')
   const lamp = useLitMaterial('#eef0f6', v.on, v.color, v.level, 1.8)
   const halo = v.on && v.night ? Math.min(0.9, 0.35 + 0.5 * v.level) : 0
   const beam = useMemo(
@@ -453,6 +528,125 @@ export function GardenLight({ v }: P) {
     [v.color, v.level, v.night],
   )
   useEffect(() => () => beam.dispose(), [beam])
+    if (kind === 'mushroom')
+    return (
+      <group>
+        <Cyl r={0.065} h={0.025}
+          position={[0, 0.0125, 0]} color={body} />
+
+        <Cyl r={0.022} h={0.43}
+          position={[0, 0.23, 0]} color={body} />
+
+        <Cyl r={0.105} h={0.035}
+          position={[0, 0.45, 0]}
+          material={lamp} shadow={false} />
+
+        <Cyl r={0.14} rTop={0.035} h={0.09}
+          position={[0, 0.51, 0]}
+          color={body} segments={24} />
+
+        <Glow position={[0, 0.44, 0]}
+          color={v.color} opacity={halo} size={0.8} />
+      </group>
+    )
+    if (kind === 'contemporary')
+    return (
+      <group>
+        <Box size={[0.1, 0.025, 0.1]}
+          position={[0, 0.0125, 0]} color={body} />
+
+        <Box size={[0.045, 0.55, 0.045]}
+          position={[0, 0.285, 0]} color={body} />
+
+        <Box size={[0.10, 0.045, 0.22]}
+          position={[0, 0.58, 0.07]} color={body} />
+
+        <Box size={[0.075, 0.012, 0.17]}
+          position={[0, 0.552, 0.07]}
+          material={lamp} shadow={false} />
+
+        <Glow position={[0, 0.54, 0.07]}
+          color={v.color} opacity={halo} size={0.8} />
+      </group>
+    )
+    if (kind === 'tiered')
+    return (
+      <group>
+        <Cyl r={0.06} h={0.025}
+          position={[0, 0.0125, 0]} color={body} />
+
+        <Cyl r={0.025} h={0.48}
+          position={[0, 0.25, 0]} color={body} />
+
+        <Cyl r={0.085} h={0.23}
+          position={[0, 0.61, 0]}
+          material={lamp} shadow={false} />
+
+        {[0.50, 0.61, 0.72].map((y, i) => (
+          <Cyl
+            key={i}
+            r={0.13}
+            rTop={0.08}
+            h={0.045}
+            position={[0, y, 0]}
+            color={body}
+            segments={24}
+          />
+        ))}
+
+        <Cyl r={0.09} rTop={0.025} h={0.06}
+          position={[0, 0.77, 0]}
+          color={body} segments={24} />
+
+        <Glow position={[0, 0.61, 0]}
+          color={v.color} opacity={halo} size={0.9} />
+      </group>
+    )
+    if (kind === 'pagoda')
+    return (
+      <group>
+        <Box size={[0.12, 0.025, 0.12]}
+          position={[0, 0.0125, 0]} color={body} />
+
+        <Cyl r={0.025} h={0.46}
+          position={[0, 0.245, 0]} color={body} />
+
+        <Box size={[0.19, 0.035, 0.19]}
+          position={[0, 0.49, 0]} color={body} />
+
+        <Box size={[0.145, 0.20, 0.145]}
+          position={[0, 0.61, 0]}
+          material={lamp} shadow={false} />
+
+        {[-1, 1].flatMap((sx) =>
+          [-1, 1].map((sz) => (
+            <Box
+              key={`${sx}-${sz}`}
+              size={[0.016, 0.21, 0.016]}
+              position={[sx * 0.077, 0.61, sz * 0.077]}
+              color={body}
+            />
+          ))
+        )}
+
+        <Cyl r={0.19} rTop={0.085} h={0.065}
+          position={[0, 0.74, 0]}
+          rotation-y={Math.PI / 4}
+          color={body} segments={4} />
+
+        <Cyl r={0.10} rTop={0.025} h={0.09}
+          position={[0, 0.81, 0]}
+          rotation-y={Math.PI / 4}
+          color={body} segments={4} />
+
+        <Ball r={0.022}
+          position={[0, 0.875, 0]}
+          color={body} detail={1} />
+
+        <Glow position={[0, 0.61, 0]}
+          color={v.color} opacity={halo} size={0.9} />
+      </group>
+    )
   if (kind === 'bollard')
     return (
       <group>
@@ -469,7 +663,10 @@ export function GardenLight({ v }: P) {
         <Cyl r={0.003} rTop={0.012} h={0.05} position={[0, 0.025, 0]} color={body} segments={8} shadow={false} />
         <Ball r={0.018} position={[0, 0.055, 0]} color={body} detail={1} shadow={false} />
         {/* spotlight housing facing up and slightly forward */}
-        <group position={[0, 0.06, 0]} rotation-x={0.35}>
+        <group
+           position={[0, 0.06, 0]}
+           rotation-x={((v.opts.tilt ?? 20) * Math.PI) / 180}
+           >
           <Cyl r={0.032} rTop={0.038} h={0.08} position={[0, 0.045, 0]} color={body} segments={16} />
           <Cyl r={0.032} h={0.006} position={[0, 0.087, 0]} material={lamp} segments={16} shadow={false} />
           {v.on && (

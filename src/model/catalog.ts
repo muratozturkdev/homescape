@@ -871,11 +871,25 @@ export const OPTIONS: Partial<
   gardenLight: {
     variantLabel: t('Model'),
     variants: [
-      ['post', t('Post')],
-      ['bollard', t('Short post')],
+      ['post', t('Traditional lantern')],
+      ['bollard', t('Modern bollard')],
+      ['mushroom', t('Mushroom light')],
+      ['contemporary', t('Contemporary LED')],
+      ['tiered', t('Tiered pagoda')],
+      ['pagoda', t('Garden pagoda lantern')],
       ['spike', t('Ground spot')],
     ],
     variantDef: 'post',
+    body: t('Fixture color'),
+    bodyDef: '#2c3140',
+    bodyList: [
+      [t('Black'), '#26282c'],
+      [t('Dark bronze'), '#594237'],
+      [t('White'), '#f1f1ed'],
+      [t('Silver'), '#a6a9ad'],
+      [t('Brass'), '#b59a56'],
+      [t('Copper'), '#b87333'],
+    ],
   },
   grill: { variantLabel: t('Model'), variants: [['kettle', t('Kettle grill')], ['gas', t('Gas grill')]], variantDef: 'kettle' },
   parasol: {
@@ -1136,6 +1150,40 @@ export const RESIZABLE: Partial<Record<ItemKind, { min: number; max: number; lab
   christmasTree: { min: 0.6, max: 5, label: t('Tree height'), def: 2 },
   utilityLight: { min: 0.6, max: 2.4, label: t('Fixture length'), def: 1.2 },
   tree: { min: 0.8, max: 8, label: t('Tree height'), def: 4 },
+  gardenLight: { min: 0.15, max: 1.8, label: t('Fixture height'), def: 0.8, },
+}
+/** Native dimensions of each garden light model (meters). */
+export const GARDEN_LIGHT_DIMENSIONS: Record<
+  string,
+  { height: number; width: number; lightY: number }
+> = {
+  post:         { height: 1.191, width: 0.25, lightY: 0.99 },
+  bollard:      { height: 0.62,  width: 0.17, lightY: 0.54 },
+  mushroom:     { height: 0.555, width: 0.28, lightY: 0.44 },
+  contemporary: { height: 0.603, width: 0.36, lightY: 0.54 },
+  tiered:       { height: 0.8,   width: 0.26, lightY: 0.61 },
+  pagoda:       { height: 0.897, width: 0.38, lightY: 0.61 },
+  spike:        { height: 0.15,  width: 0.10, lightY: 0.15 },
+}
+
+export const gardenLightDimensions = (variant?: string) =>
+  GARDEN_LIGHT_DIMENSIONS[variant ?? 'post']
+  ?? GARDEN_LIGHT_DIMENSIONS.post
+
+export function gardenLightScale(
+  variant?: string,
+  len?: number,
+  len2?: number,
+) {
+  const model = gardenLightDimensions(variant)
+
+  const height = len ?? model.height
+  const width = len2 ?? model.width
+
+  return {
+    y: height / model.height,
+    xz: width / model.width,
+  }
 }
 /**
  * Christmas tree size: Item.len is the tree's HEIGHT (not its width), 2 m by default. The whole model scales with it, so the
@@ -1156,7 +1204,12 @@ export const labelYOf = (kind: ItemKind, len?: number) => {
   if (kind === 'tree') {
     return CATALOG[kind].labelY * regularTreeScale(len)
   }
-    return CATALOG[kind].labelY
+
+  if (kind === 'gardenLight' && len != null) {
+    return len + 0.1
+  }
+
+  return CATALOG[kind].labelY
 }
 /**
  * Sliding glass door (a door with Item.variant 'sliding', GitHub issue #6): its width is Item.len, set in the card; a hinged
@@ -1195,6 +1248,7 @@ export const RESIZABLE2: Partial<Record<ItemKind, { min: number; max: number; la
   pool: { min: 1, max: 8, label: t('Pool width'), def: 2.5 },
   // Island depth: 0.6 m is cabinets only, anything more is the seating overhang at the back
   kitchenIsland: { min: 0.6, max: 1.4, label: t('Island depth'), def: 0.95 },
+  gardenLight: { min: 0.10, max: 0.60, label: t('Fixture width'), def: 0.25, },
 }
 
 /**
@@ -1249,6 +1303,11 @@ export const windowSize = (it: { len?: number; len2?: number }) => ({ w: it.len 
 /** The item's real footprint: the adjusted length if there is one. */
 export function sizeOf(kind: ItemKind, len?: number, len2?: number): [number, number] {
   const [w, d] = CATALOG[kind].size
+    // Garden light len represents height, not footprint width.
+  if (kind === 'gardenLight') {
+    const width = len2 ?? 0.38
+    return [width, width]
+  }
   // The second size only for kinds that use it as depth (ceiling strip, rug); the L arm of a counter is computed separately.
   if (kind === 'ceilingStrip' || kind === 'rug' || kind === 'doormat' || kind === 'pool' || kind === 'kitchenIsland' || kind === 'stairs') return [len ?? w, len2 ?? d]
   // A garage door: its opening and the frame

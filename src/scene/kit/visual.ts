@@ -71,6 +71,8 @@ export interface ItemOpts {
   dishwasher?: Item['dishwasher']
   /** Stairs: walls along the long sides (Item.walls; model/stairs.ts) */
   walls?: 'left' | 'right' | 'both'
+  tilt?: number
+  powerSource?: Item['powerSource']
 }
 
 /**

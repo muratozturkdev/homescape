@@ -408,6 +408,10 @@ export interface Item {
    * bind / unbind / makeMain).
    */
   group?: string
+    /** Landscape spotlight tilt in degrees from vertical. */
+  tilt?: number
+    /** Power source of an outdoor light. Wired by default. */
+  powerSource?: 'wired' | 'solar' | 'battery'
 }
 
 /** A level (floor). */
