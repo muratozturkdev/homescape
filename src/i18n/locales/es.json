@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "Se eliminó {room}. ⌘Z lo deshace.",
  "{value}%": "{value} %",
  "Ø {d} m · can be oval": "Ø {d} m · puede ser oval",
- "⌥ or ⇧ + left drag": "⌥ o ⇧ + arrastrar con el izquierdo"
+ "⌥ or ⇧ + left drag": "⌥ o ⇧ + arrastrar con el izquierdo",
+ "Indoor wall light": "Aplique de interior",
+ "Traditional lantern": "Farol tradicional",
+ "Modern lantern": "Farol moderno",
+ "Farmhouse lantern": "Farol rústico",
+ "Gooseneck": "Lámpara de cuello de cisne",
+ "Up/down sconce": "Aplique bidireccional",
+ "Bulkhead": "Aplique estanco",
+ "Fixture color": "Color de la luminaria",
+ "Dark bronze": "Bronce oscuro",
+ "Brass": "Latón",
+ "Copper": "Cobre",
+ "Outdoor wall light": "Aplique exterior",
+ "Lantern / sconce": "Farol / aplique"
 }

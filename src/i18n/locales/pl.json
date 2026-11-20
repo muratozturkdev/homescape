@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "Usunięto pokój {room}. Cofnij: ⌘Z.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · może być owalny",
- "⌥ or ⇧ + left drag": "⌥ lub ⇧ + przeciągnięcie lewym przyciskiem"
+ "⌥ or ⇧ + left drag": "⌥ lub ⇧ + przeciągnięcie lewym przyciskiem",
+ "Indoor wall light": "Wewnętrzna lampa ścienna",
+ "Traditional lantern": "Tradycyjna latarnia",
+ "Modern lantern": "Nowoczesna latarnia",
+ "Farmhouse lantern": "Rustykalna latarnia",
+ "Gooseneck": "Lampa na gęsiej szyi",
+ "Up/down sconce": "Kinkiet góra/dół",
+ "Bulkhead": "Oprawa hermetyczna",
+ "Fixture color": "Kolor oprawy",
+ "Dark bronze": "Ciemny brąz",
+ "Brass": "Mosiądz",
+ "Copper": "Miedź",
+ "Outdoor wall light": "Zewnętrzna lampa ścienna",
+ "Lantern / sconce": "Latarnia / kinkiet"
 }

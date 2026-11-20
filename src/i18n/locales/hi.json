@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "{room} हटा दिया गया। पूर्ववत करने के लिए ⌘Z दबाएँ।",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · अंडाकार भी हो सकता है",
- "⌥ or ⇧ + left drag": "⌥ या ⇧ + बायाँ ड्रैग"
+ "⌥ or ⇧ + left drag": "⌥ या ⇧ + बायाँ ड्रैग",
+ "Indoor wall light": "इनडोर दीवार लाइट",
+ "Traditional lantern": "पारंपरिक लालटेन",
+ "Modern lantern": "आधुनिक लालटेन",
+ "Farmhouse lantern": "फार्महाउस लालटेन",
+ "Gooseneck": "हंस-गर्दन लाइट",
+ "Up/down sconce": "ऊपर/नीचे दीवार लाइट",
+ "Bulkhead": "बल्कहेड लाइट",
+ "Fixture color": "लाइट का रंग",
+ "Dark bronze": "गहरा कांस्य",
+ "Brass": "पीतल",
+ "Copper": "तांबा",
+ "Outdoor wall light": "बाहरी दीवार लाइट",
+ "Lantern / sconce": "लालटेन / दीवार लाइट"
 }

@@ -438,7 +438,7 @@ function BeamAngle({ item }: { item: Item }) {
 }
 
 /** Kinds whose variant changes the footprint (an L counter has two parts, a wall TV sits on another layer). */
-const SHAPE_VARIANTS: Item['kind'][] = ['kitchenCounter', 'tv']
+const SHAPE_VARIANTS: Item['kind'][] = ['kitchenCounter', 'tv', 'wallLight']
 
 /** TV height when its placement changes: on the wall it hangs (none), on its stand it sits on the unit or table below. */
 function tvHeight(item: Item, variant: string) {

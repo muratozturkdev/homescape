@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "Комната {room} удалена. Отменить: ⌘Z.",
  "{value}%": "{value} %",
  "Ø {d} m · can be oval": "Ø {d} m · может быть овальным",
- "⌥ or ⇧ + left drag": "⌥ или ⇧ + перетаскивание левой кнопкой"
+ "⌥ or ⇧ + left drag": "⌥ или ⇧ + перетаскивание левой кнопкой",
+ "Indoor wall light": "Внутренний настенный светильник",
+ "Traditional lantern": "Традиционный фонарь",
+ "Modern lantern": "Современный фонарь",
+ "Farmhouse lantern": "Фонарь в деревенском стиле",
+ "Gooseneck": "Светильник на изогнутом кронштейне",
+ "Up/down sconce": "Светильник вверх/вниз",
+ "Bulkhead": "Герметичный светильник",
+ "Fixture color": "Цвет корпуса",
+ "Dark bronze": "Тёмная бронза",
+ "Brass": "Латунь",
+ "Copper": "Медь",
+ "Outdoor wall light": "Наружный настенный светильник",
+ "Lantern / sconce": "Фонарь / бра"
 }

@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "{room}を削除しました。⌘Zで元に戻せます。",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø{d} m · 楕円にもできます",
- "⌥ or ⇧ + left drag": "⌥ または ⇧ + 左ドラッグ"
+ "⌥ or ⇧ + left drag": "⌥ または ⇧ + 左ドラッグ",
+ "Indoor wall light": "屋内壁掛け照明",
+ "Traditional lantern": "伝統的なランタン",
+ "Modern lantern": "モダンランタン",
+ "Farmhouse lantern": "ファームハウスランタン",
+ "Gooseneck": "グースネックライト",
+ "Up/down sconce": "上下配光ブラケットライト",
+ "Bulkhead": "バルクヘッドライト",
+ "Fixture color": "照明器具の色",
+ "Dark bronze": "ダークブロンズ",
+ "Brass": "真鍮",
+ "Copper": "銅",
+ "Outdoor wall light": "屋外壁掛け照明",
+ "Lantern / sconce": "ランタン / 壁掛け照明"
 }

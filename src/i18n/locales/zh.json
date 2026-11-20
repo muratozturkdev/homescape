@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "已删除 {room}。按 ⌘Z 可撤销。",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · 也可做成椭圆",
- "⌥ or ⇧ + left drag": "⌥ 或 ⇧ + 左键拖动"
+ "⌥ or ⇧ + left drag": "⌥ 或 ⇧ + 左键拖动",
+ "Indoor wall light": "室内壁灯",
+ "Traditional lantern": "传统灯笼",
+ "Modern lantern": "现代灯笼",
+ "Farmhouse lantern": "乡村风格灯笼",
+ "Gooseneck": "鹅颈灯",
+ "Up/down sconce": "上下照明壁灯",
+ "Bulkhead": "防护型壁灯",
+ "Fixture color": "灯具颜色",
+ "Dark bronze": "深古铜色",
+ "Brass": "黄铜",
+ "Copper": "铜",
+ "Outdoor wall light": "室外壁灯",
+ "Lantern / sconce": "灯笼 / 壁灯"
 }

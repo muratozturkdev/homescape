@@ -249,19 +249,43 @@ function cutRuns(runs: WallRun[], cuts: WallRun[]): WallRun[] {
  * top: the highest point of a wall-mounted item or opening above the floor (rules.ts > wallTop): a half wall only takes
  * items below its top (a plug yes, a painting or a window no). Floor items (a counter) lean on half walls too.
  */
-export function wallSnap(rooms: Room[], x: number, z: number, depth: number, maxDist = 0.6, width?: number, aperture = false, exact = false, top?: number, extra: WallRun[] = []) {
+export function wallSnap(rooms: Room[], x: number, z: number, depth: number, maxDist = 0.6, width?: number, aperture = false, exact = false, top?: number, extra: WallRun[] = [], allowExterior = false,) {
   let best: { x: number; z: number; rot: number; dist: number } | null = null
   const inset = aperture ? APERTURE_INSET : WALL_IN + depth / 2 + 0.01
   const ROT = WALL_ROT
   const tall = top != null && top > HALF_WALL_H - 0.02
   // extra: walls that are not rooms' walls, like the stairs' side walls (model/stairs.ts > stairsWallRuns); no door or
   // window goes into them
+    // Exterior faces of real building walls.
+  // No outdoor floor is required.
+  const opposite: Record<Side, Side> = {
+    back: 'front',
+    front: 'back',
+    left: 'right',
+    right: 'left',
+  }
+
+  const exteriorRuns: WallRun[] =
+    allowExterior && !aperture
+      ? rooms
+          .filter((room) => !isOutdoor(room))
+          .flatMap((room) =>
+            wallRuns(room, rooms)
+              .filter((run) =>
+                !run.interior && !(tall && run.half),
+              )
+              .map((run) => ({
+                ...run,
+                side: opposite[run.side],
+              })),
+          )
+      : []
   const groups = [...rooms.map((room) =>
     // Outdoors the only wall is the house wall: items do not hang on a garden or balcony edge but on the house's outer face
     isOutdoor(room)
       ? wallRuns(room, rooms, 'house').filter((r) => !(tall && r.half))
       : cutRuns(wallRuns(room, [], 'edges'), [...wallRuns(room, rooms, 'open'), ...(tall ? wallRuns(room, rooms).filter((r) => r.half) : [])]),
-  ), aperture ? [] : extra]
+  ), aperture ? [] : extra, exteriorRuns]
   for (const runs of groups) {
     for (const run of runs) {
       const along = run.horizontal ? x : z

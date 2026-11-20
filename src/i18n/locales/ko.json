@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "{room} 삭제됨. ⌘Z로 되돌릴 수 있어요.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · 타원도 가능해요",
- "⌥ or ⇧ + left drag": "⌥ 또는 ⇧ + 왼쪽 드래그"
+ "⌥ or ⇧ + left drag": "⌥ 또는 ⇧ + 왼쪽 드래그",
+ "Indoor wall light": "실내 벽 조명",
+ "Traditional lantern": "전통 랜턴",
+ "Modern lantern": "현대식 랜턴",
+ "Farmhouse lantern": "농가 스타일 랜턴",
+ "Gooseneck": "구즈넥 조명",
+ "Up/down sconce": "상하향 벽 조명",
+ "Bulkhead": "벌크헤드 조명",
+ "Fixture color": "조명 기구 색상",
+ "Dark bronze": "진한 청동색",
+ "Brass": "황동",
+ "Copper": "구리",
+ "Outdoor wall light": "실외 벽 조명",
+ "Lantern / sconce": "랜턴 / 벽 조명"
 }

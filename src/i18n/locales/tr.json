@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "{room} silindi. Geri almak için ⌘Z.",
  "{value}%": "%{value}",
  "Ø {d} m · can be oval": "Ø {d} m · oval de olur",
- "⌥ or ⇧ + left drag": "⌥ ya da ⇧ + sol sürükle"
+ "⌥ or ⇧ + left drag": "⌥ ya da ⇧ + sol sürükle",
+ "Indoor wall light": "İç mekân duvar lambası",
+ "Traditional lantern": "Geleneksel fener",
+ "Modern lantern": "Modern fener",
+ "Farmhouse lantern": "Rustik fener",
+ "Gooseneck": "Kaz boynu lamba",
+ "Up/down sconce": "Yukarı/aşağı aplik",
+ "Bulkhead": "Kapalı tip duvar lambası",
+ "Fixture color": "Armatür rengi",
+ "Dark bronze": "Koyu bronz",
+ "Brass": "Pirinç",
+ "Copper": "Bakır",
+ "Outdoor wall light": "Dış mekân duvar lambası",
+ "Lantern / sconce": "Fener / aplik"
 }

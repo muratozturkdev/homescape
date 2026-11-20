@@ -1823,5 +1823,18 @@
  "{room} deleted. ⌘Z undoes it.": "{room} gelöscht. Rückgängig mit ⌘Z.",
  "{value}%": "{value} %",
  "Ø {d} m · can be oval": "Ø {d} m · kann oval sein",
- "⌥ or ⇧ + left drag": "⌥ oder ⇧ + mit links ziehen"
+ "⌥ or ⇧ + left drag": "⌥ oder ⇧ + mit links ziehen",
+ "Indoor wall light": "Innenwandleuchte",
+ "Traditional lantern": "Traditionelle Laterne",
+ "Modern lantern": "Moderne Laterne",
+ "Farmhouse lantern": "Landhauslaterne",
+ "Gooseneck": "Schwanenhalsleuchte",
+ "Up/down sconce": "Up/Down-Wandleuchte",
+ "Bulkhead": "Ovalleuchte",
+ "Fixture color": "Leuchtenfarbe",
+ "Dark bronze": "Dunkelbronze",
+ "Brass": "Messing",
+ "Copper": "Kupfer",
+ "Outdoor wall light": "Außenwandleuchte",
+ "Lantern / sconce": "Laterne / Wandleuchte"
 }

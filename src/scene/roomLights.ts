@@ -382,25 +382,44 @@ function daylightLights(level: Level, entities: Record<string, HassEntity>, sky:
  * walls. The intersection of the open areas with the range square is merged into the largest rectangles on a small grid
  * (the shader takes HS_RECTS rectangles per light; the largest ones).
  */
-function outdoorRegion(level: Level, cx: number, cz: number, range: number): Rect[] {
+function outdoorRegion(level: Level, cx: number, cz: number, range: number,  includeEmpty = false): Rect[] {
   const x0 = cx - range
   const x1 = cx + range
   const z0 = cz - range
   const z1 = cz + range
   const parts = level.rooms
-    .filter((r) => isOutdoor(r))
+    .filter((r) =>
+    includeEmpty ? !isOutdoor(r) : isOutdoor(r),
+    )
     .flatMap(rectsOf)
     .map((q) => ({ a: Math.max(q.x, x0), b: Math.min(q.x + q.w, x1), c: Math.max(q.z, z0), d: Math.min(q.z + q.d, z1) }))
     .filter((q) => q.b - q.a > 0.05 && q.d - q.c > 0.05)
-  if (!parts.length) return []
-  const xs = [...new Set(parts.flatMap((q) => [q.a, q.b]))].sort((a, b) => a - b)
-  const zs = [...new Set(parts.flatMap((q) => [q.c, q.d]))].sort((a, b) => a - b)
+   if (!parts.length && !includeEmpty) return []
+
+  const xs = [
+    ...new Set([
+      ...(includeEmpty ? [x0, x1] : []),
+      ...parts.flatMap((q) => [q.a, q.b]),
+    ]),
+  ].sort((a, b) => a - b)
+
+  const zs = [
+    ...new Set([
+      ...(includeEmpty ? [z0, z1] : []),
+      ...parts.flatMap((q) => [q.c, q.d]),
+    ]),
+  ].sort((a, b) => a - b)
   const nx = xs.length - 1
   const nz = zs.length - 1
   const inside = (i: number, j: number) => {
     const x = (xs[i] + xs[i + 1]) / 2
     const z = (zs[j] + zs[j + 1]) / 2
-    return parts.some((q) => x > q.a && x < q.b && z > q.c && z < q.d)
+        const occupied = parts.some((q) =>
+      x > q.a && x < q.b &&
+      z > q.c && z < q.d,
+    )
+
+    return includeEmpty ? !occupied : occupied
   }
   const used = new Uint8Array(nx * nz)
   const free = (i: number, j: number) => i < nx && j < nz && !used[j * nx + i] && inside(i, j)
@@ -460,7 +479,31 @@ export function computeRoomLights(level: Level, entities: Record<string, HassEnt
     // Outdoors: all open areas within range (road, crosswalk, sidewalk...). If the fixture is above no room (a lamp whose
     // arm points away from the road) the open area the item stands on decides; otherwise the light would leak into the house.
     const base = room ?? roomOf(it.x, it.z)
-    if (base && isOutdoor(base)) rects = outdoorRegion(level, pos[0], pos[2], r)
+
+    if (
+      it.kind === 'wallLight' &&
+      !roomOf(it.x, it.z)
+    ) {
+      // Exterior wall light without a defined floor.
+      // Illuminate empty outdoor space, excluding indoor rooms.
+      rects = outdoorRegion(
+        level,
+        pos[0],
+        pos[2],
+        r,
+        true,
+      )
+
+      // Never fall back to unrestricted illumination.
+      if (!rects.length) return
+    } else if (base && isOutdoor(base)) {
+      rects = outdoorRegion(
+        level,
+        pos[0],
+        pos[2],
+        r,
+      )
+    }
     // The item's light intensity factor (Item.intensity, 10%-300% on the card)
     const p = power * (it.intensity ?? 1)
     out.push({ pos, range: r, type, rects, axis, color: color.clone().multiplyScalar(p * f), power: p * color.r + p * color.g + p * color.b })
