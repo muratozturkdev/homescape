@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "{room} हटा दिया गया। पूर्ववत करने के लिए ⌘Z दबाएँ।",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · अंडाकार भी हो सकता है",
- "⌥ or ⇧ + left drag": "⌥ या ⇧ + बायाँ ड्रैग"
+ "⌥ or ⇧ + left drag": "⌥ या ⇧ + बायाँ ड्रैग",
+ "Trunk": "पेड़ का तना",
+ "Panel / rail": "पैनल / रेल",
+ "Left post": "बायाँ खंभा",
+ "Right post": "दायाँ खंभा",
+ "Middle post": "बीच का खंभा",
+ "Camera mounting surface": "कैमरा लगाने की सतह",
+ "Building wall": "इमारत की दीवार",
+ "Gate post": "गेट का खंभा",
+ "Mount to": "इस पर लगाएँ",
+ "No matching objects": "कोई उपयुक्त वस्तु नहीं",
+ "Add a matching tree, fence, or gate first.": "पहले एक उपयुक्त पेड़, बाड़ या गेट जोड़ें।",
+ "Mounting position": "माउंटिंग स्थिति",
+ "Mounting height": "माउंटिंग ऊँचाई",
+ "Mounting side": "माउंटिंग तरफ",
+ "Front": "सामने",
+ "Back": "पीछे",
+ "Camera direction": "कैमरे की दिशा"
 }

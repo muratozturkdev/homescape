@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "Excluído: {room}. ⌘Z desfaz.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · pode ser oval",
- "⌥ or ⇧ + left drag": "⌥ ou ⇧ + arrastar com o esquerdo"
+ "⌥ or ⇧ + left drag": "⌥ ou ⇧ + arrastar com o esquerdo",
+ "Trunk": "Tronco",
+ "Panel / rail": "Painel / travessa",
+ "Left post": "Poste esquerdo",
+ "Right post": "Poste direito",
+ "Middle post": "Poste central",
+ "Camera mounting surface": "Superfície de montagem da câmera",
+ "Building wall": "Parede do edifício",
+ "Gate post": "Poste do portão",
+ "Mount to": "Montar em",
+ "No matching objects": "Nenhum objeto compatível",
+ "Add a matching tree, fence, or gate first.": "Adicione primeiro uma árvore, cerca ou portão compatível.",
+ "Mounting position": "Posição de montagem",
+ "Mounting height": "Altura de montagem",
+ "Mounting side": "Lado de montagem",
+ "Front": "Frente",
+ "Back": "Trás",
+ "Camera direction": "Direção da câmera"
 }

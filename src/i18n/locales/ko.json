@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "{room} 삭제됨. ⌘Z로 되돌릴 수 있어요.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · 타원도 가능해요",
- "⌥ or ⇧ + left drag": "⌥ 또는 ⇧ + 왼쪽 드래그"
+ "⌥ or ⇧ + left drag": "⌥ 또는 ⇧ + 왼쪽 드래그",
+ "Trunk": "나무줄기",
+ "Panel / rail": "패널 / 가로대",
+ "Left post": "왼쪽 기둥",
+ "Right post": "오른쪽 기둥",
+ "Middle post": "가운데 기둥",
+ "Camera mounting surface": "카메라 설치 표면",
+ "Building wall": "건물 벽",
+ "Gate post": "대문 기둥",
+ "Mount to": "설치 대상",
+ "No matching objects": "호환되는 객체 없음",
+ "Add a matching tree, fence, or gate first.": "먼저 호환되는 나무, 울타리 또는 대문을 추가하세요.",
+ "Mounting position": "설치 위치",
+ "Mounting height": "설치 높이",
+ "Mounting side": "설치 면",
+ "Front": "앞면",
+ "Back": "뒷면",
+ "Camera direction": "카메라 방향"
 }

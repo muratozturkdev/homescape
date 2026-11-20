@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "{room} verwijderd. Ongedaan maken met ⌘Z.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · kan ovaal zijn",
- "⌥ or ⇧ + left drag": "⌥ of ⇧ + met links slepen"
+ "⌥ or ⇧ + left drag": "⌥ of ⇧ + met links slepen",
+ "Trunk": "Boomstam",
+ "Panel / rail": "Paneel / dwarsbalk",
+ "Left post": "Linker paal",
+ "Right post": "Rechter paal",
+ "Middle post": "Middelste paal",
+ "Camera mounting surface": "Montageoppervlak van camera",
+ "Building wall": "Gebouwmuur",
+ "Gate post": "Poortpaal",
+ "Mount to": "Bevestigen aan",
+ "No matching objects": "Geen passende objecten",
+ "Add a matching tree, fence, or gate first.": "Voeg eerst een passende boom, schutting of poort toe.",
+ "Mounting position": "Montagepositie",
+ "Mounting height": "Montagehoogte",
+ "Mounting side": "Montagezijde",
+ "Front": "Voorkant",
+ "Back": "Achterkant",
+ "Camera direction": "Camerarichting"
 }

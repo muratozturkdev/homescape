@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "{room} silindi. Geri almak için ⌘Z.",
  "{value}%": "%{value}",
  "Ø {d} m · can be oval": "Ø {d} m · oval de olur",
- "⌥ or ⇧ + left drag": "⌥ ya da ⇧ + sol sürükle"
+ "⌥ or ⇧ + left drag": "⌥ ya da ⇧ + sol sürükle",
+ "Trunk": "Ağaç gövdesi",
+ "Panel / rail": "Panel / yatay çıta",
+ "Left post": "Sol direk",
+ "Right post": "Sağ direk",
+ "Middle post": "Orta direk",
+ "Camera mounting surface": "Kamera montaj yüzeyi",
+ "Building wall": "Bina duvarı",
+ "Gate post": "Kapı direği",
+ "Mount to": "Monte edilecek nesne",
+ "No matching objects": "Uygun nesne bulunamadı",
+ "Add a matching tree, fence, or gate first.": "Önce uygun bir ağaç, çit veya kapı ekleyin.",
+ "Mounting position": "Montaj konumu",
+ "Mounting height": "Montaj yüksekliği",
+ "Mounting side": "Montaj tarafı",
+ "Front": "Ön",
+ "Back": "Arka",
+ "Camera direction": "Kamera yönü"
 }

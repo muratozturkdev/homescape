@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "Stanza eliminata: {room}. ⌘Z per annullare.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · può essere ovale",
- "⌥ or ⇧ + left drag": "⌥ o ⇧ + trascina con il sinistro"
+ "⌥ or ⇧ + left drag": "⌥ o ⇧ + trascina con il sinistro",
+ "Trunk": "Tronco",
+ "Panel / rail": "Pannello / traversa",
+ "Left post": "Palo sinistro",
+ "Right post": "Palo destro",
+ "Middle post": "Palo centrale",
+ "Camera mounting surface": "Superficie di montaggio della telecamera",
+ "Building wall": "Parete dell’edificio",
+ "Gate post": "Palo del cancello",
+ "Mount to": "Monta su",
+ "No matching objects": "Nessun oggetto compatibile",
+ "Add a matching tree, fence, or gate first.": "Aggiungi prima un albero, una recinzione o un cancello compatibile.",
+ "Mounting position": "Posizione di montaggio",
+ "Mounting height": "Altezza di montaggio",
+ "Mounting side": "Lato di montaggio",
+ "Front": "Fronte",
+ "Back": "Retro",
+ "Camera direction": "Orientamento della telecamera"
 }

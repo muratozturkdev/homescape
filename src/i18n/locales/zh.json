@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "已删除 {room}。按 ⌘Z 可撤销。",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · 也可做成椭圆",
- "⌥ or ⇧ + left drag": "⌥ 或 ⇧ + 左键拖动"
+ "⌥ or ⇧ + left drag": "⌥ 或 ⇧ + 左键拖动",
+ "Trunk": "树干",
+ "Panel / rail": "面板 / 横杆",
+ "Left post": "左侧立柱",
+ "Right post": "右侧立柱",
+ "Middle post": "中间立柱",
+ "Camera mounting surface": "摄像头安装表面",
+ "Building wall": "建筑墙壁",
+ "Gate post": "门柱",
+ "Mount to": "安装到",
+ "No matching objects": "没有匹配的对象",
+ "Add a matching tree, fence, or gate first.": "请先添加合适的树木、围栏或大门。",
+ "Mounting position": "安装位置",
+ "Mounting height": "安装高度",
+ "Mounting side": "安装侧面",
+ "Front": "正面",
+ "Back": "背面",
+ "Camera direction": "摄像头方向"
 }

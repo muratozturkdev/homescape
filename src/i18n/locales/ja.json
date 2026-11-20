@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "{room}を削除しました。⌘Zで元に戻せます。",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø{d} m · 楕円にもできます",
- "⌥ or ⇧ + left drag": "⌥ または ⇧ + 左ドラッグ"
+ "⌥ or ⇧ + left drag": "⌥ または ⇧ + 左ドラッグ",
+ "Trunk": "幹",
+ "Panel / rail": "パネル / 横桟",
+ "Left post": "左の支柱",
+ "Right post": "右の支柱",
+ "Middle post": "中央の支柱",
+ "Camera mounting surface": "カメラの取り付け面",
+ "Building wall": "建物の壁",
+ "Gate post": "門柱",
+ "Mount to": "取り付け先",
+ "No matching objects": "対応するオブジェクトがありません",
+ "Add a matching tree, fence, or gate first.": "先に対応する木、フェンス、または門を追加してください。",
+ "Mounting position": "取り付け位置",
+ "Mounting height": "取り付け高さ",
+ "Mounting side": "取り付け側",
+ "Front": "前面",
+ "Back": "背面",
+ "Camera direction": "カメラの向き"
 }

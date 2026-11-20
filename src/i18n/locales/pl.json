@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "Usunięto pokój {room}. Cofnij: ⌘Z.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · może być owalny",
- "⌥ or ⇧ + left drag": "⌥ lub ⇧ + przeciągnięcie lewym przyciskiem"
+ "⌥ or ⇧ + left drag": "⌥ lub ⇧ + przeciągnięcie lewym przyciskiem",
+ "Trunk": "Pień",
+ "Panel / rail": "Panel / poprzeczka",
+ "Left post": "Lewy słupek",
+ "Right post": "Prawy słupek",
+ "Middle post": "Środkowy słupek",
+ "Camera mounting surface": "Powierzchnia montażu kamery",
+ "Building wall": "Ściana budynku",
+ "Gate post": "Słupek bramy",
+ "Mount to": "Zamontuj na",
+ "No matching objects": "Brak pasujących obiektów",
+ "Add a matching tree, fence, or gate first.": "Najpierw dodaj odpowiednie drzewo, ogrodzenie lub bramę.",
+ "Mounting position": "Pozycja montażu",
+ "Mounting height": "Wysokość montażu",
+ "Mounting side": "Strona montażu",
+ "Front": "Przód",
+ "Back": "Tył",
+ "Camera direction": "Kierunek kamery"
 }

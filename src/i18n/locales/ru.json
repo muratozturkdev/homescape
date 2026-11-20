@@ -1823,5 +1823,22 @@
  "{room} deleted. ⌘Z undoes it.": "Комната {room} удалена. Отменить: ⌘Z.",
  "{value}%": "{value} %",
  "Ø {d} m · can be oval": "Ø {d} m · может быть овальным",
- "⌥ or ⇧ + left drag": "⌥ или ⇧ + перетаскивание левой кнопкой"
+ "⌥ or ⇧ + left drag": "⌥ или ⇧ + перетаскивание левой кнопкой",
+ "Trunk": "Ствол дерева",
+ "Panel / rail": "Панель / перекладина",
+ "Left post": "Левый столб",
+ "Right post": "Правый столб",
+ "Middle post": "Средний столб",
+ "Camera mounting surface": "Поверхность крепления камеры",
+ "Building wall": "Стена здания",
+ "Gate post": "Столб ворот",
+ "Mount to": "Закрепить на",
+ "No matching objects": "Нет подходящих объектов",
+ "Add a matching tree, fence, or gate first.": "Сначала добавьте подходящее дерево, забор или ворота.",
+ "Mounting position": "Положение крепления",
+ "Mounting height": "Высота крепления",
+ "Mounting side": "Сторона крепления",
+ "Front": "Спереди",
+ "Back": "Сзади",
+ "Camera direction": "Направление камеры"
 }
