@@ -6,7 +6,7 @@ import { useHa } from '@/ha/store'
 import { bindingsOf, boundAnywhere, emitsLight, isBound, ledOf, ledSource } from '@/model/bindings'
 import { BEAM, BODY_COLORS, CATALOG, CONSOLE_LEN, consoleModel, GARAGE_DOOR, isSlidingDoor, isWallOpening, ITEM_PRESETS, OPENING_DOOR_H, OPENING_FULL_H, OPTIONS, RESIZABLE, RESIZABLE2, SLIDING_DOOR, sizeOf, TOP_COLORS, WALL_OPENING } from '@/model/catalog'
 import { kindFor, modelName, variantFor } from '@/model/generate'
-import { doorSides, isOutdoor, isStreetSurface, rectsOf, roomArea, roomAt, wallLengthAt, wallSnap, openingWallRun, openingMaxWidth, WALL_IN, type Side } from '@/model/geometry'
+import { doorSides, isOutdoor, isStreetSurface, rectsOf, openingMaxWidth, openingWallRun, ownsItem, roomArea, roomAt, WALL_IN, wallLengthAt, wallSnap, type Side } from '@/model/geometry'
 import { groupFamily, groupMates, heatingSummary } from '@/model/groups'
 import { activeHomeId, activeLevel, homesOf, useLayout } from '@/model/layoutStore'
 import { usePlacement } from '@/model/placement'
@@ -1228,7 +1228,7 @@ function RoomView({ room, stats }: { room: Room; stats?: RoomStats }) {
   const level = useLayout((s) => activeLevel(s))
   const entities = useHa((s) => s.entities)
   const select = useLayout((s) => s.select)
-  const items = (level?.items ?? []).filter((it) => bindingsOf(it).some((id) => entities[id]) && roomAt([room], it.x, it.z))
+  const items = (level?.items ?? []).filter((it) => bindingsOf(it).some((id) => entities[id]) && level && ownsItem(room, it, level.rooms))
   return (
     <div className={panel}>
       <Header eyebrow={t('Room')} title={room.name} onClose={() => select(null)} />

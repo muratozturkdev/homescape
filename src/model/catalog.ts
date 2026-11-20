@@ -752,7 +752,7 @@ export const OPTIONS: Partial<
     bodyDef: '#efeeea',
     note: t('Bind the HomePod media player in Home Assistant (Apple TV integration): while playing, music notes rise from it and a colored wave spins on the touch surface, stronger as the volume goes up; it fades when paused.'),
   },
-    wallLight: {
+  wallLight: {
     variantLabel: t('Type'),
     variants: [
       ['indoor', t('Indoor wall light')],
@@ -1209,7 +1209,7 @@ export interface ItemPreset {
   extra: Partial<Pick<Item, 'len' | 'len2' | 'y' | 'variant' | 'mount' | 'fixed' | 'double' | 'sink' | 'dishwasher'>>
 }
 export const ITEM_PRESETS: ItemPreset[] = [
-  { id: 'outdoorWallLight', kind: 'wallLight', label: t('Outdoor wall light'), sub: t('Lantern / sconce'), extra: {variant: 'traditional', }, },
+  { id: 'outdoorWallLight', kind: 'wallLight', label: t('Outdoor wall light'), sub: t('Lantern / sconce'), extra: { variant: 'traditional' } },
   { id: 'windowFull', kind: 'window', label: t('Full-height window'), sub: `${formatNumber(1.2)} × ${formatNumber(2.1)} m`, extra: { len2: 2.1, y: -0.82 } },
   // A window that does not open (fixed glazing): no sash and no swing arc; Opens / Fixed in its card switches it
   { id: 'windowFixed', kind: 'window', label: t('Fixed window'), sub: t('does not open'), extra: { fixed: true } },

@@ -95,19 +95,8 @@ function ItemGhost({ kind, extra }: { kind: ItemKind; extra?: Partial<Item> }) {
       // Kitchen cabinets and appliances stick to a wall only close to it; elsewhere they stand free (an island)
       // A TV may end up on the wall: it does not hang on a half wall either
       const top = wallTop({ kind, variant: kind === 'tv' ? 'wall' : extra?.variant, mount: extra?.mount, y: extra?.y, len2: extra?.len2 })
-            const w = wallSnap(
-        level.rooms,
-        x,
-        z,
-        meta.size[1],
-        FREESTANDING.includes(kind) ? FREE_SNAP : 1,
-        sizeOf(kind, extra?.len)[0],
-        isAperture(kind),
-        extra?.mount === 'wall',
-        top,
-        stairsWallRuns(level.items),
-        kind === 'wallLight',
-      )
+      // A wall light also hangs on the outside of a house wall
+      const w = wallSnap(level.rooms, x, z, meta.size[1], FREESTANDING.includes(kind) ? FREE_SNAP : 1, sizeOf(kind, extra?.len)[0], isAperture(kind), extra?.mount === 'wall', top, stairsWallRuns(level.items), kind === 'wallLight')
       if (w) ({ x, z, rot } = w)
       else onWall = false
     }

@@ -325,11 +325,11 @@ function groundFloor(): Level {
   // A two-tube shop light over the workbench, on with the garage lights
   put('utilityLight', 11.15, 4.3, 0, { ...bind('light.us_garage'), variant: 'ledShop2', len: 1.5 })
 
-  /* --- front porch: doorbell, wall lights, seating corner --- */
+  /* --- front porch: doorbell, lanterns, seating corner --- */
   put('doormat', 0.5, 10.55, 0, { len: 1, len2: 0.6, variant: 'welcome', body: '#7a2f3a' })
   wall(porch, 'back', 1.25, 'doorbell', bind('camera.us_doorbell'))
-  wall(porch, 'back', -0.2, 'wallLight', { ...bind('light.us_porch'), group: 'us-grp-porch' })
-  wall(porch, 'back', 1.5, 'wallLight', { ...bind('light.us_porch'), group: 'us-grp-porch' })
+  wall(porch, 'back', -0.2, 'wallLight', { ...bind('light.us_porch'), group: 'us-grp-porch', variant: 'traditional' })
+  wall(porch, 'back', 1.5, 'wallLight', { ...bind('light.us_porch'), group: 'us-grp-porch', variant: 'traditional' })
   wall(porch, 'back', -3.1, 'camera', bind('camera.us_porch'))
   put('bench', -2.7, 10.5, 0, { variant: 'park', len: 1.6, top: '#f4f2ee' })
   put('roundTable', 2.3, 10.75, 0)
@@ -380,7 +380,7 @@ function groundFloor(): Level {
   put('stringLights', -2.3, -3.85, 0, { ...bind('light.us_deck_string_lights'), len: 5.5 })
   put('grill', 0.35, -2.4, -PI / 2, { ...bind('switch.us_grill'), variant: 'gas' })
   wall(deck, 'front', -0.25, 'awning', { ...bind('cover.us_deck_awning'), len: 2.4, body: '#3f56e0' })
-  wall(deck, 'front', -4.4, 'wallLight', bind('light.us_deck_light'))
+  wall(deck, 'front', -4.4, 'wallLight', { ...bind('light.us_deck_light'), variant: 'modern' })
   wall(deck, 'front', -6.4, 'camera', bind('camera.us_backyard'))
   put('planter', -6.3, -3.55, 0, { variant: 'wood', len: 1 })
   put('gardenLight', 0.65, -3.65, 0, { ...bind('light.us_deck_light'), variant: 'spike' })
