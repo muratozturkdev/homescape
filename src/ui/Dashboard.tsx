@@ -38,7 +38,7 @@ import type { HassEntity } from '@/ha/types'
 import { t, tc, tn } from '@/i18n'
 import { bindingsOf, itemLightIds } from '@/model/bindings'
 import { arrange, isHidden, isPinned, isRowHidden, place, roomKey, rowOrder, step, stepPin, stepRow, toggleHidden, togglePin, toggleRow } from '@/model/dashboardLayout'
-import { inRoom, isOutdoor, isStreetSurface } from '@/model/geometry'
+import { inRoom, isOutdoor, isStreetSurface, ownsItem } from '@/model/geometry'
 import { activeHomeId, homesOf, levelName, useLayout } from '@/model/layoutStore'
 import type { DashboardLayout, Item, Level, Room } from '@/model/types'
 import { useView } from '@/scene/camera'
@@ -325,7 +325,7 @@ function DeviceRow({ e, item, Icon, onOpen, tools }: { e: HassEntity; item?: Ite
 
 /** Main entities of the room's items (controllable ones first) and the room's lights. */
 function roomDevices(room: Room, level: Level, entities: Record<string, HassEntity>) {
-  const items = level.items.filter((it) => inRoom(room, it.x, it.z))
+  const items = level.items.filter((it) => ownsItem(room, it, level.rooms))
   const seen = new Set<string>()
   const rows: { e: HassEntity; item: Item }[] = []
   for (const it of items) {

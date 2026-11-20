@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { floorNumber, t } from '@/i18n'
 import { asMain, foldTvBacklights, isBound, primaryFirst, withBinding, withoutBinding } from './bindings'
 import { connectRooms } from './doors'
-import { areaContents, inRoom, rectsOf, settleWallItems, shiftRoom } from './geometry'
+import { areaContents, ownsItem, rectsOf, settleWallItems, shiftRoom } from './geometry'
 import { dropLoneGroups, groupMates } from './groups'
 import { splitTvUnits } from './migrate'
 import { isDefault as isDefaultDashboard } from './dashboardLayout'
@@ -390,8 +390,8 @@ export const useLayout = create<LayoutState>()(
               ...l,
               // Together with all its parts.
               rooms: l.rooms.map((r) => (r.id === id ? shiftRoom(r, dx, dz) : r)),
-              // Moving a room also moves the items inside it (in any of its parts).
-              items: l.items.map((it) => (inRoom(room, it.x, it.z) ? { ...it, x: it.x + dx, z: it.z + dz } : it)),
+              // Moving a room also moves the items inside it (in any of its parts) and the lights on the outside of its walls.
+              items: l.items.map((it) => (ownsItem(room, it, l.rooms) ? { ...it, x: it.x + dx, z: it.z + dz } : it)),
             }
           }, false),
         resizeEdge: (roomId, part, edge, v, record = true) =>

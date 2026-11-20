@@ -249,19 +249,25 @@ function cutRuns(runs: WallRun[], cuts: WallRun[]): WallRun[] {
  * top: the highest point of a wall-mounted item or opening above the floor (rules.ts > wallTop): a half wall only takes
  * items below its top (a plug yes, a painting or a window no). Floor items (a counter) lean on half walls too.
  */
-export function wallSnap(rooms: Room[], x: number, z: number, depth: number, maxDist = 0.6, width?: number, aperture = false, exact = false, top?: number, extra: WallRun[] = []) {
+export function wallSnap(rooms: Room[], x: number, z: number, depth: number, maxDist = 0.6, width?: number, aperture = false, exact = false, top?: number, extra: WallRun[] = [], exterior = false) {
   let best: { x: number; z: number; rot: number; dist: number } | null = null
   const inset = aperture ? APERTURE_INSET : WALL_IN + depth / 2 + 0.01
   const ROT = WALL_ROT
   const tall = top != null && top > HALF_WALL_H - 0.02
   // extra: walls that are not rooms' walls, like the stairs' side walls (model/stairs.ts > stairsWallRuns); no door or
   // window goes into them
+  // exterior: the outer faces of the house walls too, with no garden in front (an outdoor wall light, rules.ts > checkItem)
+  const outward: Record<Side, Side> = { back: 'front', front: 'back', left: 'right', right: 'left' }
+  const exteriorRuns: WallRun[] =
+    exterior && !aperture
+      ? rooms.filter((room) => !isOutdoor(room)).flatMap((room) => wallRuns(room, rooms).filter((r) => !r.interior && !(tall && r.half)).map((r) => ({ ...r, side: outward[r.side] })))
+      : []
   const groups = [...rooms.map((room) =>
     // Outdoors the only wall is the house wall: items do not hang on a garden or balcony edge but on the house's outer face
     isOutdoor(room)
       ? wallRuns(room, rooms, 'house').filter((r) => !(tall && r.half))
       : cutRuns(wallRuns(room, [], 'edges'), [...wallRuns(room, rooms, 'open'), ...(tall ? wallRuns(room, rooms).filter((r) => r.half) : [])]),
-  ), aperture ? [] : extra]
+  ), aperture ? [] : extra, exteriorRuns]
   for (const runs of groups) {
     for (const run of runs) {
       const along = run.horizontal ? x : z
@@ -394,6 +400,27 @@ export function apertureOf(it: Item) {
   return null
 }
 
+/** Indoor wall runs an opening (door, window, doorless opening) sits in: one per room the wall belongs to. */
+function openingRuns(item: Item, rooms: Room[]): WallRun[] {
+  const a = apertureOf(item)
+  if (!a) return []
+  const on = (r: WallRun) => r.horizontal === a.horizontal && Math.abs(r.line - a.line) <= 0.08 && a.along >= r.a0 && a.along <= r.a1
+  return rooms.filter((room) => !isOutdoor(room)).flatMap((room) => wallRuns(room, rooms).filter(on))
+}
+
+/** The indoor wall run an opening sits in. */
+export const openingWallRun = (item: Item, rooms: Room[]): WallRun | undefined => openingRuns(item, rooms)[0]
+
+/** Whether an opening is in a half-height wall. */
+export const openingOnHalfWall = (item: Item, rooms: Room[]) => openingRuns(item, rooms).some((r) => r.half)
+
+/** The widest an opening can be in its wall (its ends stay clear of the corners), rounded down to 5 cm. */
+export function openingMaxWidth(item: Item, rooms: Room[]): number | undefined {
+  const run = openingWallRun(item, rooms)
+  if (!run) return undefined
+  return Math.max(0, Math.floor((run.a1 - run.a0 - 2 * WALL_IN + 1e-6) * 20) / 20)
+}
+
 /** Openings in a wall run. A door in the neighbor room cuts the shared wall too. */
 export function runOpenings(run: WallRun, items: Item[]): Opening[] {
   const out: Opening[] = []
@@ -474,6 +501,23 @@ export function ceilingFit(rooms: Room[], x: number, z: number) {
 
 /* ---------- what goes with a removed area ---------- */
 
+
+/**
+ * A point just behind a wall light, inside the room whose wall it hangs on. A light on the outside of a house wall stands
+ * outside every room; it belongs to that room (rules.ts > checkItem), moves with it and goes when it is deleted.
+ */
+export function behindWall(it: { x: number; z: number; rot: number }) {
+  const back = WALL_IN + CATALOG.wallLight.size[1] / 2 + 0.06
+  return { x: it.x - Math.sin(it.rot) * back, z: it.z - Math.cos(it.rot) * back }
+}
+
+/** Whether an item is in the room: inside it, or a light on the outside of its wall (behindWall). */
+export function ownsItem(room: Room, it: Item, rooms: Room[]) {
+  if (inRoom(room, it.x, it.z)) return true
+  if (it.kind !== 'wallLight' || roomAt(rooms, it.x, it.z)) return false
+  const b = behindWall(it)
+  return inRoom(room, b.x, b.z)
+}
 /**
  * Items deleted together with a room or room part: those inside the area (not belonging to a remaining room) and doors
  * from a neighbor room that open into this area. area: the removed rectangles; keep: the rooms left after deleting.
@@ -482,6 +526,11 @@ export function areaContents(items: Item[], area: Rect[], keep: Room[]): Item[] 
   const inArea = (x: number, z: number) => area.some((r) => inRect(r, x, z)) && !roomAt(keep, x, z)
   return items.filter((it) => {
     if (inArea(it.x, it.z)) return true
+    // A light on the outside of a house wall (outside every room) goes with the room behind the wall
+    if (it.kind === 'wallLight' && !roomAt(keep, it.x, it.z)) {
+      const b = behindWall(it)
+      return inArea(b.x, b.z)
+    }
     if (it.kind !== 'door' || !apertureOf(it)) return false
     // If the door's back (other side) is in the removed area it now opens into nothing: it goes too.
     const bx = it.x - Math.sin(it.rot) * (APERTURE_INSET + 0.3)

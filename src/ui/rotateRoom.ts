@@ -1,5 +1,5 @@
 import { useHa } from '@/ha/store'
-import { inRoom, rectBounds, rectsOf } from '@/model/geometry'
+import { ownsItem, rectBounds, rectsOf } from '@/model/geometry'
 import { activeLevel, useLayout } from '@/model/layoutStore'
 import { overlapsRoom } from '@/model/rules'
 import { turnOpen } from '@/model/walls'
@@ -33,7 +33,7 @@ export function rotateRoom(id: string, dir: 1 | -1 = 1): boolean {
     useHa.setState({ notice: t("Can't rotate: it overlaps another room. Make room first or move the room.") })
     return false
   }
-  const items = lv.items.filter((it) => inRoom(room, it.x, it.z))
+  const items = lv.items.filter((it) => ownsItem(room, it, lv.rooms))
   s.checkpoint()
   const [main, ...parts] = next
   // Walls left out or half toward open space turn with the room (the side keys); walls to neighbor rooms are named by id

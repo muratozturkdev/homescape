@@ -476,6 +476,44 @@ ok(Lend.rooms.length === L0.rooms.length && !Lend.items.some((i) => STREET.inclu
   }, lamp)
 }
 
+// --- Outdoor wall light (PR #16): hangs on the outside of a house wall with no garden in front and belongs to the room behind ---
+{
+  const r = await p.evaluate(async () => {
+    const G = await import('/src/model/geometry.ts')
+    const R = await import('/src/model/rules.ts')
+    const s = window.__homescape.getState().layout
+    s.setMode('edit')
+    const room = s.addRoom({ name: 'Lantern house', floor: 'wood', type: 'room', x: 500, z: 10, w: 4, d: 4 })
+    const lv = () => {
+      const st = window.__homescape.getState().layout
+      return st.layout.levels.find((l) => l.id === st.levelId)
+    }
+    // Just outside the front wall (z 14): the snap finds the wall's outer face
+    const top = R.wallTop({ kind: 'wallLight', variant: 'traditional' })
+    const w = G.wallSnap(lv().rooms, 502, 14.3, 0.25, 0.6, 0.4, false, false, top, [], true)
+    const chk = w && R.checkItem(lv(), { kind: 'wallLight', variant: 'traditional', x: w.x, z: w.z, rot: w.rot })
+    const painting = w && R.checkItem(lv(), { kind: 'painting', x: w.x, z: w.z, rot: w.rot })
+    const id = w ? s.addItem('wallLight', w.x, w.z, w.rot, null, undefined, { variant: 'traditional' }) : null
+    const at = () => lv().items.find((it) => it.id === id)
+    const placed = at() && { x: at().x, z: at().z }
+    s.moveRoom(room, 3, 0)
+    const moved = at() && { x: at().x, z: at().z }
+    const { rotateRoom } = await import('/src/ui/rotateRoom.ts')
+    rotateRoom(room, 1)
+    const turned = at() && { x: at().x, z: at().z, rot: at().rot }
+    const inside = turned && G.ownsItem(lv().rooms.find((x) => x.id === room), at(), lv().rooms)
+    s.deleteRoom(room)
+    const left = Boolean(at())
+    s.setMode('view')
+    return { w, chk, painting, placed, moved, turned, inside, left }
+  })
+  ok(r.w && r.w.z > 14 && Math.abs(r.w.rot) < 0.01, `A wall light snaps to the outer face of a house wall with no garden in front (${JSON.stringify(r.w)})`)
+  ok(r.chk?.ok && r.painting && !r.painting.ok, `It can hang there; a painting cannot (light ${JSON.stringify(r.chk)}, painting ${JSON.stringify(r.painting)})`)
+  ok(r.placed && r.moved && Math.abs(r.moved.x - r.placed.x - 3) < 0.001 && Math.abs(r.moved.z - r.placed.z) < 0.001, `It moves with its room (${JSON.stringify(r.placed)} -> ${JSON.stringify(r.moved)})`)
+  ok(r.turned && r.inside, `It turns with its room and still belongs to it (${JSON.stringify(r.turned)})`)
+  ok(!r.left, 'It goes when its room is deleted')
+}
+
 ok(errors.length === 0, `No page errors${errors.length ? `: ${errors.slice(0, 3).join(' | ')}` : ''}`)
 await b.close()
 console.log(failures ? `\n${failures} checks failed` : '\nAll checks passed')

@@ -49,6 +49,7 @@ export const CATALOG: Record<ItemKind, KindMeta> = {
   mirrorLight: { label: t('Mirror light'), group: 'light', domains: LIGHTISH, size: [0.8, 0.2], labelY: 2.3, wall: true },
   downlight: { label: t('Downlight'), group: 'light', domains: LIGHTISH, size: [0.15, 0.15], labelY: 2.75 },
   ceilingStrip: { label: t('Ceiling LED strip'), group: 'light', domains: LIGHTISH, size: [3, 3], labelY: 2.75 },
+  utilityLight: { label: t('Utility light'), group: 'light', domains: LIGHTISH, size: [1.2, 0.34], labelY: 2.75 },
 
   // TV and TV unit are separate items: the TV goes on a unit/table or hangs on the wall.
   tv: { label: t('TV'), group: 'media', domains: ['media_player', 'switch', 'remote'], size: [1.3, 0.2], labelY: 1.75, wall: true },
@@ -323,6 +324,8 @@ export const CATALOG: Record<ItemKind, KindMeta> = {
   treadmill: { label: t('Treadmill'), group: 'furniture', domains: ['switch', 'sensor'], size: [0.8, 1.8], labelY: 1.6 },
   // Exercise bike: the flywheel spins while on
   exerciseBike: { label: t('Exercise bike'), group: 'furniture', domains: ['switch', 'sensor'], size: [0.55, 1.1], labelY: 1.4 },
+  // Rowing Machine: the flywheel spins while on
+  rowingMachine: { label: t('Rowing machine'), group: 'furniture', domains: ['switch', 'sensor'], size: [0.65, 2.2], labelY: 1.15, },
   // Yoga mat, walked on like a rug; rolled out or rolled up
   yogaMat: { label: t('Yoga mat'), group: 'furniture', domains: [], size: [0.61, 1.83], labelY: 0.2 },
   // Upright or digital piano against a wall
@@ -625,6 +628,18 @@ export const OPTIONS: Partial<
     ],
     ledHint: t("Pick the diffuser's light (like \"Diffuser Light\") separately: the ring strip around the body lights up with it and takes its color, and so does the mist. Without one, the first light bound to the diffuser."),
   },
+  utilityLight: {
+    variantLabel: t('Fixture style'),
+    variants: [
+      ['fluorescent1', t('Fluorescent · 1 tube')],
+      ['fluorescent2', t('Fluorescent · 2 tubes')],
+      ['fluorescent4', t('Fluorescent · 4 tubes')],
+      ['ledBatten', t('LED batten')],
+      ['ledShop2', t('LED shop · 2 tubes')],
+      ['ledShop4', t('LED shop · 4 tubes')],
+    ],
+    variantDef: 'fluorescent2',
+  },
   downlight: {
     variantLabel: t('Light spread'),
     variants: [
@@ -736,6 +751,29 @@ export const OPTIONS: Partial<
     bodyList: HOMEPOD_COLORS,
     bodyDef: '#efeeea',
     note: t('Bind the HomePod media player in Home Assistant (Apple TV integration): while playing, music notes rise from it and a colored wave spins on the touch surface, stronger as the volume goes up; it fades when paused.'),
+  },
+  wallLight: {
+    variantLabel: t('Type'),
+    variants: [
+      ['indoor', t('Indoor wall light')],
+      ['traditional', t('Traditional lantern')],
+      ['modern', t('Modern lantern')],
+      ['farmhouse', t('Farmhouse lantern')],
+      ['gooseneck', t('Gooseneck')],
+      ['upDown', t('Up/down sconce')],
+      ['bulkhead', t('Bulkhead')],
+    ],
+    variantDef: 'indoor',
+    body: t('Fixture color'),
+    bodyDef: '#26282c',
+    bodyList: [
+      [t('Black'), '#26282c'],
+      [t('Dark bronze'), '#594237'],
+      [t('White'), '#f1f1ed'],
+      [t('Silver'), '#a6a9ad'],
+      [t('Brass'), '#b59a56'],
+      [t('Copper'), '#b87333'],
+    ],
   },
   ceilingLight: { variantLabel: t('Shape'), variants: [['round', t('Round')], ['square', t('Square')]], variantDef: 'round' },
   tableLamp: {
@@ -1096,6 +1134,8 @@ export const RESIZABLE: Partial<Record<ItemKind, { min: number; max: number; lab
   speedBump: { min: 1, max: 10, label: t('Speed bump length') },
   ledStrip: { min: 0.3, max: 8 },
   christmasTree: { min: 0.6, max: 5, label: t('Tree height'), def: 2 },
+  utilityLight: { min: 0.6, max: 2.4, label: t('Fixture length'), def: 1.2 },
+  tree: { min: 0.8, max: 8, label: t('Tree height'), def: 4 },
 }
 /**
  * Christmas tree size: Item.len is the tree's HEIGHT (not its width), 2 m by default. The whole model scales with it, so the
@@ -1104,8 +1144,20 @@ export const RESIZABLE: Partial<Record<ItemKind, { min: number; max: number; lab
  */
 export const TREE_DEF_H = 2
 export const treeScale = (len?: number) => (len ?? TREE_DEF_H) / TREE_DEF_H
+/** Trees */
+export const REGULAR_TREE_DEF_H = 4
+export const regularTreeScale = (height?: number) => Math.max(0.8, Math.min(8, height ?? REGULAR_TREE_DEF_H)) / REGULAR_TREE_DEF_H
 /** Height of an item's DOM label: the catalog's labelY, scaled for kinds whose size changes their height (Christmas tree). */
-export const labelYOf = (kind: ItemKind, len?: number) => (kind === 'christmasTree' ? CATALOG[kind].labelY * treeScale(len) : CATALOG[kind].labelY)
+export const labelYOf = (kind: ItemKind, len?: number) => {
+  if (kind === 'christmasTree') {
+    return CATALOG[kind].labelY * treeScale(len)
+  }
+
+  if (kind === 'tree') {
+    return CATALOG[kind].labelY * regularTreeScale(len)
+  }
+    return CATALOG[kind].labelY
+}
 /**
  * Sliding glass door (a door with Item.variant 'sliding', GitHub issue #6): its width is Item.len, set in the card; a hinged
  * door keeps its fixed 1 m.
@@ -1157,6 +1209,7 @@ export interface ItemPreset {
   extra: Partial<Pick<Item, 'len' | 'len2' | 'y' | 'variant' | 'mount' | 'fixed' | 'double' | 'sink' | 'dishwasher'>>
 }
 export const ITEM_PRESETS: ItemPreset[] = [
+  { id: 'outdoorWallLight', kind: 'wallLight', label: t('Outdoor wall light'), sub: t('Lantern / sconce'), extra: { variant: 'traditional' } },
   { id: 'windowFull', kind: 'window', label: t('Full-height window'), sub: `${formatNumber(1.2)} × ${formatNumber(2.1)} m`, extra: { len2: 2.1, y: -0.82 } },
   // A window that does not open (fixed glazing): no sash and no swing arc; Opens / Fixed in its card switches it
   { id: 'windowFixed', kind: 'window', label: t('Fixed window'), sub: t('does not open'), extra: { fixed: true } },
@@ -1204,6 +1257,12 @@ export function sizeOf(kind: ItemKind, len?: number, len2?: number): [number, nu
   if (kind === 'ceilingFan') return [len ?? w, len ?? d]
   // A Christmas tree's len is its height; the round footprint grows with it
   if (kind === 'christmasTree') return [w * treeScale(len), d * treeScale(len)]
+ // For regular trees, Item.len represents height.
+ // Scale both footprint dimensions together.
+  if (kind === 'tree') {const s = regularTreeScale(len)
+  return [w * s, d * s]
+}
+  // All other items use their existing dimensions.
   return [len ?? w, d]
 }
 
@@ -1217,7 +1276,7 @@ export const consoleModel = (variant?: string) => ({ brand: variant?.startsWith(
 /** Beam angle of a downlight (degrees, full cone): limits of the card slider and the default (Item.beam). */
 export const BEAM = { min: 20, max: 150, def: 90 }
 
-export const LIGHT_KINDS: ItemKind[] = ['pendant', 'floorLamp', 'deskLamp', 'wallLight', 'ledStrip', 'mirrorLight', 'downlight', 'ceilingStrip', 'ceilingLight', 'trackLight', 'tableLamp', 'gardenLight', 'stringLights', 'streetLamp']
+export const LIGHT_KINDS: ItemKind[] = ['pendant', 'floorLamp', 'deskLamp', 'wallLight', 'ledStrip', 'mirrorLight', 'downlight', 'ceilingStrip', 'ceilingLight', 'trackLight', 'tableLamp', 'gardenLight', 'stringLights', 'streetLamp', 'utilityLight']
 
 export function isLightKind(kind: ItemKind) {
   return LIGHT_KINDS.includes(kind)

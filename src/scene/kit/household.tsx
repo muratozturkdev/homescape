@@ -1159,6 +1159,142 @@ export function ExerciseBike({ v }: P) {
   )
 }
 
+/**
+ * Rowing machine / indoor rower.
+ * Local +z is the front; all measurements are in meters.
+ */
+export function RowingMachine({ v }: P) {
+  const frame = bodyOf(v, '#30343b')
+  const dark = '#17191e'
+  const metal = '#adb5c2'
+
+  return (
+    <group>
+      {/* Long central aluminum rail */}
+      <Box
+        size={[0.11, 0.10, 1.75]}
+        position={[0, 0.25, 0]}
+        color={metal}
+        radius={0.015}
+      />
+
+      {/* Rear stabilizer */}
+      <Box
+        size={[0.58, 0.06, 0.10]}
+        position={[0, 0.07, 0.94]}
+        color={frame}
+        radius={0.025}
+      />
+
+      {/* Front stabilizer */}
+      <Box
+        size={[0.60, 0.07, 0.12]}
+        position={[0, 0.07, -0.92]}
+        color={frame}
+        radius={0.025}
+      />
+
+      {/* Upright front support */}
+      <Box
+        size={[0.10, 0.38, 0.10]}
+        position={[0, 0.23, -0.80]}
+        color={frame}
+        radius={0.015}
+      />
+
+      {/* Flywheel housing */}
+      <group position={[0, 0.43, -0.78]}>
+        <Cyl
+          r={0.23}
+          h={0.15}
+          rotation={[0, 0, Math.PI / 2]}
+          color={dark}
+          segments={32}
+        />
+        <Cyl
+          r={0.17}
+          h={0.155}
+          rotation={[0, 0, Math.PI / 2]}
+          color={metal}
+          segments={32}
+        />
+        <Cyl
+          r={0.06}
+          h={0.16}
+          rotation={[0, 0, Math.PI / 2]}
+          color={frame}
+        />
+      </group>
+
+      {/* Footrests */}
+      {[-1, 1].map((side) => (
+        <group key={side}>
+          <Box
+            size={[0.13, 0.025, 0.35]}
+            position={[side * 0.18, 0.16, -0.48]}
+            rotation={[-0.25, 0, 0]}
+            color={dark}
+            radius={0.012}
+          />
+          <Box
+            size={[0.14, 0.035, 0.04]}
+            position={[side * 0.18, 0.22, -0.53]}
+            color={frame}
+          />
+        </group>
+      ))}
+
+      {/* Sliding seat - initially stationary */}
+      <Box
+        size={[0.35, 0.07, 0.30]}
+        position={[0, 0.34, 0.38]}
+        color={dark}
+        radius={0.04}
+      />
+
+      {/* Handlebar */}
+      <Cyl
+        r={0.018}
+        h={0.46}
+        rotation={[0, 0, Math.PI / 2]}
+        position={[0, 0.45, -0.40]}
+        color={dark}
+      />
+
+      {/* Handle cable */}
+      <Box
+        size={[0.008, 0.008, 0.40]}
+        position={[0, 0.45, -0.62]}
+        color={metal}
+      />
+
+      {/* Monitor arm */}
+      <Box
+        size={[0.035, 0.45, 0.035]}
+        position={[0, 0.82, -0.77]}
+        rotation={[0.25, 0, 0]}
+        color={frame}
+      />
+
+      {/* Performance monitor */}
+      <Box
+        size={[0.22, 0.16, 0.06]}
+        position={[0, 1.06, -0.71]}
+        rotation={[-0.2, 0, 0]}
+        color={dark}
+        radius={0.012}
+      />
+
+      {/* Monitor screen */}
+      <Box
+        size={[0.18, 0.12, 0.008]}
+        position={[0, 1.06, -0.675]}
+        color={v.on ? '#69d5ac' : '#45515e'}
+      />
+    </group>
+  )
+}
+
 /** Yoga mat: flat on the floor (walked on like a rug) or rolled up (Item.variant 'rolled'), in its color (Item.body). */
 export function YogaMat({ v }: P) {
   const color = v.opts.body ?? '#8f6cf0'

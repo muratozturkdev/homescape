@@ -259,6 +259,7 @@ const SPEC: Partial<Record<ItemKind, { at: [number, number, number]; range: numb
   ledStrip: { at: [0, 0, 0.05], range: 4, power: 2.4, type: 3, half: 1 },
   mirrorLight: { at: [0, 1.9, 0.15], range: 3.5, power: 1.8, type: 0 },
   downlight: { at: [0, 2.55, 0], range: 4.2, power: 3.4, type: 1 },
+  utilityLight: { at: [0, 2.5, 0], range: 5, power: 3.2, type: 3, half: 0.6 },
   ceilingStrip: { at: [0, 2.5, 0], range: 99, power: 1.6, type: 2 },
   // A ceiling light lights the whole room like a chandelier, a track spot its surroundings, a table lamp what is near (kit/smart.tsx)
   ceilingLight: { at: [0, 2.45, 0], range: 'room', power: 3.6, type: 0 },
@@ -382,25 +383,27 @@ function daylightLights(level: Level, entities: Record<string, HassEntity>, sky:
  * walls. The intersection of the open areas with the range square is merged into the largest rectangles on a small grid
  * (the shader takes HS_RECTS rectangles per light; the largest ones).
  */
-function outdoorRegion(level: Level, cx: number, cz: number, range: number): Rect[] {
+function outdoorRegion(level: Level, cx: number, cz: number, range: number, open = false): Rect[] {
   const x0 = cx - range
   const x1 = cx + range
   const z0 = cz - range
   const z1 = cz + range
+  // open: everything around that is not indoors (the light of a wall light outside the house, with no garden under it)
   const parts = level.rooms
-    .filter((r) => isOutdoor(r))
+    .filter((r) => (open ? !isOutdoor(r) : isOutdoor(r)))
     .flatMap(rectsOf)
     .map((q) => ({ a: Math.max(q.x, x0), b: Math.min(q.x + q.w, x1), c: Math.max(q.z, z0), d: Math.min(q.z + q.d, z1) }))
     .filter((q) => q.b - q.a > 0.05 && q.d - q.c > 0.05)
-  if (!parts.length) return []
-  const xs = [...new Set(parts.flatMap((q) => [q.a, q.b]))].sort((a, b) => a - b)
-  const zs = [...new Set(parts.flatMap((q) => [q.c, q.d]))].sort((a, b) => a - b)
+  if (!parts.length && !open) return []
+  const xs = [...new Set([...(open ? [x0, x1] : []), ...parts.flatMap((q) => [q.a, q.b])])].sort((a, b) => a - b)
+  const zs = [...new Set([...(open ? [z0, z1] : []), ...parts.flatMap((q) => [q.c, q.d])])].sort((a, b) => a - b)
   const nx = xs.length - 1
   const nz = zs.length - 1
   const inside = (i: number, j: number) => {
     const x = (xs[i] + xs[i + 1]) / 2
     const z = (zs[j] + zs[j + 1]) / 2
-    return parts.some((q) => x > q.a && x < q.b && z > q.c && z < q.d)
+    const covered = parts.some((q) => x > q.a && x < q.b && z > q.c && z < q.d)
+    return open ? !covered : covered
   }
   const used = new Uint8Array(nx * nz)
   const free = (i: number, j: number) => i < nx && j < nz && !used[j * nx + i] && inside(i, j)
@@ -460,7 +463,11 @@ export function computeRoomLights(level: Level, entities: Record<string, HassEnt
     // Outdoors: all open areas within range (road, crosswalk, sidewalk...). If the fixture is above no room (a lamp whose
     // arm points away from the road) the open area the item stands on decides; otherwise the light would leak into the house.
     const base = room ?? roomOf(it.x, it.z)
-    if (base && isOutdoor(base)) rects = outdoorRegion(level, pos[0], pos[2], r)
+    if (it.kind === 'wallLight' && !roomOf(it.x, it.z)) {
+      // A wall light on the outside of a house wall with no garden under it lights what is around, never the house
+      rects = outdoorRegion(level, pos[0], pos[2], r, true)
+      if (!rects.length) return
+    } else if (base && isOutdoor(base)) rects = outdoorRegion(level, pos[0], pos[2], r)
     // The item's light intensity factor (Item.intensity, 10%-300% on the card)
     const p = power * (it.intensity ?? 1)
     out.push({ pos, range: r, type, rects, axis, color: color.clone().multiplyScalar(p * f), power: p * color.r + p * color.g + p * color.b })
@@ -486,7 +493,12 @@ export function computeRoomLights(level: Level, entities: Record<string, HassEnt
         // The tree scales with its height (Item.len): the light rises to its middle, a big outdoor tree reaches further and shines brighter
         const k = treeScale(it.len)
         push(it, [0, spec.at[1] * k, 0], (spec.range as number) * Math.max(0.7, k), spec.power * Math.max(0.6, Math.sqrt(k)), 0, _c.set(lightColor(e)).multiplyScalar(level))
-      } else push(it, spec.at, spec.range, spec.power, spec.type, _c.set(lightColor(e)).multiplyScalar(level), it.kind === 'ledStrip' && it.len ? it.len / 2 : spec.half)
+      } else {
+        // An LED strip and a utility light shine along their length
+        const half = it.kind === 'utilityLight' ? (it.len ?? 1.2) / 2 : it.kind === 'ledStrip' && it.len ? it.len / 2 : spec.half
+        push(it, spec.at, spec.range, spec.power, spec.type, _c.set(lightColor(e)).multiplyScalar(level), half)
+      }
+
       continue
     }
     // Under-counter LED: onto the front of the counter, from below the wall cabinets (source chosen on the card, or the main entity)

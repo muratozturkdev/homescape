@@ -71,7 +71,7 @@ function ItemGhost({ kind, extra }: { kind: ItemKind; extra?: Partial<Item> }) {
   const [variant, setVariant] = useState<string | undefined>(undefined)
   // The preset card's settings (height of a full-height window, a fixed window's single pane) show in the ghost too
   const ghostV = useMemo(
-    () => (variant || extra ? { ...GHOST_VISUAL, opts: { len: extra?.len, len2: extra?.len2, variant: variant ?? extra?.variant, mount: extra?.mount, sink: extra?.sink, dishwasher: extra?.dishwasher }, at: { x: 0, z: 0, rot: 0, y: extra?.y }, fixed: Boolean(extra?.fixed), double: Boolean(extra?.double) } : GHOST_VISUAL),
+    () => (variant || extra ? { ...GHOST_VISUAL, opts: { len: extra?.len, len2: extra?.len2, variant: variant ?? extra?.variant, cover: extra?.cover, mount: extra?.mount, sink: extra?.sink, dishwasher: extra?.dishwasher }, at: { x: 0, z: 0, rot: 0, y: extra?.y }, fixed: Boolean(extra?.fixed), double: Boolean(extra?.double) } : GHOST_VISUAL),
     [variant, extra],
   )
   useGhostMaterials(inner, `${kind}-${variant ?? ''}`)
@@ -96,7 +96,8 @@ function ItemGhost({ kind, extra }: { kind: ItemKind; extra?: Partial<Item> }) {
       // Kitchen cabinets and appliances stick to a wall only close to it; elsewhere they stand free (an island)
       // A TV may end up on the wall: it does not hang on a half wall either
       const top = wallTop({ kind, variant: kind === 'tv' ? 'wall' : extra?.variant, mount: extra?.mount, y: extra?.y, len2: extra?.len2 })
-      const w = wallSnap(level.rooms, x, z, meta.size[1], FREESTANDING.includes(kind) ? FREE_SNAP : 1, sizeOf(kind, extra?.len)[0], isAperture(kind), extra?.mount === 'wall', top, stairsWallRuns(level.items))
+      // A wall light also hangs on the outside of a house wall
+      const w = wallSnap(level.rooms, x, z, meta.size[1], FREESTANDING.includes(kind) ? FREE_SNAP : 1, sizeOf(kind, extra?.len)[0], isAperture(kind), extra?.mount === 'wall', top, stairsWallRuns(level.items), kind === 'wallLight')
       if (w) ({ x, z, rot } = w)
       else onWall = false
     }

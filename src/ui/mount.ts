@@ -88,7 +88,7 @@ export function nudgeAlongWall(item: Item, d: number) {
   const x = Math.round((item.x + Math.cos(item.rot) * d) * 1000) / 1000
   const z = Math.round((item.z - Math.sin(item.rot) * d) * 1000) / 1000
   const aperture = item.kind === 'window'
-  const w = wallSnap(level.rooms, x, z, CATALOG[item.kind].size[1], 0.05, sizeOf(item.kind, item.len)[0], aperture, item.mount === 'wall', wallTop(item), stairsWallRuns(level.items))
+  const w = wallSnap(level.rooms, x, z, CATALOG[item.kind].size[1], 0.05, sizeOf(item.kind, item.len)[0], aperture, item.mount === 'wall', wallTop(item), stairsWallRuns(level.items), item.kind === 'wallLight')
   const turn = w ? Math.abs(Math.atan2(Math.sin(w.rot - item.rot), Math.cos(w.rot - item.rot))) : 1
   if (!w || turn > 0.01) return useHa.setState({ notice: t('Reached the end of the wall') })
   const chk = checkItem(level, { kind: item.kind, x: w.x, z: w.z, rot: item.rot, y: item.y, variant: item.variant, mount: item.mount, len: item.len, len2: item.len2 }, item.id)

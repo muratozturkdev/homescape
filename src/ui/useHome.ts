@@ -4,9 +4,8 @@ import { useHa } from '@/ha/store'
 import type { HassEntity } from '@/ha/types'
 import { bindingsOf, itemLightIds } from '@/model/bindings'
 import { isLightKind, isWallOpening } from '@/model/catalog'
-import { inRoom, isOutdoor } from '@/model/geometry'
+import { isOutdoor, ownsItem } from '@/model/geometry'
 import { activeLevel, useLayout } from '@/model/layoutStore'
-import type { Item, Room } from '@/model/types'
 import { formatNumber } from '@/i18n'
 
 /* Derived home data the UI needs: room statistics, counters */
@@ -21,7 +20,6 @@ export interface RoomStats {
 
 const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null)
 
-const inRoomItem = (r: Room, it: Item) => inRoom(r, it.x, it.z)
 
 export function useRoomStats(): Record<string, RoomStats> {
   const level = useLayout((s) => activeLevel(s))
@@ -41,7 +39,7 @@ export function useRoomStats(): Record<string, RoomStats> {
     }
     for (const r of level.rooms) {
       const areaEnts = (r.areaId && byArea.get(r.areaId)) || []
-      const items = level.items.filter((it) => inRoomItem(r, it))
+      const items = level.items.filter((it) => ownsItem(r, it, level.rooms))
       // All entities bound to the items in the room (main + extras) and the entities in the room's HA area
       const itemEnts = items.flatMap(bindingsOf).map((id) => entities[id]).filter((e): e is HassEntity => Boolean(e))
       const pool = [...new Set([...areaEnts, ...itemEnts])]
