@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "Usunięto pokój {room}. Cofnij: ⌘Z.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · może być owalny",
- "⌥ or ⇧ + left drag": "⌥ lub ⇧ + przeciągnięcie lewym przyciskiem"
+ "⌥ or ⇧ + left drag": "⌥ lub ⇧ + przeciągnięcie lewym przyciskiem",
+ "Utility light": "Lampa użytkowa",
+ "Fixture style": "Typ oprawy",
+ "Fluorescent · 1 tube": "Świetlówka · 1 rura",
+ "Fluorescent · 2 tubes": "Świetlówka · 2 rury",
+ "Fluorescent · 4 tubes": "Świetlówka · 4 rury",
+ "LED batten": "Listwa LED",
+ "LED shop · 2 tubes": "LED warsztatowa · 2 rury",
+ "LED shop · 4 tubes": "LED warsztatowa · 4 rury",
+ "Fixture length": "Długość oprawy",
+ "Exposed tubes": "Odsłonięte świetlówki",
+ "Flat frosted cover": "Płaska matowa osłona",
+ "Wraparound diffuser": "Klosz otaczający",
+ "Louvered grid": "Raster lamelowy",
+ "Cover style": "Typ osłony",
+ "Choose a cover or leave the fixture tubes exposed.": "Wybierz osłonę lub pozostaw świetlówki odsłonięte."
 }

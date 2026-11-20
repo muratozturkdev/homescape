@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "Se eliminó {room}. ⌘Z lo deshace.",
  "{value}%": "{value} %",
  "Ø {d} m · can be oval": "Ø {d} m · puede ser oval",
- "⌥ or ⇧ + left drag": "⌥ o ⇧ + arrastrar con el izquierdo"
+ "⌥ or ⇧ + left drag": "⌥ o ⇧ + arrastrar con el izquierdo",
+ "Utility light": "Luminaria de servicio",
+ "Fixture style": "Tipo de luminaria",
+ "Fluorescent · 1 tube": "Fluorescente · 1 tubo",
+ "Fluorescent · 2 tubes": "Fluorescente · 2 tubos",
+ "Fluorescent · 4 tubes": "Fluorescente · 4 tubos",
+ "LED batten": "Regleta LED",
+ "LED shop · 2 tubes": "LED de taller · 2 tubos",
+ "LED shop · 4 tubes": "LED de taller · 4 tubos",
+ "Fixture length": "Longitud de la luminaria",
+ "Exposed tubes": "Tubos expuestos",
+ "Flat frosted cover": "Cubierta plana mate",
+ "Wraparound diffuser": "Difusor envolvente",
+ "Louvered grid": "Rejilla de lamas",
+ "Cover style": "Tipo de cubierta",
+ "Choose a cover or leave the fixture tubes exposed.": "Elige una cubierta o deja los tubos expuestos."
 }

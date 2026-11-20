@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "Комната {room} удалена. Отменить: ⌘Z.",
  "{value}%": "{value} %",
  "Ø {d} m · can be oval": "Ø {d} m · может быть овальным",
- "⌥ or ⇧ + left drag": "⌥ или ⇧ + перетаскивание левой кнопкой"
+ "⌥ or ⇧ + left drag": "⌥ или ⇧ + перетаскивание левой кнопкой",
+ "Utility light": "Рабочий светильник",
+ "Fixture style": "Тип светильника",
+ "Fluorescent · 1 tube": "Люминесцентный · 1 трубка",
+ "Fluorescent · 2 tubes": "Люминесцентный · 2 трубки",
+ "Fluorescent · 4 tubes": "Люминесцентный · 4 трубки",
+ "LED batten": "Линейный LED-светильник",
+ "LED shop · 2 tubes": "LED для мастерской · 2 трубки",
+ "LED shop · 4 tubes": "LED для мастерской · 4 трубки",
+ "Fixture length": "Длина светильника",
+ "Exposed tubes": "Открытые трубки",
+ "Flat frosted cover": "Плоская матовая крышка",
+ "Wraparound diffuser": "Охватывающий рассеиватель",
+ "Louvered grid": "Решётка с ламелями",
+ "Cover style": "Тип крышки",
+ "Choose a cover or leave the fixture tubes exposed.": "Выберите крышку или оставьте трубки открытыми."
 }

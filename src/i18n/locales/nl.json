@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "{room} verwijderd. Ongedaan maken met ⌘Z.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · kan ovaal zijn",
- "⌥ or ⇧ + left drag": "⌥ of ⇧ + met links slepen"
+ "⌥ or ⇧ + left drag": "⌥ of ⇧ + met links slepen",
+ "Utility light": "Werkverlichting",
+ "Fixture style": "Armatuurtype",
+ "Fluorescent · 1 tube": "Fluorescent · 1 buis",
+ "Fluorescent · 2 tubes": "Fluorescent · 2 buizen",
+ "Fluorescent · 4 tubes": "Fluorescent · 4 buizen",
+ "LED batten": "LED-lichtbalk",
+ "LED shop · 2 tubes": "LED-werkplaatslamp · 2 buizen",
+ "LED shop · 4 tubes": "LED-werkplaatslamp · 4 buizen",
+ "Fixture length": "Armatuurlengte",
+ "Exposed tubes": "Open buizen",
+ "Flat frosted cover": "Vlakke matte afdekking",
+ "Wraparound diffuser": "Omhullende diffuser",
+ "Louvered grid": "Lamellenrooster",
+ "Cover style": "Afdekkingstype",
+ "Choose a cover or leave the fixture tubes exposed.": "Kies een afdekking of laat de buizen vrij."
 }

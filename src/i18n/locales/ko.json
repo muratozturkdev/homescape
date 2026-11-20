@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "{room} 삭제됨. ⌘Z로 되돌릴 수 있어요.",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · 타원도 가능해요",
- "⌥ or ⇧ + left drag": "⌥ 또는 ⇧ + 왼쪽 드래그"
+ "⌥ or ⇧ + left drag": "⌥ 또는 ⇧ + 왼쪽 드래그",
+ "Utility light": "작업용 조명",
+ "Fixture style": "조명 기구 유형",
+ "Fluorescent · 1 tube": "형광등 · 1개",
+ "Fluorescent · 2 tubes": "형광등 · 2개",
+ "Fluorescent · 4 tubes": "형광등 · 4개",
+ "LED batten": "LED 바 조명",
+ "LED shop · 2 tubes": "작업용 LED · 2개",
+ "LED shop · 4 tubes": "작업용 LED · 4개",
+ "Fixture length": "조명 기구 길이",
+ "Exposed tubes": "노출형 튜브",
+ "Flat frosted cover": "평면 불투명 커버",
+ "Wraparound diffuser": "랩어라운드 확산판",
+ "Louvered grid": "루버 격자",
+ "Cover style": "커버 유형",
+ "Choose a cover or leave the fixture tubes exposed.": "커버를 선택하거나 조명 튜브를 노출 상태로 둡니다."
 }

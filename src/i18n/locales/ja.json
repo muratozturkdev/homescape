@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "{room}を削除しました。⌘Zで元に戻せます。",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø{d} m · 楕円にもできます",
- "⌥ or ⇧ + left drag": "⌥ または ⇧ + 左ドラッグ"
+ "⌥ or ⇧ + left drag": "⌥ または ⇧ + 左ドラッグ",
+ "Utility light": "作業用照明",
+ "Fixture style": "照明器具の種類",
+ "Fluorescent · 1 tube": "蛍光灯 · 1本",
+ "Fluorescent · 2 tubes": "蛍光灯 · 2本",
+ "Fluorescent · 4 tubes": "蛍光灯 · 4本",
+ "LED batten": "LEDバーライト",
+ "LED shop · 2 tubes": "作業用LED · 2本",
+ "LED shop · 4 tubes": "作業用LED · 4本",
+ "Fixture length": "照明器具の長さ",
+ "Exposed tubes": "露出管",
+ "Flat frosted cover": "平型フロストカバー",
+ "Wraparound diffuser": "ラップアラウンドディフューザー",
+ "Louvered grid": "ルーバーグリッド",
+ "Cover style": "カバーの種類",
+ "Choose a cover or leave the fixture tubes exposed.": "カバーを選択するか、蛍光管を露出させます。"
 }

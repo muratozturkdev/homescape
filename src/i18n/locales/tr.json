@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "{room} silindi. Geri almak için ⌘Z.",
  "{value}%": "%{value}",
  "Ø {d} m · can be oval": "Ø {d} m · oval de olur",
- "⌥ or ⇧ + left drag": "⌥ ya da ⇧ + sol sürükle"
+ "⌥ or ⇧ + left drag": "⌥ ya da ⇧ + sol sürükle",
+ "Utility light": "Çalışma alanı lambası",
+ "Fixture style": "Armatür tipi",
+ "Fluorescent · 1 tube": "Floresan · 1 tüp",
+ "Fluorescent · 2 tubes": "Floresan · 2 tüp",
+ "Fluorescent · 4 tubes": "Floresan · 4 tüp",
+ "LED batten": "LED çubuk lamba",
+ "LED shop · 2 tubes": "Atölye LED · 2 tüp",
+ "LED shop · 4 tubes": "Atölye LED · 4 tüp",
+ "Fixture length": "Armatür uzunluğu",
+ "Exposed tubes": "Açık tüpler",
+ "Flat frosted cover": "Düz mat kapak",
+ "Wraparound diffuser": "Sarmal difüzör",
+ "Louvered grid": "Lamelli ızgara",
+ "Cover style": "Kapak tipi",
+ "Choose a cover or leave the fixture tubes exposed.": "Bir kapak seçin veya tüpleri açık bırakın."
 }

@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "已删除 {room}。按 ⌘Z 可撤销。",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · 也可做成椭圆",
- "⌥ or ⇧ + left drag": "⌥ 或 ⇧ + 左键拖动"
+ "⌥ or ⇧ + left drag": "⌥ 或 ⇧ + 左键拖动",
+ "Utility light": "工作照明灯",
+ "Fixture style": "灯具类型",
+ "Fluorescent · 1 tube": "荧光灯 · 1管",
+ "Fluorescent · 2 tubes": "荧光灯 · 2管",
+ "Fluorescent · 4 tubes": "荧光灯 · 4管",
+ "LED batten": "LED条形灯",
+ "LED shop · 2 tubes": "LED工作灯 · 2管",
+ "LED shop · 4 tubes": "LED工作灯 · 4管",
+ "Fixture length": "灯具长度",
+ "Exposed tubes": "裸露灯管",
+ "Flat frosted cover": "平面磨砂灯罩",
+ "Wraparound diffuser": "包覆式扩散罩",
+ "Louvered grid": "百叶格栅",
+ "Cover style": "灯罩类型",
+ "Choose a cover or leave the fixture tubes exposed.": "选择灯罩或保持灯管裸露。"
 }

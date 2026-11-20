@@ -1823,5 +1823,20 @@
  "{room} deleted. ⌘Z undoes it.": "{room} हटा दिया गया। पूर्ववत करने के लिए ⌘Z दबाएँ।",
  "{value}%": "{value}%",
  "Ø {d} m · can be oval": "Ø {d} m · अंडाकार भी हो सकता है",
- "⌥ or ⇧ + left drag": "⌥ या ⇧ + बायाँ ड्रैग"
+ "⌥ or ⇧ + left drag": "⌥ या ⇧ + बायाँ ड्रैग",
+ "Utility light": "यूटिलिटी लाइट",
+ "Fixture style": "लाइट का प्रकार",
+ "Fluorescent · 1 tube": "फ्लोरोसेंट · 1 ट्यूब",
+ "Fluorescent · 2 tubes": "फ्लोरोसेंट · 2 ट्यूब",
+ "Fluorescent · 4 tubes": "फ्लोरोसेंट · 4 ट्यूब",
+ "LED batten": "एलईडी बैटन",
+ "LED shop · 2 tubes": "वर्कशॉप एलईडी · 2 ट्यूब",
+ "LED shop · 4 tubes": "वर्कशॉप एलईडी · 4 ट्यूब",
+ "Fixture length": "लाइट की लंबाई",
+ "Exposed tubes": "खुली ट्यूब",
+ "Flat frosted cover": "सपाट फ्रॉस्टेड कवर",
+ "Wraparound diffuser": "चारों ओर का डिफ्यूज़र",
+ "Louvered grid": "लूवर ग्रिड",
+ "Cover style": "कवर का प्रकार",
+ "Choose a cover or leave the fixture tubes exposed.": "कवर चुनें या लाइट की ट्यूब खुली छोड़ें।"
 }
