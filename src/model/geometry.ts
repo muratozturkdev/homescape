@@ -394,6 +394,27 @@ export function apertureOf(it: Item) {
   return null
 }
 
+/** Indoor wall runs an opening (door, window, doorless opening) sits in: one per room the wall belongs to. */
+function openingRuns(item: Item, rooms: Room[]): WallRun[] {
+  const a = apertureOf(item)
+  if (!a) return []
+  const on = (r: WallRun) => r.horizontal === a.horizontal && Math.abs(r.line - a.line) <= 0.08 && a.along >= r.a0 && a.along <= r.a1
+  return rooms.filter((room) => !isOutdoor(room)).flatMap((room) => wallRuns(room, rooms).filter(on))
+}
+
+/** The indoor wall run an opening sits in. */
+export const openingWallRun = (item: Item, rooms: Room[]): WallRun | undefined => openingRuns(item, rooms)[0]
+
+/** Whether an opening is in a half-height wall. */
+export const openingOnHalfWall = (item: Item, rooms: Room[]) => openingRuns(item, rooms).some((r) => r.half)
+
+/** The widest an opening can be in its wall (its ends stay clear of the corners), rounded down to 5 cm. */
+export function openingMaxWidth(item: Item, rooms: Room[]): number | undefined {
+  const run = openingWallRun(item, rooms)
+  if (!run) return undefined
+  return Math.max(0, Math.floor((run.a1 - run.a0 - 2 * WALL_IN + 1e-6) * 20) / 20)
+}
+
 /** Openings in a wall run. A door in the neighbor room cuts the shared wall too. */
 export function runOpenings(run: WallRun, items: Item[]): Opening[] {
   const out: Opening[] = []

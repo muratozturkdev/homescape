@@ -5,7 +5,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { deviceClass, domainOf, isActive, lightColor, lightLevel, num } from '@/ha/derive'
 import type { HassEntity } from '@/ha/types'
-import { GARAGE_DOOR } from '@/model/catalog'
+import { GARAGE_DOOR, regularTreeScale } from '@/model/catalog'
 import { APERTURE_INSET, WALL_CUT_H, WALL_H, WALL_INNER_H, WALL_T } from '@/model/geometry'
 import { U_FLIGHT, U_GAP, U_LANDING, U_SIZE, wallSides } from '@/model/stairs'
 import { roofView, useView } from '../camera'
@@ -307,9 +307,25 @@ function treeGeometry(kind: string) {
  * clustered low poly foliage balls), 'pine' (stacked cones), 'palm' (ringed curved trunk, drooping fronds, coconuts),
  * 'olive' (short twisted trunk, gray green crown). One merged mesh, seeded: the same on every load.
  */
+/**
+ * Regular trees with adjustable height.
+ * Supports deciduous, pine, palm and olive.
+ */
 export function Tree({ v }: P) {
-  const kind = TREE_KINDS.includes(v.opts.variant ?? '') ? v.opts.variant! : 'oak'
-  return <M g={treeGeometry(kind)} m={vcMat(0.85, true, kind === 'palm')} />
+  const kind = TREE_KINDS.includes(v.opts.variant ?? '')
+    ? v.opts.variant!
+    : 'oak'
+
+  const scale = regularTreeScale(v.opts.len)
+
+  return (
+    <group scale={[scale, scale, scale]}>
+      <M
+        g={treeGeometry(kind)}
+        m={vcMat(0.85, true, kind === 'palm')}
+      />
+    </group>
+  )
 }
 
 /* ---------- bush ---------- */

@@ -6,7 +6,7 @@ import { useHa } from '@/ha/store'
 import { bindingsOf, boundAnywhere, emitsLight, isBound, ledOf, ledSource } from '@/model/bindings'
 import { BEAM, BODY_COLORS, CATALOG, CONSOLE_LEN, consoleModel, GARAGE_DOOR, isSlidingDoor, isWallOpening, ITEM_PRESETS, OPENING_DOOR_H, OPENING_FULL_H, OPTIONS, RESIZABLE, RESIZABLE2, SLIDING_DOOR, sizeOf, TOP_COLORS, WALL_OPENING } from '@/model/catalog'
 import { kindFor, modelName, variantFor } from '@/model/generate'
-import { doorSides, isOutdoor, isStreetSurface, rectsOf, roomArea, roomAt, wallLengthAt, wallSnap, type Side } from '@/model/geometry'
+import { doorSides, isOutdoor, isStreetSurface, rectsOf, roomArea, roomAt, wallLengthAt, wallSnap, openingWallRun, openingMaxWidth, WALL_IN, type Side } from '@/model/geometry'
 import { groupFamily, groupMates, heatingSummary } from '@/model/groups'
 import { activeHomeId, activeLevel, homesOf, useLayout } from '@/model/layoutStore'
 import { usePlacement } from '@/model/placement'
@@ -449,8 +449,11 @@ function tvHeight(item: Item, variant: string) {
 /** Settings of items like desks and cabinets: length, drawers, top and body color. */
 function FurnitureOptions({ item }: { item: Item }) {
   const opt = OPTIONS[item.kind]
+  // A wall opening is no wider than the wall it is in (a short half wall leaves less room)
+  const openingMax = useLayout((s) => (isWallOpening(item) ? openingMaxWidth(item, activeLevel(s)?.rooms ?? []) : undefined))
+  const opening = openingMax != null && openingMax > 0 ? { ...WALL_OPENING, min: Math.min(WALL_OPENING.min, openingMax), max: openingMax } : WALL_OPENING
   // A sliding glass door, a wall opening and a garage door have their own width; a hinged door has none to set
-  const range = item.kind === 'door' ? (isSlidingDoor(item) ? SLIDING_DOOR : isWallOpening(item) ? WALL_OPENING : undefined) : item.kind === 'garageDoor' ? GARAGE_DOOR : RESIZABLE[item.kind]
+  const range = item.kind === 'door' ? (isSlidingDoor(item) ? SLIDING_DOOR : isWallOpening(item) ? opening : undefined) : item.kind === 'garageDoor' ? GARAGE_DOOR : RESIZABLE[item.kind]
   const range2 = RESIZABLE2[item.kind]
   const { updateItem, checkpoint } = useLayout.getState()
   if (!opt && !range) return null
@@ -473,6 +476,17 @@ function FurnitureOptions({ item }: { item: Item }) {
     if ((item.mount === 'wall' || item.kind === 'ledStrip') && 'len' in patch) {
       const w = wallSnap(level.rooms, item.x, item.z, CATALOG[item.kind].size[1], 0.2, sizeOf(item.kind, patch.len)[0], false, true, wallTop(item), stairsWallRuns(level.items))
       if (w) patch = { ...patch, x: w.x, z: w.z }
+    }
+    // A wall opening stays within its wall when it gets wider: it slides away from the wall's end
+    if (isWallOpening(item) && patch.len != null) {
+      const run = openingWallRun(item, level.rooms)
+      const max = openingMaxWidth(item, level.rooms)
+      if (!run || max == null || max <= 0) return
+      const width = Math.min(patch.len, max)
+      const lo = run.a0 + WALL_IN + width / 2
+      const hi = run.a1 - WALL_IN - width / 2
+      const center = Math.min(Math.max(run.horizontal ? item.x : item.z, lo), hi)
+      patch = { ...patch, len: width, ...(run.horizontal ? { x: center } : { z: center }) }
     }
     const next = { ...item, ...patch }
     const chk = checkItem(level, { kind: next.kind, x: next.x, z: next.z, rot: next.rot, y: next.y, len: next.len, len2: next.len2, variant: next.variant, mount: next.mount, swing: next.swing, walls: next.walls }, item.id)

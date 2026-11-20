@@ -11,7 +11,7 @@ import { toggle } from '@/ha/actions'
 import { t } from '@/i18n'
 import { isBound } from '@/model/bindings'
 import { CATALOG, isLightKind, sizeOf } from '@/model/catalog'
-import { backOnWall, doorSides, isAperture, isOutdoor, snap, wallSnap } from '@/model/geometry'
+import { backOnWall, doorSides, HALF_WALL_H, isAperture, isOutdoor, openingOnHalfWall, snap, wallSnap } from '@/model/geometry'
 import { activeLevel, useLayout } from '@/model/layoutStore'
 import { usePlacement } from '@/model/placement'
 import { APPLIANCE_STACK, checkItem, FREE_SNAP, FREESTANDING, isWallMounted, snapsToWall, STACKABLE, surfaceAt, wallTop } from '@/model/rules'
@@ -97,9 +97,12 @@ function ItemNodeImpl({ item, entity, related, night, levelId, still = false }: 
   const { len, drawers, top, body, fedAt, shape, variant, len2, led, ledEntity, intensity, mount, beam, sink, dishwasher, walls } = item
   // Built-in sink of the kitchen counter (model/counter.ts): in the middle unless there is a separate sink next to it
   const sinkAt = useLayout((s) => (item.kind === 'kitchenCounter' ? (counterSink(lvOf(s)?.items ?? [], item) ?? undefined) : undefined))
+  // A doorless opening in a half wall is as high as the wall
+  const halfOpening = useLayout((s) => item.kind === 'door' && item.variant === 'opening' && openingOnHalfWall(item, lvOf(s)?.rooms ?? []))
+  const openingHeight = halfOpening ? HALF_WALL_H : len2
   const opts = useMemo(
-    () => ({ len, drawers, top, body, fedAt, shape, variant, len2, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls }),
-    [len, drawers, top, body, fedAt, shape, variant, len2, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls],
+    () => ({ len, drawers, top, body, fedAt, shape, variant, len2: openingHeight, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls }),
+    [len, drawers, top, body, fedAt, shape, variant, openingHeight, led, ledEntity, intensity, mount, beam, sinkAt, sink, dishwasher, walls],
   )
   useCursor(hover && interactive && !busy())
   // If the quick on/off pill opens on this item, it is placed by this group's body (scene/QuickAnchor.tsx)
