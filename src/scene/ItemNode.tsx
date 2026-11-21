@@ -10,7 +10,7 @@ import type { HassEntity } from '@/ha/types'
 import { toggle } from '@/ha/actions'
 import { t } from '@/i18n'
 import { isBound } from '@/model/bindings'
-import { CATALOG, isLightKind, sizeOf } from '@/model/catalog'
+import { CATALOG, isLightKind, sizeOf, SOLAR_LIGHT } from '@/model/catalog'
 import { backOnWall, doorSides, HALF_WALL_H, isAperture, isOutdoor, openingOnHalfWall, snap, wallSnap } from '@/model/geometry'
 import { activeLevel, useLayout } from '@/model/layoutStore'
 import { usePlacement } from '@/model/placement'
@@ -164,25 +164,11 @@ function ItemNodeImpl({ item, entity, related, night, levelId, still = false }: 
 
   const v: Visual = useMemo(() => {
     const opening = { related, interior, hingeRight, swingOut, fixed, double, free, edit, opts, at: { x: item.x, z: item.z, rot: item.rot, y: item.y } }
-        if (!entity) {
-      const solarAuto =
-        item.kind === 'gardenLight' &&
-        opts.powerSource === 'solar' &&
-        !item.entityId &&
-        night
-
-      return {
-        ...OFF_VISUAL,
-        bound: Boolean(item.entityId),
-        night,
-        unavailable: Boolean(item.entityId),
-        ...opening,
-        on: solarAuto,
-        level: solarAuto ? (intensity ?? 1) : 0,
-        color: '#ffd29a',
-        open: open ? 1 : 0,
-        openParts,
-      }
+    if (!entity) {
+      // An unbound solar garden light turns on by itself at night (roomLights.ts lights the garden)
+      const solar = item.kind === 'gardenLight' && opts.powerSource === 'solar' && !item.entityId && night
+      const glow = solar ? { on: true, level: intensity ?? 1, color: SOLAR_LIGHT } : {}
+      return { ...OFF_VISUAL, bound: Boolean(item.entityId), night, unavailable: Boolean(item.entityId), ...opening, ...glow, open: open ? 1 : 0, openParts }
     }
     const on = isActive(entity)
     return {

@@ -566,6 +566,36 @@ ok(Lend.rooms.length === L0.rooms.length && !Lend.items.some((i) => STREET.inclu
   ok(!back.left, 'It goes when its fence is deleted')
 }
 
+// --- Garden lights (PR #17): models keep their footprint, a solar one turns on by itself at night ---
+{
+  const r = await p.evaluate(async () => {
+    const C = await import('/src/model/catalog.ts')
+    const s = window.__homescape.getState().layout
+    s.setMode('edit')
+    const garden = s.addRoom({ name: 'Solar garden', floor: 'grass', type: 'garden', x: 800, z: 0, w: 4, d: 4 })
+    const id = s.addItem('gardenLight', 802, 2, 0, null, undefined, { variant: 'mushroom', powerSource: 'solar' })
+    s.setMode('view')
+    return { id, garden, size: C.sizeOf('gardenLight'), wide: C.sizeOf('gardenLight', 0.8, 0.5) }
+  })
+  ok(r.size[0] === 0.3 && r.size[1] === 0.3 && r.wide[0] === 0.5 && r.wide[1] === 0.5, `A garden light keeps its 30 cm footprint; its width setting widens it (${JSON.stringify(r.size)}, ${JSON.stringify(r.wide)})`)
+  const near = async () => (await p.evaluate(() => window.__homescape.roomLights())).filter((l) => l.pos[0] > 801 && l.pos[0] < 803).length
+  await p.evaluate(() => window.__homescape.setTheme('day'))
+  await p.waitForTimeout(600)
+  const day = await near()
+  await p.evaluate(() => window.__homescape.setTheme('night'))
+  await p.waitForTimeout(600)
+  const night = await near()
+  await p.evaluate(() => window.__homescape.setTheme('auto'))
+  ok(day === 0 && night === 1, `An unbound solar garden light is off by day and on at night (day ${day}, night ${night} lights)`)
+  await p.evaluate(({ id, garden }) => {
+    const s = window.__homescape.getState().layout
+    s.setMode('edit')
+    s.deleteItem(id)
+    s.deleteRoom(garden)
+    s.setMode('view')
+  }, r)
+}
+
 ok(errors.length === 0, `No page errors${errors.length ? `: ${errors.slice(0, 3).join(' | ')}` : ''}`)
 await b.close()
 console.log(failures ? `\n${failures} checks failed` : '\nAll checks passed')

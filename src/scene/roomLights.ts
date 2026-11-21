@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { deviceClass, isActive, lightColor, lightLevel } from '@/ha/derive'
 import type { HassEntity } from '@/ha/types'
 import { bindingsOf, ledOf, ledSource } from '@/model/bindings'
-import { BEAM, isSlidingDoor, isWallOpening, treeScale, gardenLightDimensions, gardenLightScale, } from '@/model/catalog'
+import { BEAM, gardenLightDimensions, gardenLightScale, isSlidingDoor, isWallOpening, SOLAR_LIGHT, treeScale } from '@/model/catalog'
 import { apertureOf, doorSides, isOutdoor, rectsOf, roomAt, WALL_H, WALL_T } from '@/model/geometry'
 import type { Item, ItemKind, Level, Rect, Room } from '@/model/types'
 import { openNeighbors } from '@/model/walls'
@@ -477,16 +477,9 @@ export function computeRoomLights(level: Level, entities: Record<string, HassEnt
     const e = it.entityId ? entities[it.entityId] : undefined
     const spec = SPEC[it.kind]
     if (spec) {
-      // A street lamp without a linked entity turns on by itself at night
-            const solarAuto =
-        it.kind === 'gardenLight' &&
-        it.powerSource === 'solar' &&
-        !it.entityId &&
-        night
-
-      const auto =
-        (it.kind === 'streetLamp' && !it.entityId && night) ||
-        solarAuto
+      // A street lamp or a solar garden light without a linked entity turns on by itself at night
+      const solar = it.kind === 'gardenLight' && it.powerSource === 'solar' && !it.entityId && night
+      const auto = (it.kind === 'streetLamp' && !it.entityId && night) || solar
       if (!auto && (!e || !isActive(e))) continue
       const level = auto ? 1 : lightLevel(e)
       if (level <= 0) continue
@@ -497,27 +490,11 @@ export function computeRoomLights(level: Level, entities: Record<string, HassEnt
         // One light per fixture lens; it lights all open areas within range (the pole's sidewalk, the road, the crosswalk)
         const heads = STREET_LAMP[it.variant ?? 'single'] ?? STREET_LAMP.single
         for (const at of heads) push(it, at, spec.range, spec.power, 0, _c)
-            } else if (it.kind === 'gardenLight') {
-        const dimensions = gardenLightDimensions(it.variant)
-        const scale = gardenLightScale(
-          it.variant,
-          it.len,
-          it.len2,
-        )
-
-        push(
-          it,
-          [
-            0,
-            dimensions.lightY * scale.y,
-            it.variant === 'contemporary' ? 0.07 * scale.xz : 0,
-          ],
-          spec.range,
-          spec.power,
-          spec.type,
-          _c.set(solarAuto ? '#ffd29a' : lightColor(e))
-          .multiplyScalar(level),
-        )
+      } else if (it.kind === 'gardenLight') {
+        // The light sits in the lamp, which rises and spreads with the fixture's size (the contemporary one's head reaches forward)
+        const lamp = gardenLightDimensions(it.variant)
+        const k = gardenLightScale(it.variant, it.len, it.len2)
+        push(it, [0, lamp.lightY * k.y, it.variant === 'contemporary' ? 0.07 * k.xz : 0], spec.range, spec.power, spec.type, _c.set(solar ? SOLAR_LIGHT : lightColor(e)).multiplyScalar(level))
       } else if (it.kind === 'christmasTree') {
         // The tree scales with its height (Item.len): the light rises to its middle, a big outdoor tree reaches further and shines brighter
         const k = treeScale(it.len)
